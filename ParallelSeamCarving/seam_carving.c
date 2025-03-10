@@ -1,10 +1,21 @@
-#define STB_IMAGE_IMPLEMENTATION
-#include <lib/stb_image.h>
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <lib/stb_image_write.h>
+// SYSTEM LIBS //////////////////////////////////////////////////////////////////////////
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+#include <limits.h>
 
-// 0 for dynamic color channels
-#define COLOR_CHANNELS 0
+
+// IMPORTED LIBS //////////////////////////////////////////////////////////////////////////
+#define STB_IMAGE_IMPLEMENTATION
+#include "lib/stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "lib/stb_image_write.h"
+
+
+// CONSTANTS //////////////////////////////////////////////////////////////////////////////
+#define COLOR_CHANNELS 0 // 0 for dynamic color channels
+#define REMOVED_SEAMS 128
+
 
 unsigned char *getPixel(unsigned char *image, int x, int y, int channel, int width, int height) {
     if (x >= width || y >= height) {
@@ -17,7 +28,7 @@ unsigned char *getPixel(unsigned char *image, int x, int y, int channel, int wid
         return NULL;
     }
 
-    return image[pixelPos];
+    return &image[pixelPos];
 }
 
 int main(int argc, char *args[]) {
@@ -25,13 +36,13 @@ int main(int argc, char *args[]) {
     if (argc != 5)
     {
         printf("Error: Invalid amount of arguments. [%d]\n", argc);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     char *imageInPath = args[1];
     char *imageOutPath = args[2];
-    int outWidth = args[3];
-    int outHeight = args[4];
+    int outWidth = atoi(args[3]);
+    int outHeight = atoi(args[4]);
 
     // Load image
     int imageWidth, imageHeight, imageChannelCount, imageDataSizeBytes;
@@ -39,14 +50,22 @@ int main(int argc, char *args[]) {
     if (imageIn == NULL)
     {
         printf("Error: Couldn't load image\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
+    printf("Loaded image %s of size %dx%d.\n", imageInPath, imageWidth, imageHeight);
+    
+    const int numPixels = imageWidth * imageHeight;
 
+    double start = omp_get_wtime();
     // Process image
     
     /// Assign energy value for every pixel
-    unsigned int *energyImage = (unsigned int *)malloc(sizeof(unsigned int) * imageWidth * imageHeight);
+    unsigned int *energyImage = (unsigned int *) malloc(sizeof(unsigned int) * numPixels);
 
+    
+
+    double stopEnergy = omp_get_wtime();
+    printf(" -> time to assign energy value: %f s\n", stopEnergy - start);
 
     /// Find an 8-connected path of the pixels with the least energy
 
@@ -55,14 +74,17 @@ int main(int argc, char *args[]) {
 
 
     // Output image
-    unsigned char *outputImage = (unsigned char *)malloc(sizeof(unsigned char *) * imageWidth * imageHeight * imageChannelCount);
+    const int numPixelsOutput = outWidth * outHeight;
+    unsigned char *outputImage = (unsigned char *) malloc(sizeof(unsigned char *) * numPixelsOutput * imageChannelCount);
 
 
-    free(outputImage);
-
+    // FREE ///////////////////////////////////////////////////////////////////////////////
     free(energyImage);
+    free(outputImage);
 
     stbi_image_free(imageIn);
     free(imageOutPath);
     free(imageInPath);
+
+    return EXIT_SUCCESS;
 }
