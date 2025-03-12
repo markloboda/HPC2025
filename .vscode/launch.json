@@ -3,5 +3,32 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": []
+    "configurations": [
+        {
+            "name": "Debug Seam Carving",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/ParallelSeamCarving/seam_carving.out",
+            "args": [
+                "${workspaceFolder}/ParallelSeamCarving/test_images/720x480.png",
+                "${workspaceFolder}/ParallelSeamCarving/output_images/720x480.png",
+                "720",
+                "480"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/ParallelSeamCarving/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build Seam Carving",
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
 }
