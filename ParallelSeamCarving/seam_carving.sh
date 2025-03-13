@@ -17,4 +17,4 @@ export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 gcc -O2 -lm --openmp seam_carving.c -o seam_carving.out
 
 # Run
-srun ./seam_carving.out ./test_images/720x480.png ./output_images/720x480.png 720 480
+srun ./seam_carving.out ./test_images/720x480.png ./output_images/720x480.png 720

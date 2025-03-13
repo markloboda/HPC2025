@@ -1,5 +1,5 @@
 // LOCAL RUNNING
-// gcc -lm --openmp -g3 -O0 seam_carving.c -o seam_carving.out; ./seam_carving.out ./test_images/720x480.png ./output_images/720x480.png 720 480
+// gcc -lm --openmp -g3 -O0 seam_carving.c -o seam_carving.out; ./seam_carving.out ./test_images/720x480.png ./output_images/720x480.png 720
 
 // SYSTEM LIBS //////////////////////////////////////////////////////////////////////////
 #include <stdio.h>
@@ -16,6 +16,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "lib/stb_image_write.h"
 
+
 // MACROS ////////////////////////////////////////////////////////////////////////////////
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \
@@ -31,6 +32,8 @@
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////
 #define STB_COLOR_CHANNELS 0 // 0 for dynamic color channels
 #define REMOVED_SEAMS 128
+#define SEAM -1
+
 
 // Main image object
 typedef struct _Image_
@@ -47,8 +50,42 @@ typedef struct _Image_
 
 } Image;
 
-Image imageIn, imageOut, energyImage, seamIdImage;
+Image imageIn, imageOut, energyImage, seamIdImage, seamMaskImage;
 
+
+/*
+*  Returns the address of minimum element between three neighbouring elements
+*  Parameter: middle element
+*/
+unsigned int* getMinAddr(unsigned int* midElement, int xMid, int width)
+{
+    unsigned int* min_addr = midElement;
+
+    if (xMid - 1 >= 0 && *(midElement - 1) < *midElement)
+    {
+        min_addr = midElement - 1;
+    }
+
+    if (xMid + 1 < width && *(midElement + 1) < *midElement)
+    {
+        min_addr = midElement + 1;
+    }
+    
+    return min_addr;
+}
+
+unsigned int* minElementRowAddr(unsigned int* row, int length)
+{
+    unsigned int* min_addr = row;
+
+    for (int pos = 1; pos < length; pos++)
+    {
+        if (row[pos] < *min_addr)
+            min_addr = &row[pos];
+    }
+
+    return min_addr;
+}
 
 unsigned char *getPixel(Image* image, int x, int y) 
 {
@@ -68,8 +105,8 @@ unsigned char *getPixel(Image* image, int x, int y)
 
 unsigned int getPixelEnergy(Image* image, int x, int y)
 {
-    // Pixels outside the bounds and should be ignored during min function
-    if (x >= image->width || y >= image->height || x < 0 || y < 0) {
+    // Pixels outside the bounds and should be ignored
+    if (x >= image->width || x < 0) {
         return INT_MAX;
     }
 
@@ -114,17 +151,17 @@ unsigned int _calcEnergyPixel(Image* image, int x, int y)
     for (int rgbChannel = 0; rgbChannel < image->channelCount; rgbChannel++)
     {
         int Gx = - getPixelE(image, x - 1, y - 1)[rgbChannel] -
-                 2 * getPixelE(image, x, y - 1)[rgbChannel] -
-                 getPixelE(image, x + 1, y - 1)[rgbChannel] +
+                 2 * getPixelE(image, x - 1, y)[rgbChannel] -
                  getPixelE(image, x - 1, y + 1)[rgbChannel] +
-                 2 * getPixelE(image, x, y + 1)[rgbChannel] + 
+                 getPixelE(image, x + 1, y - 1)[rgbChannel] +
+                 2 * getPixelE(image, x + 1, y)[rgbChannel] + 
                  getPixelE(image, x + 1, y + 1)[rgbChannel];
 
         int Gy = getPixelE(image, x - 1, y - 1)[rgbChannel] +
-                 2 * getPixelE(image, x - 1, y)[rgbChannel] +
-                 getPixelE(image, x - 1, y + 1)[rgbChannel] -
+                 2 * getPixelE(image, x, y - 1)[rgbChannel] +
                  getPixelE(image, x + 1, y - 1)[rgbChannel] -
-                 2 * getPixelE(image, x + 1, y)[rgbChannel] -
+                 getPixelE(image, x - 1, y + 1)[rgbChannel] -
+                 2 * getPixelE(image, x, y + 1)[rgbChannel] -
                  getPixelE(image, x + 1, y + 1)[rgbChannel];
 
         energy += sqrt(pow(Gx, 2) + pow(Gy, 2));
@@ -149,8 +186,8 @@ unsigned int seamIdentificationPixel(Image* image, int x, int y)
 {   
     unsigned int currEnergy = getPixelEnergy(image, x, y);
     // Minimum between three neighbouring values
-    unsigned int minEnergy = min(getPixelEnergy(image, x + 1, y - 1), 
-                                min(getPixelEnergy(image, x + 1, y), 
+    unsigned int minEnergy = min(getPixelEnergy(image, x - 1, y + 1), 
+                                min(getPixelEnergy(image, x, y + 1), 
                                     getPixelEnergy(image, x + 1, y + 1)));
     return currEnergy + minEnergy;
 }
@@ -168,11 +205,34 @@ void seamIdentification(Image* image)
     }
 }
 
+void seamRemoval(Image* image)
+{
+    unsigned int* minElementAddr = minElementRowAddr(image->imgI, image->width);
+    *minElementAddr = SEAM;
+
+    for (int y = 0; y < image->height - 1; y++)
+    {
+        unsigned int* midElementAddr = minElementAddr + image->width;  // Descend one row
+        unsigned int midElementX = (midElementAddr - image->imgI) % image->width;
+        minElementAddr = getMinAddr(midElementAddr, midElementX, image->width);
+    }
+}
+
+void seamRemovalAll(Image* image, int widthOut)
+{
+    int numSeams = image->width - widthOut;
+
+    for (int seam = 0; seam < numSeams; seam++)
+    {
+        seamRemoval(image);
+    }
+}
+
 
 int main(int argc, char *args[]) 
 {
     // Read arguments
-    if (argc != 5)
+    if (argc != 4)
     {
         printf("Error: Invalid amount of arguments. [%d]\n", argc);
         exit(EXIT_FAILURE);
@@ -181,7 +241,7 @@ int main(int argc, char *args[])
     imageIn.fPath = args[1];
     imageOut.fPath = args[2];
     imageOut.width = atoi(args[3]);
-    imageOut.height = atoi(args[4]);
+    //imageOut.height = atoi(args[4]);  // Height stays the same
 
     // Load image
     imageIn.imgC = stbi_load(imageIn.fPath,
@@ -196,6 +256,10 @@ int main(int argc, char *args[])
         exit(EXIT_FAILURE);
     }
     printf("Loaded image %s of size %dx%d.\n", imageIn.fPath, imageIn.width, imageIn.height);
+
+    imageOut.height = imageIn.height; // Height stays the same
+
+    if (imageOut.width > imageIn.width) return EXIT_FAILURE;  // Output width should be smaller than input width
 
     //printMatrix(&imageIn.image, imageIn.width * image.channelCount, image.height);
 
@@ -231,6 +295,18 @@ int main(int argc, char *args[])
 
     /// Vertical Seam Removal - Follow the cheapest path to remove one pixel from each row or column to resize the image
 
+    // Copying unnecessary outside testing environment, so it is not timed
+    seamMaskImage.imgI = (unsigned int *) malloc(sizeof(unsigned int) * numPixelsIn);
+    memcpy(seamMaskImage.imgI, seamIdImage.imgI, sizeof(unsigned int) * numPixelsIn);
+    seamMaskImage.width = seamIdImage.width;
+    seamMaskImage.height = seamIdImage.height;
+
+    double startSeamRemove = omp_get_wtime();
+
+    seamRemovalAll(&seamMaskImage, imageOut.width);
+
+    double stopSeamRemove = omp_get_wtime();
+    printf(" -> time to remove vertical seam: %f s\n", stopSeamRemove - startSeamRemove);
 
     // Output image
     const int numPixelsOutput = imageOut.width * imageOut.height;
@@ -238,8 +314,14 @@ int main(int argc, char *args[])
     unsigned char *outputImage = (unsigned char *) malloc(
         sizeof(unsigned char *) * numPixelsOutput * imageOut.channelCount);
 
+    
+    printf(" -> total time: %f s\n", 0);
+
 
     // FREE ///////////////////////////////////////////////////////////////////////////////
+    free(seamIdImage.imgI);
+    free(seamMaskImage.imgI);
+
     free(energyImage.imgI);
     free(imageOut.imgC);
     stbi_image_free(imageIn.imgC);
