@@ -63,3 +63,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Custom
+ParallelSeamCarving/output_images/*.png
+

@@ -12,7 +12,7 @@
             "args": [
                 "${workspaceFolder}/ParallelSeamCarving/test_images/720x480.png",
                 "${workspaceFolder}/ParallelSeamCarving/output_images/720x480.png",
-                "720",
+                "718",
                 //"480"
             ],
             "stopAtEntry": false,

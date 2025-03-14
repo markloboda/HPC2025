@@ -145,7 +145,7 @@ void printMatrix(unsigned char* matrix, int width, int height)
     }
 }
 
-unsigned int _calcEnergyPixel(Image* image, int x, int y)
+unsigned int calcEnergyPixel(Image* image, int x, int y)
 {
     int energy = 0;
     for (int rgbChannel = 0; rgbChannel < image->channelCount; rgbChannel++)
@@ -170,14 +170,14 @@ unsigned int _calcEnergyPixel(Image* image, int x, int y)
     return energy / image->channelCount;
 }
 
-void _calcEnergy(Image* image, Image* energyImage)
+void calcEnergy(Image* image, Image* energyImage)
 {
     for (int y = 0; y < image->height; y++)
     {
         for (int x = 0; x < image->width; x++)
         {
             int pixelPos = y * (image->width) + x;
-            energyImage->imgI[pixelPos] = _calcEnergyPixel(image, x, y);
+            energyImage->imgI[pixelPos] = calcEnergyPixel(image, x, y);
         }
     }
 }
@@ -228,6 +228,23 @@ void seamRemovalAll(Image* image, int widthOut)
     }
 }
 
+void copyToOutput(Image* imageIn, Image* imageOut, Image* seamMaskImage)
+{
+    unsigned char* outputPos = imageOut->imgC;
+    for (int pixelPos = 0; pixelPos < imageIn->width * imageIn->height; pixelPos++)
+    {
+        if (seamMaskImage->imgI[pixelPos] > 0)
+        {
+            for (int channel = 0; channel < imageIn->channelCount; channel++)
+            {
+                int channelInPos = pixelPos * imageOut->channelCount + channel;
+                *outputPos = imageIn->imgC[channelInPos];
+                outputPos++;
+            }
+        }
+    }
+}
+
 
 int main(int argc, char *args[]) 
 {
@@ -266,14 +283,14 @@ int main(int argc, char *args[])
     const int numPixelsIn = imageIn.width * imageIn.height;
 
     // Process image //////////////////////////////////////////////////////////////////////////
-    
+
     /// Energy Calculation - Assign energy value for every pixel
     double startEnergy = omp_get_wtime();
 
     energyImage.imgI = (unsigned int *) malloc(sizeof(unsigned int) * numPixelsIn);
     energyImage.width = imageIn.width;
     energyImage.height = imageIn.height;
-    _calcEnergy(&imageIn, &energyImage);
+    calcEnergy(&imageIn, &energyImage);
 
     double stopEnergy = omp_get_wtime();
     printf(" -> time to assign energy value: %f s\n", stopEnergy - startEnergy);
@@ -309,13 +326,27 @@ int main(int argc, char *args[])
     printf(" -> time to remove vertical seam: %f s\n", stopSeamRemove - startSeamRemove);
 
     // Output image
+    double startOutput = omp_get_wtime();
+
     const int numPixelsOutput = imageOut.width * imageOut.height;
     imageOut.channelCount = imageIn.channelCount;
-    unsigned char *outputImage = (unsigned char *) malloc(
+    imageOut.imgC = (unsigned char *) malloc(
         sizeof(unsigned char *) * numPixelsOutput * imageOut.channelCount);
 
+    copyToOutput(&imageIn, &imageOut, &seamMaskImage);
+
+    double stopOutput = omp_get_wtime();
+    printf(" -> time to copy to output image: %f s\n", stopOutput - startOutput);
+
+    // Write the output image to file
+    stbi_write_png(imageOut.fPath, imageOut.width, imageOut.height, 
+        imageOut.channelCount, imageOut.imgC, 
+        imageOut.width * imageOut.channelCount);
     
-    printf(" -> total time: %f s\n", 0);
+    printf(" -> total time: %f s\n", stopEnergy - startEnergy +
+         stopSeamId - startSeamId + 
+         stopSeamRemove - startSeamRemove + 
+         stopOutput - startOutput);
 
 
     // FREE ///////////////////////////////////////////////////////////////////////////////
