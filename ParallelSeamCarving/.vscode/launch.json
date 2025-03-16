@@ -12,7 +12,7 @@
             "args": [
                 "${workspaceFolder}/test_images/720x480.png",
                 "${workspaceFolder}/output_images/720x480.png",
-                "718",
+                "719",
                 //"480"
             ],
             "stopAtEntry": false,

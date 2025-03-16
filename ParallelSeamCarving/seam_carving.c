@@ -8,6 +8,7 @@
 #include <limits.h>
 #include <math.h>
 #include <string.h>
+#include <stdbool.h>
 
 
 // IMPORTED LIBS //////////////////////////////////////////////////////////////////////////
@@ -31,63 +32,31 @@
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////
 #define STB_COLOR_CHANNELS 0 // 0 for dynamic color channels
-#define REMOVED_SEAMS 128
 #define SEAM -1
 
+int outputDebugCount = 0;
 
 // Main image object
 typedef struct _Image_
 {
-    union
-    {
-        unsigned char* imgC;
-        unsigned int* imgI;  // Energy values have larger range than char data type
-    };
+    unsigned char* data;
     char* fPath;
     int width;
     int height;
     int channelCount;
-
 } Image;
 
-Image imageIn, imageOut, energyImage, seamIdImage, seamMaskImage;
+Image imageIn, imageOut, debugImage;
 
-
-/*
-*  Returns the address of minimum element between three neighbouring elements
-*  Parameter: middle element
-*/
-unsigned int* getMinAddr(unsigned int* midElement, int xMid, int width)
+typedef struct __ImageProcessData__
 {
-    unsigned int* min_addr = midElement;
+    unsigned int* imgEnergy;
+    unsigned int* imgSeam;
+    int width;
+    int height;
+} ImageProcessData;
 
-    if (xMid - 1 >= 0 && *(midElement - 1) < *midElement)
-    {
-        min_addr = midElement - 1;
-    }
-
-    if (xMid + 1 < width && *(midElement + 1) < *midElement)
-    {
-        min_addr = midElement + 1;
-    }
-    
-    return min_addr;
-}
-
-unsigned int* minElementRowAddr(unsigned int* row, int length)
-{
-    unsigned int* min_addr = row;
-
-    for (int pos = 1; pos < length; pos++)
-    {
-        if (row[pos] < *min_addr)
-            min_addr = &row[pos];
-    }
-
-    return min_addr;
-}
-
-unsigned char *getPixel(Image* image, int x, int y) 
+unsigned char *getPixel(Image* image, int x, int y)
 {
     if (x >= image->width || y >= image->height || x < 0 || y < 0) {
         return NULL;
@@ -100,27 +69,10 @@ unsigned char *getPixel(Image* image, int x, int y)
         return NULL;
     }
 
-    return &image->imgC[pixelPos];
+    return &image->data[pixelPos];
 }
 
-unsigned int getPixelEnergy(Image* image, int x, int y)
-{
-    // Pixels outside the bounds and should be ignored
-    if (x >= image->width || x < 0) {
-        return INT_MAX;
-    }
-
-    const int pixelCount = image->width * image->height;
-    const int pixelPos = y * image->width + x;
-
-    if (pixelPos >= pixelCount || pixelPos < 0) {
-        return -1; // Err
-    }
-
-    return image->imgI[pixelPos];
-}
-
-unsigned char* getPixelE(Image* image, int x, int y)  // Only used for energy calculation
+unsigned char* calcPixelE(Image* image, int x, int y)  // Only used for energy calculation
 {
     // if x and y outside bounds, use the closest pixel
     if (x < 0) x++;
@@ -131,38 +83,24 @@ unsigned char* getPixelE(Image* image, int x, int y)  // Only used for energy ca
     return getPixel(image, x, y);
 }
 
-void printMatrix(unsigned char* matrix, int width, int height)
-{
-    int row, column;
-    for (row = 0; row < height; row++)
-    {
-        for(column = 0; column < width; column++)
-        {
-            int elementPos = row * width + column;
-            printf("%d   ", matrix[elementPos]);
-        }
-        printf("\n");
-    }
-}
-
 unsigned int calcEnergyPixel(Image* image, int x, int y)
 {
     int energy = 0;
     for (int rgbChannel = 0; rgbChannel < image->channelCount; rgbChannel++)
     {
-        int Gx = - getPixelE(image, x - 1, y - 1)[rgbChannel] -
-                 2 * getPixelE(image, x - 1, y)[rgbChannel] -
-                 getPixelE(image, x - 1, y + 1)[rgbChannel] +
-                 getPixelE(image, x + 1, y - 1)[rgbChannel] +
-                 2 * getPixelE(image, x + 1, y)[rgbChannel] + 
-                 getPixelE(image, x + 1, y + 1)[rgbChannel];
+        int Gx = - calcPixelE(image, x - 1, y - 1)[rgbChannel] -
+                 2 * calcPixelE(image, x - 1, y)[rgbChannel] -
+                 calcPixelE(image, x - 1, y + 1)[rgbChannel] +
+                 calcPixelE(image, x + 1, y - 1)[rgbChannel] +
+                 2 * calcPixelE(image, x + 1, y)[rgbChannel] +
+                 calcPixelE(image, x + 1, y + 1)[rgbChannel];
 
-        int Gy = getPixelE(image, x - 1, y - 1)[rgbChannel] +
-                 2 * getPixelE(image, x, y - 1)[rgbChannel] +
-                 getPixelE(image, x + 1, y - 1)[rgbChannel] -
-                 getPixelE(image, x - 1, y + 1)[rgbChannel] -
-                 2 * getPixelE(image, x, y + 1)[rgbChannel] -
-                 getPixelE(image, x + 1, y + 1)[rgbChannel];
+        int Gy = calcPixelE(image, x - 1, y - 1)[rgbChannel] +
+                 2 * calcPixelE(image, x, y - 1)[rgbChannel] +
+                 calcPixelE(image, x + 1, y - 1)[rgbChannel] -
+                 calcPixelE(image, x - 1, y + 1)[rgbChannel] -
+                 2 * calcPixelE(image, x, y + 1)[rgbChannel] -
+                 calcPixelE(image, x + 1, y + 1)[rgbChannel];
 
         energy += sqrt(pow(Gx, 2) + pow(Gy, 2));
     }
@@ -170,83 +108,206 @@ unsigned int calcEnergyPixel(Image* image, int x, int y)
     return energy / image->channelCount;
 }
 
-void calcEnergy(Image* image, Image* energyImage)
+void calcEnergyFull(Image* image, unsigned int* energyImage)
 {
     for (int y = 0; y < image->height; y++)
     {
         for (int x = 0; x < image->width; x++)
         {
-            int pixelPos = y * (image->width) + x;
-            energyImage->imgI[pixelPos] = calcEnergyPixel(image, x, y);
+            unsigned int pixelPos = y * image->width + x;
+            energyImage[pixelPos] = calcEnergyPixel(image, x, y);
         }
     }
 }
 
-unsigned int seamIdentificationPixel(Image* image, int x, int y)
-{   
-    unsigned int currEnergy = getPixelEnergy(image, x, y);
-    // Minimum between three neighbouring values
-    unsigned int minEnergy = min(getPixelEnergy(image, x - 1, y + 1), 
-                                min(getPixelEnergy(image, x, y + 1), 
-                                    getPixelEnergy(image, x + 1, y + 1)));
-    return currEnergy + minEnergy;
+unsigned int getPixelIdx(ImageProcessData* data, int x, int y)
+{
+    return y * data->width + x;
 }
 
-void seamIdentification(Image* image)
+void getPixelPos(unsigned int idx, ImageProcessData* data, int* x, int* y)
 {
-    // Starts at the bottom, the firts bottom row is skipped
-    for (int y = image->height - 2; y >= 0; y--)
+    *x = idx % data->width;
+    *y = idx / data->width;
+}
+
+unsigned int getPixelEnergy(ImageProcessData* data, bool fromEnergy, int* x, int* y)
+{
+    unsigned int *arr;
+    if (fromEnergy)
     {
-        for (int x = 0; x < image->width; x++)
+        arr = data->imgEnergy;
+    }
+    else
+    {
+        arr = data->imgSeam;
+    }
+
+    if (x < 0 || y < 0 || *x >= data->width || *y >= data->height)
+    {
+        return UINT_MAX;
+    }
+
+    int energy = arr[getPixelIdx(data, *x, *y)];
+
+    int startX = *x;
+    while (energy == SEAM)
+    {
+        *x++;
+        if (*x >= data->width)
         {
-            int pixelPos = y * (image->width) + x;
-            image->imgI[pixelPos] = seamIdentificationPixel(image, x, y);
+            *x = startX - 1;
+            break;
+        }
+        energy = arr[getPixelIdx(data, *x, *y)];
+    }
+
+    energy = arr[getPixelIdx(data, *x, *y)];
+    while (energy == SEAM)
+    {
+        *x--;
+        if (*x < 0)
+        {
+            printf("Error: No valid pixels found in row [%d]\n", *y);
+            exit(EXIT_FAILURE);
+        }
+        energy = arr[getPixelIdx(data, *x, *y)];
+    }
+
+    return energy;
+}
+
+void seamIdentification(ImageProcessData* data)
+{
+    // Starts at the bottom (the bottom row is skipped)
+    for (int y = data->height - 2; y >= 0; y--)
+    {
+        for (int x = 0; x < data->width; x++)
+        {
+            if (data->imgEnergy[getPixelIdx(data, x, y)] == SEAM) continue;
+
+            int xPtr = x;
+            int yPtr = y + 1;
+            int rightEnergy = getPixelEnergy(data, true, &xPtr, &yPtr);
+
+            xPtr = x - 1;
+            int centerEnergy = getPixelEnergy(data, true, &xPtr, &yPtr);
+
+            xPtr = x - 1;
+            int leftEnergy = getPixelEnergy(data, true, &xPtr, &yPtr);
+
+            data->imgSeam[getPixelIdx(data, x, y)] = data->imgEnergy[getPixelIdx(data, x, y)] +
+                min(min(leftEnergy, centerEnergy), rightEnergy);
         }
     }
 }
 
-void seamRemoval(Image* image)
+void seamRemoval(ImageProcessData* data)
 {
-    unsigned int* minElementAddr = minElementRowAddr(image->imgI, image->width);
-    *minElementAddr = SEAM;
-
-    for (int y = 0; y < image->height - 1; y++)
+    // Find the minimum energy in the top row
+    int curX = 0;
+    for (int x = 1; x < data->width; x++)
     {
-        unsigned int* midElementAddr = minElementAddr + image->width;  // Descend one row
-        unsigned int midElementX = (midElementAddr - image->imgI) % image->width;
-        minElementAddr = getMinAddr(midElementAddr, midElementX, image->width);
+        if (data->imgSeam[getPixelIdx(data, x, 0)] < data->imgSeam[getPixelIdx(data, curX, 0)])
+        {
+            curX = x;
+        }
+    }
+
+    int idx = getPixelIdx(data, curX, 0);
+    data->imgEnergy[idx] = SEAM;
+    data->imgSeam[idx] = SEAM;
+
+    for (int y = 1; y < data->height; y++)
+    {
+        int yPtr = y + 1;
+        int xPtr = curX;
+        int rightEnergy = getPixelEnergy(data, false, &xPtr, &yPtr);
+
+        xPtr = xPtr - 1;
+        int centerEnergy = getPixelEnergy(data, false, &xPtr, &yPtr);
+
+        xPtr = xPtr - 1;
+        int leftEnergy = getPixelEnergy(data, false, &xPtr, &yPtr);
+
+        if (leftEnergy < centerEnergy && leftEnergy < rightEnergy)
+        {
+            curX = xPtr - 1;
+        }
+        else if (rightEnergy < centerEnergy && rightEnergy < leftEnergy)
+        {
+            curX = xPtr + 1;
+        }
+
+        idx = getPixelIdx(data, curX, y);
+        data->imgEnergy[idx] = SEAM;
+        data->imgSeam[idx] = SEAM;
     }
 }
 
-void seamRemovalAll(Image* image, int widthOut)
+void outputDebugImage(ImageProcessData* processData)
 {
-    int numSeams = image->width - widthOut;
+    debugImage.width = processData->width;
+    debugImage.height = processData->height;
+    debugImage.channelCount = 3;
+    debugImage.data = (unsigned char *) malloc(
+        sizeof(unsigned char *) * processData->width * processData->height * debugImage.channelCount);
 
-    for (int seam = 0; seam < numSeams; seam++)
+    for (int y = 0; y < processData->height; y++)
     {
-        seamRemoval(image);
+        for (int x = 0; x < processData->width; x++)
+        {
+            unsigned int pixelPos = y * processData->width + x;
+            unsigned char* pixel = &debugImage.data[pixelPos * debugImage.channelCount];
+
+            if (processData->imgSeam[pixelPos] == SEAM)
+            {
+                pixel[0] = 180;
+                pixel[1] = 0;
+                pixel[2] = 0;
+            }
+            else
+            {
+                pixel[0] = processData->imgEnergy[pixelPos];
+                pixel[1] = processData->imgEnergy[pixelPos];
+                pixel[2] = processData->imgEnergy[pixelPos];
+            }
+        }
     }
+
+    // Use path from imageOut.fPath and append debug_$count
+    char *debugPath = (char *) malloc(sizeof(char) * (strlen(imageOut.fPath) + 10));
+    sprintf(debugPath, "%s_debug_%d.png", imageOut.fPath, outputDebugCount++);
+    stbi_write_png(debugPath,
+        debugImage.width,
+        debugImage.height,
+        debugImage.channelCount,
+        debugImage.data,
+        debugImage.width * debugImage.channelCount);
+
+    printf("Debug image written to %s\n", debugPath);
+
+    free(debugImage.data);
 }
 
-void copyToOutput(Image* imageIn, Image* imageOut, Image* seamMaskImage)
+void copyToOutput(Image* imageIn, Image* imageOut, ImageProcessData* processData)
 {
-    unsigned char* outputPos = imageOut->imgC;
+    unsigned char* outputPos = imageOut->data;
     for (int pixelPos = 0; pixelPos < imageIn->width * imageIn->height; pixelPos++)
     {
-        if (seamMaskImage->imgI[pixelPos] > 0)
+        if (processData->imgSeam[pixelPos] != SEAM)
         {
             for (int channel = 0; channel < imageIn->channelCount; channel++)
             {
                 int channelInPos = pixelPos * imageOut->channelCount + channel;
-                *outputPos = imageIn->imgC[channelInPos];
+                *outputPos = imageIn->data[channelInPos];
                 outputPos++;
             }
         }
     }
 }
 
-
-int main(int argc, char *args[]) 
+int main(int argc, char *args[])
 {
     // Read arguments
     if (argc != 4)
@@ -261,13 +322,13 @@ int main(int argc, char *args[])
     //imageOut.height = atoi(args[4]);  // Height stays the same
 
     // Load image
-    imageIn.imgC = stbi_load(imageIn.fPath,
+    imageIn.data = stbi_load(imageIn.fPath,
                              &imageIn.width,
-                             &imageIn.height, 
-                             &imageIn.channelCount, 
+                             &imageIn.height,
+                             &imageIn.channelCount,
                              STB_COLOR_CHANNELS);
-    
-    if (imageIn.imgC == NULL)
+
+    if (imageIn.data == NULL)
     {
         printf("Error: Couldn't load image\n");
         exit(EXIT_FAILURE);
@@ -280,82 +341,52 @@ int main(int argc, char *args[])
 
     //printMatrix(&imageIn.image, imageIn.width * image.channelCount, image.height);
 
-    const int numPixelsIn = imageIn.width * imageIn.height;
-
     // Process image //////////////////////////////////////////////////////////////////////////
+    ImageProcessData processData;
+    processData.width = imageIn.width;
+    processData.height = imageIn.height;
+    processData.imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * processData.width * processData.height);
+    processData.imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * processData.width * processData.height);
 
-    /// Energy Calculation - Assign energy value for every pixel
-    double startEnergy = omp_get_wtime();
+    /// Energy Calculation Full - Assign energy value for every pixel in the image
+    calcEnergyFull(&imageIn, processData.imgEnergy);
 
-    energyImage.imgI = (unsigned int *) malloc(sizeof(unsigned int) * numPixelsIn);
-    energyImage.width = imageIn.width;
-    energyImage.height = imageIn.height;
-    calcEnergy(&imageIn, &energyImage);
+    int seamCount = imageIn.width - imageOut.width;
+    for (int i = 0; i < seamCount; i++) {
+        seamIdentification(&processData);
+        seamRemoval(&processData);
+    }
 
-    double stopEnergy = omp_get_wtime();
-    printf(" -> time to assign energy value: %f s\n", stopEnergy - startEnergy);
+    outputDebugImage(&processData);
 
-    /// Vertical Seam Identification - Find an 8-connected path of the pixels with the least energy
-    
-    // Copying unnecessary outside testing environment, so it is not timed
-    seamIdImage.imgI = (unsigned int *) malloc(sizeof(unsigned int) * numPixelsIn);
-    memcpy(seamIdImage.imgI, energyImage.imgI, sizeof(unsigned int) * numPixelsIn);
-    seamIdImage.width = energyImage.width;
-    seamIdImage.height = energyImage.height;
-
-    double startSeamId = omp_get_wtime();
-
-    seamIdentification(&seamIdImage);
-
-    double stopSeamId = omp_get_wtime();
-    printf(" -> time to identify vertical seam: %f s\n", stopSeamId - startSeamId);
-
-    /// Vertical Seam Removal - Follow the cheapest path to remove one pixel from each row or column to resize the image
-
-    // Copying unnecessary outside testing environment, so it is not timed
-    seamMaskImage.imgI = (unsigned int *) malloc(sizeof(unsigned int) * numPixelsIn);
-    memcpy(seamMaskImage.imgI, seamIdImage.imgI, sizeof(unsigned int) * numPixelsIn);
-    seamMaskImage.width = seamIdImage.width;
-    seamMaskImage.height = seamIdImage.height;
-
-    double startSeamRemove = omp_get_wtime();
-
-    seamRemovalAll(&seamMaskImage, imageOut.width);
-
-    double stopSeamRemove = omp_get_wtime();
-    printf(" -> time to remove vertical seam: %f s\n", stopSeamRemove - startSeamRemove);
-
-    // Output image
+    // Output image //////////////////////////////////////////////////////////////////////////
     double startOutput = omp_get_wtime();
 
     const int numPixelsOutput = imageOut.width * imageOut.height;
     imageOut.channelCount = imageIn.channelCount;
-    imageOut.imgC = (unsigned char *) malloc(
+    imageOut.data = (unsigned char *) malloc(
         sizeof(unsigned char *) * numPixelsOutput * imageOut.channelCount);
 
-    copyToOutput(&imageIn, &imageOut, &seamMaskImage);
+    copyToOutput(&imageIn, &imageOut, &processData);
 
     double stopOutput = omp_get_wtime();
-    printf(" -> time to copy to output image: %f s\n", stopOutput - startOutput);
 
     // Write the output image to file
-    stbi_write_png(imageOut.fPath, imageOut.width, imageOut.height, 
-        imageOut.channelCount, imageOut.imgC, 
+    stbi_write_png(imageOut.fPath, imageOut.width, imageOut.height,
+        imageOut.channelCount, imageOut.data,
         imageOut.width * imageOut.channelCount);
-    
-    printf(" -> total time: %f s\n", stopEnergy - startEnergy +
-         stopSeamId - startSeamId + 
-         stopSeamRemove - startSeamRemove + 
-         stopOutput - startOutput);
+
+    // printf(" -> total time: %f s\n", stopEnergy - startEnergy +
+    //      stopSeamId - startSeamId +
+    //      stopSeamRemove - startSeamRemove +
+    //      stopOutput - startOutput);
 
 
     // FREE ///////////////////////////////////////////////////////////////////////////////
-    free(seamIdImage.imgI);
-    free(seamMaskImage.imgI);
-
-    free(energyImage.imgI);
-    free(imageOut.imgC);
-    stbi_image_free(imageIn.imgC);
+    free(processData.imgEnergy);
+    free(processData.imgSeam);
+    free(imageOut.data);
+    stbi_image_free(imageIn.data);
 
     return EXIT_SUCCESS;
 }
