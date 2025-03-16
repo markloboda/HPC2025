@@ -8,15 +8,15 @@
             "name": "Debug Seam Carving",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/ParallelSeamCarving/seam_carving.out",
+            "program": "${workspaceFolder}/seam_carving.out",
             "args": [
-                "${workspaceFolder}/ParallelSeamCarving/test_images/720x480.png",
-                "${workspaceFolder}/ParallelSeamCarving/output_images/720x480.png",
+                "${workspaceFolder}/test_images/720x480.png",
+                "${workspaceFolder}/output_images/720x480.png",
                 "718",
                 //"480"
             ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/ParallelSeamCarving/",
+            "cwd": "${workspaceFolder}/",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -28,7 +28,6 @@
                 }
             ],
             "preLaunchTask": "Build Seam Carving",
-            "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
 }

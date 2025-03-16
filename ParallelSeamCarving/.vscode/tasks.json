@@ -7,7 +7,7 @@
             "label": "Build Seam Carving",
             "type": "shell",
             "options": {
-                "cwd": "${workspaceFolder}/ParallelSeamCarving/"
+                "cwd": "${workspaceFolder}/"
             },
             "command": "gcc",
             "args": [
