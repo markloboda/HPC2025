@@ -10,9 +10,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/seam_carving.out",
             "args": [
-                "${workspaceFolder}/test_images/720x480.png",
-                "${workspaceFolder}/output_images/720x480.png",
-                "480"
+                "${workspaceFolder}/test_images/1024x768.png",
+                "${workspaceFolder}/output_images/1024x768.png",
+                "1000"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/",

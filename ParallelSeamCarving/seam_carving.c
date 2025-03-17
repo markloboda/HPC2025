@@ -42,6 +42,7 @@ typedef struct __ImageProcessData__
     unsigned char* img;
     unsigned int* imgEnergy;
     unsigned int* imgSeam;
+    int* seamPath;
     int width;
     int height;
     int channelCount;
@@ -115,6 +116,16 @@ unsigned int getEnergyPixelE(unsigned int* data, int x, int y, int width, int he
     }
 
     return energy;
+}
+
+bool isSeam(ImageProcessData* data, int x, int y)
+{
+    if (data->seamPath == NULL || y >= data->height)
+    {
+        return false;
+    }
+
+    return data->seamPath[y] == x;
 }
 
 /// @brief Calculate the energy of a pixel using the sobel operator
@@ -202,6 +213,13 @@ void seamIdentification(ImageProcessData* data)
 /// @brief Annotate the seam in the image (with SEAM value)
 void seamAnnotate(ImageProcessData* data)
 {
+    // Allocate memory for seam path
+    if (data->seamPath != NULL)
+    {
+        free(data->seamPath);
+    }
+    data->seamPath = (int *) malloc(sizeof(int) * data->height);
+
     // Find the minimum energy in the top row
     int curX = 0;
     for (int x = 1; x < data->width; x++)
@@ -213,9 +231,7 @@ void seamAnnotate(ImageProcessData* data)
     }
 
     // Set SEAM
-    unsigned int idx = getPixelIdx(curX, 0, data->width);
-    data->imgSeam[idx] = SEAM;
-    data->imgEnergy[idx] = SEAM;
+    data->seamPath[0] = curX;
 
     for (int y = 0; y < data->height - 1; y++)
     {
@@ -235,22 +251,16 @@ void seamAnnotate(ImageProcessData* data)
         }
 
         // Set SEAM
-        idx = getPixelIdx(curX, y + 1, data->width);
-        data->imgSeam[idx] = SEAM;
-        data->imgEnergy[idx] = SEAM;
+        data->seamPath[y + 1] = curX;
     }
 }
 
 /// @brief Remove the seam from the image
 void seamRemove(ImageProcessData* processData)
 {
-    // Update image dimensions
-    processData->width = processData->width - 1;
-    processData->height = processData->height;
-    processData->channelCount = processData->channelCount;
-
     // Allocate space for new image
-    unsigned int pixelCount = processData->width * processData->height;
+    unsigned int newWidth = processData->width - 1;
+    unsigned int pixelCount = newWidth * processData->height;
     unsigned char* image = (unsigned char *) malloc(sizeof(unsigned char) * pixelCount * processData->channelCount);
 
     // Copy image data without seam
@@ -259,8 +269,7 @@ void seamRemove(ImageProcessData* processData)
     {
         for (int x = 0; x < processData->width; x++)
         {
-            unsigned int pixelIdx = getPixelIdx(x, y, processData->width);
-            if (processData->imgEnergy[pixelIdx] != SEAM)
+            if (!isSeam(processData, x, y))
             {
                 unsigned int pixelIdxC = getPixelIdxC(x, y, processData->width, processData->channelCount);
                 for (int channel = 0; channel < processData->channelCount; channel++)
@@ -274,7 +283,12 @@ void seamRemove(ImageProcessData* processData)
 
     // Free old image and set new image
     free(processData->img);
+
+    // Update process data
     processData->img = image;
+    processData->width = processData->width - 1;
+    processData->height = processData->height;
+    processData->channelCount = processData->channelCount;
 }
 
 /// @brief Output the debug image with the seam annotated and energy values
@@ -289,10 +303,9 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
     {
         for (int x = 0; x < processData->width; x++)
         {
-            unsigned int pixelPos = getPixelIdx(x, y, debugWidth);
             unsigned char *pixel = &debugImgData[getPixelIdxC(x, y, debugWidth, debugChannelCount)];
 
-            if (processData->imgSeam[pixelPos] == SEAM)
+            if (isSeam(processData, x, y))
             {
                 pixel[0] = 180;
                 pixel[1] = 0;
@@ -300,6 +313,7 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
             }
             else
             {
+                unsigned int pixelPos = getPixelIdx(x, y, debugWidth);
                 pixel[0] = processData->imgEnergy[pixelPos];
                 pixel[1] = processData->imgEnergy[pixelPos];
                 pixel[2] = processData->imgEnergy[pixelPos];
@@ -308,12 +322,8 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
     }
 
     // Use path from imageOut.fPath and append debug_$count
-    stbi_write_png(imageOutPath,
-        debugWidth,
-        debugHeight,
-        debugChannelCount,
-        debugImgData,
-        debugWidth * debugChannelCount);
+    stbi_write_png(imageOutPath, debugWidth, debugHeight, debugChannelCount, debugImgData, debugWidth * debugChannelCount);
+    free(debugImgData);
 }
 
 int main(int argc, char *args[])
@@ -336,6 +346,7 @@ int main(int argc, char *args[])
     processData.img = NULL;
     processData.imgEnergy = NULL;
     processData.imgSeam = NULL;
+    processData.seamPath = NULL;
 
     // Load image //////////////////////////////////////////////////////////////////////////
     processData.img = stbi_load(imageInPath, &processData.width, &processData.height, &processData.channelCount, STB_COLOR_CHANNELS);
@@ -346,13 +357,12 @@ int main(int argc, char *args[])
     }
     printf("Loaded image %s of size %dx%d.\n", imageInPath, processData.width, processData.height);
 
-    if (outputWidth > processData.width)
+    if (outputWidth >= processData.width)
     {
         printf("Error: Output width should be smaller than input width\n");
         return EXIT_FAILURE;
     }
     outputHeight = processData.height;
-
 
     // Process image //////////////////////////////////////////////////////////////////////////
     TimingStats timingStats;
@@ -395,11 +405,11 @@ int main(int argc, char *args[])
     timingStats.totalProcessingTime = stopTotalProcessing - startTotalProcessing;
 
     // Output debug image //////////////////////////////////////////////////////////////////////////
-    // char *debugPath = (char *) malloc(sizeof(char) * (strlen(imageOutPath) + 10));
-    // sprintf(debugPath, "%s_debug_%d.png", imageOutPath, outputDebugCount++);
+    char *debugPath = (char *) malloc(sizeof(char) * (strlen(imageOutPath) + 10));
+    sprintf(debugPath, "%s_debug_%d.png", imageOutPath, outputDebugCount++);
 
-    // outputDebugImage(&processData, debugPath);
-    // free(debugPath);
+    outputDebugImage(&processData, debugPath);
+    free(debugPath);
 
     // Free process data //////////////////////////////////////////////////////////////////////////
     free(processData.imgEnergy);
