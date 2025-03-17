@@ -59,9 +59,9 @@ typedef struct __ImageProcessData__
     int channelCount;
 } ImageProcessData;
 
-unsigned int getPixelIdxC(int x, int y, int width, int channel)
+unsigned int getPixelIdxC(int x, int y, int width, int channelCount)
 {
-    return (y * width + x) * channel;
+    return (y * width + x) * channelCount;
 }
 
 unsigned int getPixelIdx(int x, int y, int width)
@@ -69,17 +69,17 @@ unsigned int getPixelIdx(int x, int y, int width)
     return getPixelIdxC(x, y, width, ENERGY_CHANNEL_COUNT);
 }
 
-unsigned char *getPixel(unsigned char *data, int x, int y, int width, int height, int channel)
+unsigned char *getPixel(unsigned char *data, int x, int y, int width, int height, int channelCount)
 {
     if (x >= width || y >= height || x < 0 || y < 0) {
         return NULL;
     }
 
-    const int pixelIdx = getPixelIdxC(x, y, width, channel);
+    const int pixelIdx = getPixelIdxC(x, y, width, channelCount);
     return &data[pixelIdx];
 }
 
-unsigned int getPixelValue(unsigned char *data, int x, int y, int width, int height, int channel)  // Only used for energy calculation
+unsigned char *getPixelE(unsigned char *data, int x, int y, int width, int height, int channelCount)  // Only used for energy calculation
 {
     // if x and y outside bounds, use the closest pixel
     if (x < 0) x++;
@@ -87,7 +87,7 @@ unsigned int getPixelValue(unsigned char *data, int x, int y, int width, int hei
     if (x == width) x--;
     if (y == height) y--;
 
-    return getPixel(data, x, y, width, height, channel)[channel];
+    return getPixel(data, x, y, width, height, channelCount);
 }
 
 unsigned int getPixelEnergy(unsigned int* data, int x, int y, int width, int height)
@@ -105,19 +105,19 @@ unsigned int calcEnergyPixel(unsigned char *data, int x, int y, int width, int h
     int energy = 0;
     for (int rgbChannel = 0; rgbChannel < channelCount; rgbChannel++)
     {
-        int Gx = - getPixelValue(data, x - 1, y - 1, width, height, rgbChannel) -
-                   2 * getPixelValue(data, x - 1, y, width, height, rgbChannel) -
-                   getPixelValue(data, x - 1, y + 1, width, height, rgbChannel) +
-                   getPixelValue(data, x + 1, y - 1, width, height, rgbChannel) +
-                   2 * getPixelValue(data, x + 1, y, width, height, rgbChannel) +
-                   getPixelValue(data, x + 1, y + 1, width, height, rgbChannel);
+        int Gx = - getPixelE(data, x - 1, y - 1, width, height, channelCount)[rgbChannel] -
+                   2 * getPixelE(data, x - 1, y, width, height, channelCount)[rgbChannel] -
+                   getPixelE(data, x - 1, y + 1, width, height, channelCount)[rgbChannel] +
+                   getPixelE(data, x + 1, y - 1, width, height, channelCount)[rgbChannel] +
+                   2 * getPixelE(data, x + 1, y, width, height, channelCount)[rgbChannel] +
+                   getPixelE(data, x + 1, y + 1, width, height, channelCount)[rgbChannel];
 
-        int Gy = getPixelValue(data, x - 1, y - 1, width, height, rgbChannel) +
-                 2 * getPixelValue(data, x, y - 1, width, height, rgbChannel) +
-                 getPixelValue(data, x + 1, y - 1, width, height, rgbChannel) -
-                 getPixelValue(data, x - 1, y + 1, width, height, rgbChannel) -
-                 2 * getPixelValue(data, x, y + 1, width, height, rgbChannel) -
-                 getPixelValue(data, x + 1, y + 1, width, height, rgbChannel);
+        int Gy = getPixelE(data, x - 1, y - 1, width, height, channelCount)[rgbChannel] +
+                 2 * getPixelE(data, x, y - 1, width, height, channelCount)[rgbChannel] +
+                 getPixelE(data, x + 1, y - 1, width, height, channelCount)[rgbChannel] -
+                 getPixelE(data, x - 1, y + 1, width, height, channelCount)[rgbChannel] -
+                 2 * getPixelE(data, x, y + 1, width, height, channelCount)[rgbChannel] -
+                 getPixelE(data, x + 1, y + 1, width, height, channelCount)[rgbChannel];
 
         energy += sqrt(pow(Gx, 2) + pow(Gy, 2));
     }
@@ -131,8 +131,8 @@ void calcEnergyFull(ImageProcessData* data)
     {
         for (int x = 0; x < data->width; x++)
         {
-            unsigned int pixelIdx = getPixelIdx(x, y, data->width + x);
-            data->imgEnergy[pixelIdx] = calcEnergyPixel(data->image, x, y, data->width, data->height, data->channelCount);
+            unsigned int energyPixelIdx = getPixelIdx(x, y, data->width);
+            data->imgEnergy[energyPixelIdx] = calcEnergyPixel(data->image, x, y, data->width, data->height, data->channelCount);
         }
     }
 }
