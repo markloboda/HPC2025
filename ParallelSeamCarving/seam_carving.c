@@ -217,13 +217,8 @@ void seamAnnotate(ImageProcessData* data)
     data->imgSeam[idx] = SEAM;
     data->imgEnergy[idx] = SEAM;
 
-    for (int y = 1; y < data->height; y++)
+    for (int y = 0; y < data->height - 1; y++)
     {
-        // Set SEAM
-        idx = getPixelIdx(curX, y, data->width);
-        data->imgSeam[idx] = SEAM;
-        data->imgEnergy[idx] = SEAM;
-
         // Find the minimum energy in the next row
         unsigned int leftEnergy =   getEnergyPixelE(data->imgSeam, curX - 1, y + 1, data->width, data->height);
         unsigned int centerEnergy = getEnergyPixelE(data->imgSeam, curX    , y + 1, data->width, data->height);
@@ -238,6 +233,11 @@ void seamAnnotate(ImageProcessData* data)
         {
             curX = curX + 1;
         }
+
+        // Set SEAM
+        idx = getPixelIdx(curX, y + 1, data->width);
+        data->imgSeam[idx] = SEAM;
+        data->imgEnergy[idx] = SEAM;
     }
 }
 
