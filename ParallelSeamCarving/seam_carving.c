@@ -324,6 +324,8 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
     // Use path from imageOut.fPath and append debug_$count
     stbi_write_png(imageOutPath, debugWidth, debugHeight, debugChannelCount, debugImgData, debugWidth * debugChannelCount);
     free(debugImgData);
+
+    outputDebugCount++;
 }
 
 int main(int argc, char *args[])
@@ -334,6 +336,7 @@ int main(int argc, char *args[])
         printf("Error: Invalid amount of arguments. [%d]\n", argc);
         exit(EXIT_FAILURE);
     }
+    printf("Arguments: imageInPath=%s, imageOutPath=%s, outputWidth=%s\n", args[1], args[2], args[3]);
 
     // Parse arguments /////////////////////////////////////////////////////////////////////
     char *imageInPath = args[1];
@@ -368,6 +371,7 @@ int main(int argc, char *args[])
     TimingStats timingStats;
     double startTotalProcessing = omp_get_wtime();
     int seamCount = processData.width - outputWidth;
+    // printf("Seam count: %d\n", seamCount);
 
     double startEnergy = omp_get_wtime();
     updateEnergyFull(&processData);
@@ -375,6 +379,8 @@ int main(int argc, char *args[])
     timingStats.energyCalculations += stopEnergy - startEnergy;
     for (int i = 0; i < seamCount; i++)
     {
+        // printf("Processing seam %d/%d\n", i + 1, seamCount);
+
         // Energy step
         startEnergy = omp_get_wtime();
         if (i > 0) {
@@ -405,11 +411,9 @@ int main(int argc, char *args[])
     timingStats.totalProcessingTime = stopTotalProcessing - startTotalProcessing;
 
     // Output debug image //////////////////////////////////////////////////////////////////////////
-    char *debugPath = (char *) malloc(sizeof(char) * (strlen(imageOutPath) + 10));
-    sprintf(debugPath, "%s_debug_%d.png", imageOutPath, outputDebugCount++);
-
-    outputDebugImage(&processData, debugPath);
-    free(debugPath);
+    // char debugImageOutPath[100];
+    // sprintf(debugImageOutPath, "%s/debug_%d.png", "debug_images", outputDebugCount);
+    // outputDebugImage(&processData, debugImageOutPath);
 
     // Free process data //////////////////////////////////////////////////////////////////////////
     free(processData.imgEnergy);
