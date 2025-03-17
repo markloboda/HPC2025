@@ -144,8 +144,6 @@ void seamIdentification(ImageProcessData* data)
     {
         for (int x = 0; x < data->width; x++)
         {
-            if (data->imgEnergy[getPixelIdx(x, y, data->width)] == SEAM) continue;
-
             int rightEnergy =  getPixelEnergy(data->imgEnergy, x + 1, y + 1, data->width, data->height);
             int centerEnergy = getPixelEnergy(data->imgEnergy, x    , y + 1, data->width, data->height);
             int leftEnergy =   getPixelEnergy(data->imgEnergy, x - 1, y + 1, data->width, data->height);
@@ -176,9 +174,9 @@ void seamRemoval(ImageProcessData* data)
 
     for (int y = 1; y < data->height; y++)
     {
-        int rightEnergy = getPixelEnergy(data->imgSeam, curX + 1, y + 1, data->width, data->height);
-        int centerEnergy = getPixelEnergy(data->imgSeam, curX, y + 1, data->width, data->height);
-        int leftEnergy = getPixelEnergy(data->imgSeam, curX - 1, y + 1, data->width, data->height);
+        int rightEnergy =  getPixelEnergy(data->imgSeam, curX + 1, y + 1, data->width, data->height);
+        int centerEnergy = getPixelEnergy(data->imgSeam, curX    , y + 1, data->width, data->height);
+        int leftEnergy =   getPixelEnergy(data->imgSeam, curX - 1, y + 1, data->width, data->height);
 
         if (leftEnergy < centerEnergy && leftEnergy < rightEnergy)
         {
@@ -193,6 +191,69 @@ void seamRemoval(ImageProcessData* data)
         data->imgEnergy[idx] = SEAM;
         data->imgSeam[idx] = SEAM;
     }
+}
+
+void refreshProcessData(ImageProcessData* processData)
+{
+    processData->width = processData->width - 1;
+    processData->height = processData->height;
+    processData->channelCount = processData->channelCount;
+
+    unsigned int pixelCount = processData->width * processData->height;
+
+    unsigned char *image = (unsigned char *) malloc(sizeof(unsigned char *) * pixelCount * imageOut.channelCount);
+    unsigned int *imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * pixelCount);
+    unsigned int *imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * pixelCount);
+
+    int imageWriteOffset = 0;
+    int energyWriteOffset = 0;
+    for (int pixelPos = 0; pixelPos < pixelCount; pixelPos++)
+    {
+        if (imgSeam[pixelPos] == SEAM)
+        {
+            imageWriteOffset -= processData->channelCount;
+            energyWriteOffset--;
+        }
+        else
+        {
+            for (int channel = 0; channel < processData->channelCount; channel++)
+            {
+                image[pixelPos + imageWriteOffset + channel] = processData->image[pixelPos];
+            }
+            imgEnergy[]
+        }
+
+    }
+
+
+
+    unsigned int pixelCounter = 0;
+    for (int pixelPos = 0; pixelPos < processData->width * processData->height; pixelPos++)
+    {
+        if (processData->imgSeam[pixelPos] != SEAM)
+        {
+            imgEnergy[pixelCounter] = processData->imgEnergy[pixelPos];
+            imgSeam[pixelCounter] = processData->imgSeam[pixelPos];
+            
+            for (int channel = 0; channel < processData->channelCount; channel++)
+            {
+                int channelInPos = pixelPos * processData->channelCount + channel;
+                int channelInCounter = pixelCounter * processData->channelCount + channel;
+                
+                image[channelInCounter] = processData->image[channelInPos];
+            }
+            
+            pixelCounter++;
+        }
+    }
+
+    free(processData->image);
+    free(processData->imgEnergy);
+    free(processData->imgSeam);
+
+    processData->image = image;
+    processData->imgEnergy = imgEnergy;
+    processData->imgSeam = imgSeam;
 }
 
 void outputDebugImage(ImageProcessData* processData)
@@ -299,14 +360,13 @@ int main(int argc, char *args[])
     processData.image = imageIn.data;
 
     /// Energy Calculation Full - Assign energy value for every pixel in the image
-    calcEnergyFull(&processData);
-
     int seamCount = imageIn.width - imageOut.width;
     for (int i = 0; i < seamCount; i++) 
     {
+        calcEnergyFull(&processData);
         seamIdentification(&processData);
         seamRemoval(&processData);
-
+        refreshProcessData(&processData);
     }
 
     outputDebugImage(&processData);
