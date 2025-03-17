@@ -1,6 +1,8 @@
 // LOCAL RUNNING
 // gcc -lm --openmp -g3 -O0 seam_carving.c -o seam_carving.out; ./seam_carving.out ./test_images/720x480.png ./output_images/720x480.png 720
 
+// #define SAVE_TIMING_STATS
+
 // SYSTEM LIBS //////////////////////////////////////////////////////////////////////////
 #include <stdio.h>
 #include <stdlib.h>
@@ -438,6 +440,21 @@ int main(int argc, char *args[])
     printf("Seam Identifications: %f s [%f \%]\n", timingStats.seamIdentifications, timingStats.seamIdentifications / timingStats.totalProcessingTime * 100);
     printf("Seam Annotates: %f s [%f \%]\n", timingStats.seamAnnotates, timingStats.seamAnnotates / timingStats.totalProcessingTime * 100);
     printf("Seam Removes: %f s [%f \%]\n", timingStats.seamRemoves, timingStats.seamRemoves / timingStats.totalProcessingTime * 100);
+
+    // Output timing stats to file //////////////////////////////////////////////////////////////////////////
+    #ifdef SAVE_TIMING_STATS
+    FILE *timingFile = fopen("timing_stats_sequential.txt", "a");
+    fprintf(timingFile, "--------------- %s ---------------\n", imageInPath);
+    fprintf(timingFile, "Arguments: imageInPath=%s, imageOutPath=%s, outputWidth=%s\n", args[1], args[2], args[3]);
+    fprintf(timingFile, "--------------- Timing Stats ---------------\n");
+    fprintf(timingFile, "Total Processing Time: %f s\n", timingStats.totalProcessingTime);
+    fprintf(timingFile, "Energy Calculations: %f s [%f \%]\n", timingStats.energyCalculations, timingStats.energyCalculations / timingStats.totalProcessingTime * 100);
+    fprintf(timingFile, "Seam Identifications: %f s [%f \%]\n", timingStats.seamIdentifications, timingStats.seamIdentifications / timingStats.totalProcessingTime * 100);
+    fprintf(timingFile, "Seam Annotates: %f s [%f \%]\n", timingStats.seamAnnotates, timingStats.seamAnnotates / timingStats.totalProcessingTime * 100);
+    fprintf(timingFile, "Seam Removes: %f s [%f \%]\n", timingStats.seamRemoves, timingStats.seamRemoves / timingStats.totalProcessingTime * 100);
+    fprintf(timingFile, "\n");
+    fclose(timingFile);
+    #endif
 
     return EXIT_SUCCESS;
 }
