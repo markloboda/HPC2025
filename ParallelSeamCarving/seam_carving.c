@@ -33,6 +33,7 @@
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////
 #define STB_COLOR_CHANNELS 0 // 0 for dynamic color channels
 #define SEAM INT_MAX
+#define ENERGY_CHANNEL_COUNT 1
 
 int outputDebugCount = 0;
 
@@ -58,14 +59,14 @@ typedef struct __ImageProcessData__
     int channelCount;
 } ImageProcessData;
 
-unsigned int getPixelIdx(int x, int y, int width, int channel)
+unsigned int getPixelIdxC(int x, int y, int width, int channel)
 {
     return (y * width + x) * channel;
 }
 
 unsigned int getPixelIdx(int x, int y, int width)
 {
-    return getPixelIdx(x, y, width, 1);
+    return getPixelIdxC(x, y, width, ENERGY_CHANNEL_COUNT);
 }
 
 unsigned char *getPixel(unsigned char *data, int x, int y, int width, int height, int channel)
@@ -74,7 +75,7 @@ unsigned char *getPixel(unsigned char *data, int x, int y, int width, int height
         return NULL;
     }
 
-    const int pixelIdx = getPixelIdx(x, y, width, height, channel);
+    const int pixelIdx = getPixelIdxC(x, y, width, channel);
     return &data[pixelIdx];
 }
 
@@ -96,7 +97,7 @@ unsigned int getPixelEnergy(unsigned int* data, int x, int y, int width, int hei
         return UINT_MAX;
     }
 
-    return data[getPixelIdx(x, y, width, height)];
+    return data[getPixelIdx(x, y, width)];
 }
 
 unsigned int calcEnergyPixel(unsigned char *data, int x, int y, int width, int height, int channelCount)
@@ -130,8 +131,8 @@ void calcEnergyFull(ImageProcessData* data)
     {
         for (int x = 0; x < data->width; x++)
         {
-            unsigned int pixelPos = y * data->width + x;
-            data->imgEnergy[pixelPos] = calcEnergyPixel(data->image, x, y, data->width, data->height, data->channelCount);
+            unsigned int pixelIdx = getPixelIdx(x, y, data->width + x);
+            data->imgEnergy[pixelIdx] = calcEnergyPixel(data->image, x, y, data->width, data->height, data->channelCount);
         }
     }
 }
@@ -143,14 +144,14 @@ void seamIdentification(ImageProcessData* data)
     {
         for (int x = 0; x < data->width; x++)
         {
-            if (data->imgEnergy[getPixelIdx(x, y, data->width, data->channelCount)] == SEAM) continue;
+            if (data->imgEnergy[getPixelIdx(x, y, data->width)] == SEAM) continue;
 
-            int rightEnergy =  getPixelEnergy(data, x + 1, y + 1, data->width, data->height);
-            int centerEnergy = getPixelEnergy(data, x    , y + 1, data->width, data->height);
-            int leftEnergy =   getPixelEnergy(data, x - 1, y + 1, data->width, data->height);
+            int rightEnergy =  getPixelEnergy(data->imgEnergy, x + 1, y + 1, data->width, data->height);
+            int centerEnergy = getPixelEnergy(data->imgEnergy, x    , y + 1, data->width, data->height);
+            int leftEnergy =   getPixelEnergy(data->imgEnergy, x - 1, y + 1, data->width, data->height);
 
-            data->imgSeam[getPixelIdx(x, y, data->width, data->channelCount)] = 
-                data->imgEnergy[getPixelIdx(data, x, y, data->width, data->channelCount)] +
+            data->imgSeam[getPixelIdx(x, y, data->width)] = 
+                data->imgEnergy[getPixelIdx(x, y, data->width)] +
                 min(min(leftEnergy, centerEnergy), rightEnergy);
         }
     }
@@ -162,14 +163,14 @@ void seamRemoval(ImageProcessData* data)
     int curX = 0;
     for (int x = 1; x < data->width; x++)
     {
-        if (data->imgSeam[getPixelIdx(x, 0, data->width, data->channelCount)] 
-                < data->imgSeam[getPixelIdx(curX, 0, data->width, data->channelCount)])
+        if (data->imgSeam[getPixelIdx(x, 0, data->width)] 
+                < data->imgSeam[getPixelIdx(curX, 0, data->width)])
         {
             curX = x;
         }
     }
 
-    int idx = getPixelIdx(curX, 0, data->width, data->channelCount);
+    int idx = getPixelIdxC(curX, 0, data->width, data->channelCount);
     data->imgEnergy[idx] = SEAM;
     data->imgSeam[idx] = SEAM;
 
@@ -188,7 +189,7 @@ void seamRemoval(ImageProcessData* data)
             curX += 1;
         }
 
-        idx = getPixelIdx(curX, y, data->width, data->channelCount);
+        idx = getPixelIdx(curX, y, data->width);
         data->imgEnergy[idx] = SEAM;
         data->imgSeam[idx] = SEAM;
     }
@@ -288,22 +289,24 @@ int main(int argc, char *args[])
 
     if (imageOut.width > imageIn.width) return EXIT_FAILURE;  // Output width should be smaller than input width
 
-    //printMatrix(&imageIn.image, imageIn.width * image.channelCount, image.height);
-
     // Process image //////////////////////////////////////////////////////////////////////////
     ImageProcessData processData;
     processData.width = imageIn.width;
     processData.height = imageIn.height;
+    processData.channelCount = imageIn.channelCount;
     processData.imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * processData.width * processData.height);
     processData.imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * processData.width * processData.height);
+    processData.image = imageIn.data;
 
     /// Energy Calculation Full - Assign energy value for every pixel in the image
-    calcEnergyFull(&imageIn, processData.imgEnergy);
+    calcEnergyFull(&processData);
 
     int seamCount = imageIn.width - imageOut.width;
-    for (int i = 0; i < seamCount; i++) {
+    for (int i = 0; i < seamCount; i++) 
+    {
         seamIdentification(&processData);
         seamRemoval(&processData);
+
     }
 
     outputDebugImage(&processData);
