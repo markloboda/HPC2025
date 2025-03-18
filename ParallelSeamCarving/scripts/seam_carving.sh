@@ -13,10 +13,8 @@
 # export OMP_PROC_BIND=TRUE
 # export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
-#folder=$( realpath "$0"  ) && dirname "$temp"
-
 # Compiling
 gcc -O2 -lm --openmp ../seam_carving.c -o ../seam_carving.out
 
 # Run
-srun ../seam_carving.out ../test_images/720x480.png ../output_images/720x480.png 400
+srun ../seam_carving.out ../test_images/720x480.png ../output_images/720x480.png 80

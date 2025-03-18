@@ -165,15 +165,9 @@ static inline unsigned int calculatePixelEnergy(unsigned char *data, int x, int 
     return energy / channelCount;
 }
 
-/// @brief Update the energy of all pixels in the image
-static inline void updateEnergyFull(ImageProcessData* data)
+/// @brief Calculate the energy of all pixels in the image
+static inline void calculateEnergyFull(ImageProcessData* data)
 {
-    // Free if already allocated
-    if (data->imgEnergy != NULL)
-    {
-        free(data->imgEnergy);
-    }
-
     // Allocate space for energy and calculate energy for each pixel
     data->imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
 
@@ -408,12 +402,12 @@ int main(int argc, char *args[])
         printf("Error: Invalid amount of arguments. [%d]\n", argc);
         exit(EXIT_FAILURE);
     }
-    printf("Arguments: imageInPath=%s, imageOutPath=%s, outputWidth=%s\n", args[1], args[2], args[3]);
+    printf("Arguments: imageInPath=%s, imageOutPath=%s, seamCount=%s\n", args[1], args[2], args[3]);
 
     // Parse arguments /////////////////////////////////////////////////////////////////////
     char *imageInPath = args[1];
     char *imageOutPath = args[2];
-    int outputWidth = atoi(args[3]);
+    int seamCount = atoi(args[3]);
     int outputHeight; // = atoi(args[4]); // Height stays the same
 
     // Setup processing data struct //////////////////////////////////////////////////////
@@ -432,9 +426,10 @@ int main(int argc, char *args[])
     }
     printf("Loaded image %s of size %dx%d.\n", imageInPath, processData.width, processData.height);
 
-    if (outputWidth >= processData.width)
+    if (seamCount >= processData.width || seamCount < 0)
     {
-        printf("Error: Output width should be smaller than input width\n");
+        printf("Error: Incorrect value for number of seams.\n");
+
         return EXIT_FAILURE;
     }
     outputHeight = processData.height;
@@ -442,11 +437,10 @@ int main(int argc, char *args[])
     // Process image //////////////////////////////////////////////////////////////////////////
     TimingStats timingStats;
     double startTotalProcessingTime = omp_get_wtime();
-    int seamCount = processData.width - outputWidth;
     // printf("Seam count: %d\n", seamCount);
 
     double startEnergyTime = omp_get_wtime();
-    updateEnergyFull(&processData);
+    calculateEnergyFull(&processData);
     double stopEnergyTime = omp_get_wtime();
     timingStats.energyCalculations += stopEnergyTime - startEnergyTime;
     for (int i = 0; i < seamCount; i++)
@@ -455,7 +449,7 @@ int main(int argc, char *args[])
 
         // Energy step
         startEnergyTime = omp_get_wtime();
-        if (i > 0) {
+        if (i != 0) {
             updateEnergyOnSeam(&processData);
         }
         stopEnergyTime = omp_get_wtime();

@@ -1,12 +1,20 @@
 #!/bin/bash
 
-#SBATCH --job-name=parallel_seam_carving
-#SBATCH --output=parallel_seam_carving.log
+#SBATCH --job-name=seam_carving_parallel
+#SBATCH --output=seam_carving_parallel.log
 #SBATCH --ntasks=1
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=2
+#SBATCH --cpus-per-task=8
 #SBATCH --time=5:00
 #SBATCH --mem-per-cpu=20000
 #SBATCH --reservation=fri
 
-srun ./parallel_seam_carving 1
+# export OMP_PLACES=cores
+# export OMP_PROC_BIND=TRUE
+# export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+
+# Compiling
+gcc -O2 -lm --openmp ../parallel_seam_carving.c -o ../parallel_seam_carving.out
+
+# Run
+srun ../parallel_seam_carving.out ../parallel_test_images/720x480.png ../parallel_output_images/720x480.png 80

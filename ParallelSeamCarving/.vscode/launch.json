@@ -11,8 +11,8 @@
             "program": "${workspaceFolder}/seam_carving.out",
             "args": [
                 "${workspaceFolder}/test_images/1024x768.png",
-                "${workspaceFolder}/output_images/1024x768.png",
-                "1000"
+                "${workspaceFolder}/output_images/1024x768_sequental.png",
+                "128"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/",
@@ -27,6 +27,30 @@
                 }
             ],
             "preLaunchTask": "Build Seam Carving",
+        },
+        {
+            "name": "Debug Seam Carving Parallel",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/parallel_seam_carving.out",
+            "args": [
+                "${workspaceFolder}/test_images/1024x768.png",
+                "${workspaceFolder}/output_images/1024x768_parallel.png",
+                "128"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build Seam Carving Parallel",
         }
     ]
 }

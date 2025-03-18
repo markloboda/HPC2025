@@ -24,6 +24,28 @@
                 "isDefault": true
             },
             "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Build Seam Carving Parallel",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/"
+            },
+            "command": "gcc",
+            "args": [
+                "-lm",
+                "--openmp",
+                "-g3",
+                "-O0",
+                "parallel_seam_carving.c",
+                "-o",
+                "parallel_seam_carving.out"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
         }
     ]
 }

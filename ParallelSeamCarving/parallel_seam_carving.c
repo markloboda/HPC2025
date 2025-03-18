@@ -166,21 +166,16 @@ static inline unsigned int calculatePixelEnergy(unsigned char *data, int x, int 
     return energy / channelCount;
 }
 
-/// @brief Update the energy of all pixels in the image
-static inline void updateEnergyFull(ImageProcessData* data)
+/// @brief Calculate the energy of all pixels in the image
+static inline void calculateEnergyFull(ImageProcessData* data)
 {
-    // Free if already allocated
-    if (data->imgEnergy != NULL)
-    {
-        free(data->imgEnergy);
-    }
-
     // Allocate space for energy and calculate energy for each pixel
     data->imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
 
-    /// Testing:
+    /// Parallel:
     // - Tested looping with one for loop through all data but is consistently slower in parallel and in sequential.
     // - Tested collapse(2) but also seems to be slower.
+    // - Standard approach is probably the best, as each thread gets a couple of rows (as cache lines) and every pixel calculation is independent
     #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
@@ -193,13 +188,15 @@ static inline void updateEnergyFull(ImageProcessData* data)
     }
 }
 
-/// @brief Update the energy of the pixels on the seam
+/// @brief Update the energy of the pixels on the seam instead of updating the whole energy image
 void updateEnergyOnSeam(ImageProcessData* data)
 {
     unsigned int *imgEnergyNew = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
 
     int oldWidth = data->width + 1;
 
+    /// Parallel:
+    // - TODO ask Mark
     #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
@@ -250,9 +247,11 @@ void seamIdentification(ImageProcessData* data)
     // Allocate space for seam and calculate cumulative energy for each pixel
     data->imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
 
-    #pragma omp parallel for
+    /// Parallel:
+    // - each row has to be calculated before starting the next row, we can only parallelize calc of a row
     for (int y = data->height - 2; y >= 0; y--)
     {
+        #pragma omp parallel for
         for (int x = 0; x < data->width; x++)
         {
             unsigned int leftEnergy =   getEnergyPixelE(data->imgSeam, x - 1, y + 1, data->width, data->height);
@@ -315,15 +314,20 @@ void seamAnnotate(ImageProcessData* data)
 /// @brief Remove the seam from the image
 void seamRemove(ImageProcessData* processData)
 {
+    // TODO: optimization: move pixels to the left (those after removed seam), then track the number of removed seams for index calc
+
     // Allocate space for new image
     unsigned int newWidth = processData->width - 1;
     unsigned int pixelCount = newWidth * processData->height;
     unsigned char* image = (unsigned char *) malloc(sizeof(unsigned char) * pixelCount * processData->channelCount);
 
     // Copy image data without seam
-    unsigned int pixelPos = 0;
+    /// Parallel:
+    // - standard for parallel, as the copying of whole lines is nicely devided between threads
+    #pragma omp parallel for
     for (int y = 0; y < processData->height; y++)
     {
+        int seanPassed = false;  // Did we pass the sean?
         for (int x = 0; x < processData->width; x++)
         {
             if (!isSeam(processData, x, y))
@@ -331,10 +335,12 @@ void seamRemove(ImageProcessData* processData)
                 unsigned int pixelIdxC = getPixelIdxC(x, y, processData->width, processData->channelCount);
                 for (int channel = 0; channel < processData->channelCount; channel++)
                 {
-                    image[pixelPos] = processData->img[pixelIdxC + channel];
-                    pixelPos++;
+                    unsigned int pixelPos = getPixelIdxC(x - seanPassed, y, newWidth, processData->channelCount);
+                    image[pixelPos + channel] = processData->img[pixelIdxC + channel];
                 }
             }
+            else
+                seanPassed = true;
         }
     }
 
@@ -417,12 +423,12 @@ int main(int argc, char *args[])
         printf("Error: Invalid amount of arguments. [%d]\n", argc);
         exit(EXIT_FAILURE);
     }
-    printf("Arguments: imageInPath=%s, imageOutPath=%s, outputWidth=%s\n", args[1], args[2], args[3]);
+    printf("Arguments: imageInPath=%s, imageOutPath=%s, seamCount=%s\n", args[1], args[2], args[3]);
 
     // Parse arguments /////////////////////////////////////////////////////////////////////
     char *imageInPath = args[1];
     char *imageOutPath = args[2];
-    int outputWidth = atoi(args[3]);
+    int seamCount = atoi(args[3]);
     int outputHeight; // = atoi(args[4]); // Height stays the same
 
     // Setup processing data struct //////////////////////////////////////////////////////
@@ -441,9 +447,9 @@ int main(int argc, char *args[])
     }
     printf("Loaded image %s of size %dx%d.\n", imageInPath, processData.width, processData.height);
 
-    if (outputWidth >= processData.width)
+    if (seamCount >= processData.width || seamCount < 0)
     {
-        printf("Error: Output width should be smaller than input width\n");
+        printf("Error: Incorrect value for number of seams.\n");
         return EXIT_FAILURE;
     }
     outputHeight = processData.height;
@@ -451,11 +457,10 @@ int main(int argc, char *args[])
     // Process image //////////////////////////////////////////////////////////////////////////
     TimingStats timingStats;
     double startTotalProcessingTime = omp_get_wtime();
-    int seamCount = processData.width - outputWidth;
     // printf("Seam count: %d\n", seamCount);
 
     double startEnergyTime = omp_get_wtime();
-    updateEnergyFull(&processData);
+    calculateEnergyFull(&processData);
     double stopEnergyTime = omp_get_wtime();
     timingStats.energyCalculations += stopEnergyTime - startEnergyTime;
     for (int i = 0; i < seamCount; i++)
@@ -464,7 +469,7 @@ int main(int argc, char *args[])
 
         // Energy step
         startEnergyTime = omp_get_wtime();
-        if (i > 0) {
+        if (i != 0) {
             updateEnergyOnSeam(&processData);
         }
         stopEnergyTime = omp_get_wtime();
