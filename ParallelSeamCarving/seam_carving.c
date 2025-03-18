@@ -64,19 +64,19 @@ typedef struct __TimingStats__
 
 // FUNCTIONS //////////////////////////////////////////////////////////////////////////////
 /// @brief Get the index of a pixel given the dimensions and channel count
-unsigned int getPixelIdxC(int x, int y, int width, int channelCount)
+static inline unsigned int getPixelIdxC(int x, int y, int width, int channelCount)
 {
     return (y * width + x) * channelCount;
 }
 
 /// @brief Get the index of a pixel given the dimensions
-unsigned int getPixelIdx(int x, int y, int width)
+static inline unsigned int getPixelIdx(int x, int y, int width)
 {
     return getPixelIdxC(x, y, width, ENERGY_CHANNEL_COUNT);
 }
 
 /// @brief Get the pixel data at the given position
-unsigned char *getPixel(unsigned char *data, int x, int y, int width, int height, int channelCount)
+static inline unsigned char *getPixel(unsigned char *data, int x, int y, int width, int height, int channelCount)
 {
     if (x >= width || y >= height || x < 0 || y < 0)
     {
@@ -88,7 +88,7 @@ unsigned char *getPixel(unsigned char *data, int x, int y, int width, int height
 }
 
 /// @brief Get the pixel data at the given position (with bounds check)
-unsigned char *getPixelE(unsigned char *data, int x, int y, int width, int height, int channelCount)  // Only used for energy calculation
+static inline unsigned char *getPixelE(unsigned char *data, int x, int y, int width, int height, int channelCount)  // Only used for energy calculation
 {
     // if x and y outside bounds, use the closest pixel
     if (x < 0)       x = 0;
@@ -100,7 +100,7 @@ unsigned char *getPixelE(unsigned char *data, int x, int y, int width, int heigh
 }
 
 /// @brief Get the energy pixel data at the given position
-unsigned int getEnergyPixel(unsigned int* data, int x, int y, int width, int height)
+static inline unsigned int getEnergyPixel(unsigned int* data, int x, int y, int width, int height)
 {
     // if x and y outside bounds, return undefined
     if (x < 0 || y < 0 || x >= width || y >= height)
@@ -112,7 +112,7 @@ unsigned int getEnergyPixel(unsigned int* data, int x, int y, int width, int hei
 }
 
 /// @brief Get the energy pixel data at the given position (with bounds check)
-unsigned int getEnergyPixelE(unsigned int* data, int x, int y, int width, int height)
+static inline unsigned int getEnergyPixelE(unsigned int* data, int x, int y, int width, int height)
 {
     unsigned int energy = getEnergyPixel(data, x, y, width, height);
     if (energy == UNDEFINED_UINT)
@@ -123,7 +123,7 @@ unsigned int getEnergyPixelE(unsigned int* data, int x, int y, int width, int he
     return energy;
 }
 
-bool isSeam(ImageProcessData* data, int x, int y)
+static inline bool isSeam(ImageProcessData* data, int x, int y)
 {
     if (data->seamPath == NULL || y >= data->height)
     {
@@ -134,7 +134,7 @@ bool isSeam(ImageProcessData* data, int x, int y)
 }
 
 /// @brief Calculate the energy of a pixel using the sobel operator
-unsigned int calculatePixelEnergy(unsigned char *data, int x, int y, int width, int height, int channelCount)
+static inline unsigned int calculatePixelEnergy(unsigned char *data, int x, int y, int width, int height, int channelCount)
 {
     int energy = 0;
     for (int rgbChannel = 0; rgbChannel < channelCount; rgbChannel++)
@@ -160,7 +160,7 @@ unsigned int calculatePixelEnergy(unsigned char *data, int x, int y, int width, 
 }
 
 /// @brief Update the energy of all pixels in the image
-void updateEnergyFull(ImageProcessData* data)
+static inline void updateEnergyFull(ImageProcessData* data)
 {
     // Free if already allocated
     if (data->imgEnergy != NULL)
@@ -170,6 +170,7 @@ void updateEnergyFull(ImageProcessData* data)
 
     // Allocate space for energy and calculate energy for each pixel
     data->imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
+
     for (int y = 0; y < data->height; y++)
     {
         for (int x = 0; x < data->width; x++)
