@@ -38,7 +38,7 @@
 // USER DEFINES ////////////////////////////////////////////////////////////////////////////
 // #define SAVE_TIMING_STATS
 // #define SAVE_DEBUG_IMAGE
-
+#define BAR_WIDTH 50
 
 int outputDebugCount = 0;
 
@@ -202,7 +202,7 @@ void updateEnergyOnSeam(ImageProcessData* data)
             int seamX0 = y > 0 ? data->seamPath[y - 1] : INT_MAX;
             int seamX1 = data->seamPath[y];
             int seamX2 = y < data->height - 1 ? data->seamPath[y + 1] : INT_MAX;
-            
+
             int insertOffsetX = -(x > seamX1);
             int idx = getPixelIdx(x + insertOffsetX, y, data->width);
 
@@ -211,7 +211,7 @@ void updateEnergyOnSeam(ImageProcessData* data)
             int difX1 = abs(x - seamX1);
             int difX2 = abs(x - seamX2);
             bool shouldRecalculate = difX0 <= 1 || difX1 <= 1 || difX2 <= 1;
-            
+
             // Recalculate and/or insert.
             if (shouldRecalculate)
             {
@@ -339,6 +339,7 @@ void seamRemove(ImageProcessData* processData)
     processData->channelCount = processData->channelCount;
 }
 
+#ifdef SAVE_DEBUG_IMAGE
 /// @brief Output the debug image with the seam annotated and energy values
 void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
 {
@@ -375,6 +376,29 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
 
     outputDebugCount++;
 }
+#endif
+
+#ifdef BAR_WIDTH
+/// @brief Update the loading bar
+void updatePrintLoadingBar(int progress, int total)
+{
+    static int lastProgress = -1;
+    if (lastProgress != -1) {
+        printf("\033[F"); // Move cursor up one line
+    }
+
+    int percent = (progress * 100) / total;
+    int filled = (progress * BAR_WIDTH) / total;
+
+    printf("[");  // Carriage return to overwrite line
+    for (int i = 0; i < filled; i++) printf("=");
+    for (int i = filled; i < BAR_WIDTH; i++) printf(" ");
+    printf("] %d%%\n", percent);
+
+    fflush(stdout);
+    lastProgress = progress;
+}
+#endif
 
 int main(int argc, char *args[])
 {
@@ -454,6 +478,10 @@ int main(int argc, char *args[])
         seamRemove(&processData);
         double stopSeamRemoveTime = omp_get_wtime();
         timingStats.seamRemoves += stopSeamRemoveTime - startSeamRemoveTime;
+
+#ifdef BAR_WIDTH
+        updatePrintLoadingBar(i + 1, seamCount);
+#endif
     }
     double stopTotalProcessingTime = omp_get_wtime();
     timingStats.totalProcessingTime = stopTotalProcessingTime - startTotalProcessingTime;
