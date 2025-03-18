@@ -1,9 +1,0 @@
---------------- ./test_images/1024x768.png ---------------
-Arguments: imageInPath=./test_images/1024x768.png, imageOutPath=./output_images/1024x768.png, outputWidth=540
---------------- Timing Stats ---------------
-Total Processing Time: 6.075000 s
-Energy Calculations: 4.824999 s [79.423856 %]
-Seam Identifications: 0.766000 s [12.609058 %]
-Seam Annotates: 0.000000 s [0.000000 %]
-Seam Removes: 0.484000 s [7.967086 %]
-

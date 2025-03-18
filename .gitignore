@@ -67,4 +67,4 @@ dkms.conf
 # Custom
 ParallelSeamCarving/output_images/*.png
 ParallelSeamCarving/debug_images/*.png
-
+ParallelSeamCarving/timing_stats/*.txt

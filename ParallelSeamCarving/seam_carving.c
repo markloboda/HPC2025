@@ -1,8 +1,6 @@
 // LOCAL RUNNING
 // gcc -lm --openmp -g3 -O0 seam_carving.c -o seam_carving.out; ./seam_carving.out ./test_images/720x480.png ./output_images/720x480.png 720
 
-// #define SAVE_TIMING_STATS
-
 // SYSTEM LIBS //////////////////////////////////////////////////////////////////////////
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +34,11 @@
 #define SEAM UINT_MAX - 1
 #define ENERGY_CHANNEL_COUNT 1
 #define UNDEFINED_UINT UINT_MAX
+
+// USER DEFINES ////////////////////////////////////////////////////////////////////////////
+// #define SAVE_TIMING_STATS
+// #define SAVE_DEBUG_IMAGE
+
 
 int outputDebugCount = 0;
 
@@ -371,51 +374,53 @@ int main(int argc, char *args[])
 
     // Process image //////////////////////////////////////////////////////////////////////////
     TimingStats timingStats;
-    double startTotalProcessing = omp_get_wtime();
+    double startTotalProcessingTime = omp_get_wtime();
     int seamCount = processData.width - outputWidth;
     // printf("Seam count: %d\n", seamCount);
 
-    double startEnergy = omp_get_wtime();
+    double startEnergyTime = omp_get_wtime();
     updateEnergyFull(&processData);
-    double stopEnergy = omp_get_wtime();
-    timingStats.energyCalculations += stopEnergy - startEnergy;
+    double stopEnergyTime = omp_get_wtime();
+    timingStats.energyCalculations += stopEnergyTime - startEnergyTime;
     for (int i = 0; i < seamCount; i++)
     {
         // printf("Processing seam %d/%d\n", i + 1, seamCount);
 
         // Energy step
-        startEnergy = omp_get_wtime();
+        startEnergyTime = omp_get_wtime();
         if (i > 0) {
             updateEnergyOnSeam(&processData);
         }
-        stopEnergy = omp_get_wtime();
-        timingStats.energyCalculations += stopEnergy - startEnergy;
+        stopEnergyTime = omp_get_wtime();
+        timingStats.energyCalculations += stopEnergyTime - startEnergyTime;
 
         // Seam identification step
-        double startSeam = omp_get_wtime();
+        double startSeamTime = omp_get_wtime();
         seamIdentification(&processData);
-        double stopSeam = omp_get_wtime();
-        timingStats.seamIdentifications += stopSeam - startSeam;
+        double stopSeamTime = omp_get_wtime();
+        timingStats.seamIdentifications += stopSeamTime - startSeamTime;
 
         // Seam annotate step
-        double startAnnotate = omp_get_wtime();
+        double startAnnotateTime = omp_get_wtime();
         seamAnnotate(&processData);
-        double stopAnnotate = omp_get_wtime();
-        timingStats.seamAnnotates += stopAnnotate - startAnnotate;
+        double stopAnnotateTime = omp_get_wtime();
+        timingStats.seamAnnotates += stopAnnotateTime - startAnnotateTime;
 
         // Seam remove step
-        double startSeamRemove = omp_get_wtime();
+        double startSeamRemoveTime = omp_get_wtime();
         seamRemove(&processData);
-        double stopSeamRemove = omp_get_wtime();
-        timingStats.seamRemoves += stopSeamRemove - startSeamRemove;
+        double stopSeamRemoveTime = omp_get_wtime();
+        timingStats.seamRemoves += stopSeamRemoveTime - startSeamRemoveTime;
     }
-    double stopTotalProcessing = omp_get_wtime();
-    timingStats.totalProcessingTime = stopTotalProcessing - startTotalProcessing;
+    double stopTotalProcessingTime = omp_get_wtime();
+    timingStats.totalProcessingTime = stopTotalProcessingTime - startTotalProcessingTime;
 
     // Output debug image //////////////////////////////////////////////////////////////////////////
-    // char debugImageOutPath[100];
-    // sprintf(debugImageOutPath, "%s/debug_%d.png", "debug_images", outputDebugCount);
-    // outputDebugImage(&processData, debugImageOutPath);
+#ifdef SAVE_DEBUG_IMAGE
+    char debugImageOutPath[100];
+    sprintf(debugImageOutPath, "%s/debug_%d.png", "debug_images", outputDebugCount);
+    outputDebugImage(&processData, debugImageOutPath);
+#endif
 
     // Free process data //////////////////////////////////////////////////////////////////////////
     free(processData.imgEnergy);
@@ -442,8 +447,8 @@ int main(int argc, char *args[])
     printf("Seam Removes: %f s [%f \%]\n", timingStats.seamRemoves, timingStats.seamRemoves / timingStats.totalProcessingTime * 100);
 
     // Output timing stats to file //////////////////////////////////////////////////////////////////////////
-    #ifdef SAVE_TIMING_STATS
-    FILE *timingFile = fopen("timing_stats_sequential.txt", "a");
+#ifdef SAVE_TIMING_STATS
+    FILE *timingFile = fopen("timing_stats/timing_stats_sequential.txt", "a");
     fprintf(timingFile, "--------------- %s ---------------\n", imageInPath);
     fprintf(timingFile, "Arguments: imageInPath=%s, imageOutPath=%s, outputWidth=%s\n", args[1], args[2], args[3]);
     fprintf(timingFile, "--------------- Timing Stats ---------------\n");
@@ -454,7 +459,7 @@ int main(int argc, char *args[])
     fprintf(timingFile, "Seam Removes: %f s [%f \%]\n", timingStats.seamRemoves, timingStats.seamRemoves / timingStats.totalProcessingTime * 100);
     fprintf(timingFile, "\n");
     fclose(timingFile);
-    #endif
+#endif
 
     return EXIT_SUCCESS;
 }
