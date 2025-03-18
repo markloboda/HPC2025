@@ -75,6 +75,12 @@ static inline unsigned int getPixelIdx(int x, int y, int width)
     return getPixelIdxC(x, y, width, ENERGY_CHANNEL_COUNT);
 }
 
+static inline void getPixelPos(unsigned int idx, int width, int* x, int* y)
+{
+    *x = idx % width;
+    *y = idx / width;
+}
+
 /// @brief Get the pixel data at the given position
 static inline unsigned char *getPixel(unsigned char *data, int x, int y, int width, int height, int channelCount)
 {
@@ -171,6 +177,10 @@ static inline void updateEnergyFull(ImageProcessData* data)
     // Allocate space for energy and calculate energy for each pixel
     data->imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
 
+    /// Testing:
+    // - Tested looping with one for loop through all data but is consistently slower in parallel and in sequential.
+    // - Tested collapse(2) but also seems to be slower.
+    #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
         for (int x = 0; x < data->width; x++)
@@ -200,6 +210,8 @@ void seamIdentification(ImageProcessData* data)
 
     // Allocate space for seam and calculate cumulative energy for each pixel
     data->imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
+    
+    #pragma omp parallel for
     for (int y = data->height - 2; y >= 0; y--)
     {
         for (int x = 0; x < data->width; x++)
