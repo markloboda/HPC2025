@@ -35,7 +35,7 @@
 #define UNDEFINED_UINT UINT_MAX
 
 // USER DEFINES ////////////////////////////////////////////////////////////////////////////
-#define SAVE_TIMING_STATS
+// #define SAVE_TIMING_STATS
 // #define SAVE_DEBUG_IMAGE
 #define RENDER_LOADING_BAR_WIDTH 50
 
@@ -245,6 +245,13 @@ void seamIdentification(ImageProcessData* data)
 
     // Allocate space for seam and calculate cumulative energy for each pixel
     data->imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
+
+    // Fill bottom row with energy values
+    #pragma omp parallel
+    for (int x = 0; x < data->width; x++)
+    {
+        data->imgSeam[getPixelIdx(x, data->height - 1, data->width)] = getEnergyPixelE(data->imgEnergy, x, data->height - 1, data->width, data->height);
+    }
 
     /// Parallel:
     // - each row has to be calculated before starting the next row, we can only parallelize calc of a row

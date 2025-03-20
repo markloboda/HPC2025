@@ -236,6 +236,13 @@ void seamIdentification(ImageProcessData* data)
 
     // Allocate space for seam and calculate cumulative energy for each pixel
     data->imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
+
+    // Fill bottom row with energy values
+    for (int x = 0; x < data->width; x++)
+    {
+        data->imgSeam[getPixelIdx(x, data->height - 1, data->width)] = getEnergyPixelE(data->imgEnergy, x, data->height - 1, data->width, data->height);
+    }
+
     for (int y = data->height - 2; y >= 0; y--)
     {
         for (int x = 0; x < data->width; x++)
