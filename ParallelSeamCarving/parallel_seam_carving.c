@@ -33,6 +33,7 @@
 #define SEAM UINT_MAX - 1
 #define ENERGY_CHANNEL_COUNT 1
 #define UNDEFINED_UINT UINT_MAX
+#define STRIP_HEIGHT 15 // Keep the STRIP_HEIGHT odd
 
 // USER DEFINES ////////////////////////////////////////////////////////////////////////////
 // #define SAVE_TIMING_STATS
@@ -204,7 +205,6 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
 }
 #endif
 
-
 /// @brief Calculate the energy of all pixels in the image
 static inline void calculateEnergyFull(ImageProcessData* data)
 {
@@ -308,6 +308,86 @@ void seamIdentification(ImageProcessData* data)
             unsigned int minEnergy = min(leftEnergy, min(centerEnergy, rightEnergy));
 
             data->imgSeam[getPixelIdx(x, y, data->width)] = curEnergy + minEnergy;
+        }
+    }
+}
+
+/// @brief Calculate the cumulative energy of the image from the bottom to the top using the triangle approach to parallelization
+void triangleSeamIdentification(ImageProcessData* data)
+{
+    if (data->imgSeam != NULL) {
+        free(data->imgSeam);
+    }
+
+    data->imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
+
+    // Fill bottom row with energy values
+    for (int x = 0; x < data->width; x++)
+    {
+        data->imgSeam[getPixelIdx(x, data->height - 1, data->width)] = getEnergyPixelE(data->imgEnergy, x, data->height - 1, data->width, data->height);
+    }
+
+    // Separate steps by horizontal STRIPS of height STRIP_HEIGHT
+    // (skip the bottom row as it is already correct)
+    for (int stripBottom = data->height - 2; stripBottom > 0; stripBottom -= STRIP_HEIGHT)
+    {
+        int triangleWidth = STRIP_HEIGHT * 2;
+        int triangleCount = (data->width + triangleWidth - 1) / triangleWidth;
+
+        // Calculate each up pointing triangle in the strip
+        #pragma omp parallel for
+        for (int triangleIdx = 0; triangleIdx < triangleCount; triangleIdx++)
+        {
+            for (int yLocal = 0; yLocal < STRIP_HEIGHT; yLocal++)
+            {
+                int y = stripBottom - yLocal;
+                if (y < 0) break;
+
+                int xStart = triangleIdx * triangleWidth + yLocal;
+                int xEnd = min(xStart + triangleWidth - 2 * yLocal, data->width);
+                for (int x = xStart; x < xEnd; x++)
+                {
+                    unsigned int leftEnergy =   getEnergyPixelE(data->imgSeam, x - 1, y + 1, data->width, data->height);
+                    unsigned int centerEnergy = getEnergyPixelE(data->imgSeam, x    , y + 1, data->width, data->height);
+                    unsigned int rightEnergy =  getEnergyPixelE(data->imgSeam, x + 1, y + 1, data->width, data->height);
+
+                    unsigned int curEnergy = getEnergyPixelE(data->imgEnergy, x, y, data->width, data->height);
+                    unsigned int minEnergy = min(leftEnergy, min(centerEnergy, rightEnergy));
+
+                    data->imgSeam[getPixelIdx(x, y, data->width)] = curEnergy + minEnergy;
+                }
+            }
+        }
+
+
+        // Calculate each down pointing triangle in the strip
+        // (bottom triangles start off the image to the left)
+        int bottomPointTriangleLeftStartX = -STRIP_HEIGHT;
+        triangleCount = (-bottomPointTriangleLeftStartX + data->width + triangleWidth - 1) / triangleWidth;
+        #pragma omp parallel for
+        for (int triangleIdx = 0; triangleIdx < triangleCount; triangleIdx++)
+        {
+            for (int yLocal = 0; yLocal < STRIP_HEIGHT; yLocal++)
+            {
+                int y = stripBottom - yLocal;
+                if (y < 0) break;
+
+                int invYLocal = STRIP_HEIGHT - yLocal - 1;  // Inverted yLocal as the triangle is pointing down
+                int xStart = bottomPointTriangleLeftStartX + triangleIdx * triangleWidth + invYLocal;
+                int xEnd = min(xStart + triangleWidth - 2 * invYLocal, data->width);
+                int clampedXStart = max(0, xStart);
+                for (int x = clampedXStart; x < xEnd; x++)
+                {
+                    unsigned int leftEnergy =   getEnergyPixelE(data->imgSeam, x - 1, y + 1, data->width, data->height);
+                    unsigned int centerEnergy = getEnergyPixelE(data->imgSeam, x    , y + 1, data->width, data->height);
+                    unsigned int rightEnergy =  getEnergyPixelE(data->imgSeam, x + 1, y + 1, data->width, data->height);
+
+                    unsigned int curEnergy = getEnergyPixelE(data->imgEnergy, x, y, data->width, data->height);
+                    unsigned int minEnergy = min(leftEnergy, min(centerEnergy, rightEnergy));
+
+                    data->imgSeam[getPixelIdx(x, y, data->width)] = curEnergy + minEnergy;
+                }
+            }
         }
     }
 }
@@ -484,7 +564,8 @@ int main(int argc, char *args[])
 
         // Seam identification step
         double startSeamTime = omp_get_wtime();
-        seamIdentification(&processData);
+        // seamIdentification(&processData);
+        triangleSeamIdentification(&processData);
         double stopSeamTime = omp_get_wtime();
         timingStats.seamIdentifications += stopSeamTime - startSeamTime;
 
