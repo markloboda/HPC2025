@@ -17,4 +17,4 @@
 gcc -O2 -lm --openmp ../seam_carving.c -o ../seam_carving.out
 
 # Run
-srun ../seam_carving.out ../test_images/720x480.png ../output_images/720x480.png 80
+srun ../seam_carving.out ../test_images/3840x2160.png ../output_images/3840x2160_sequential.png 80

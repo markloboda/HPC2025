@@ -10,7 +10,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-
 // IMPORTED LIBS //////////////////////////////////////////////////////////////////////////
 #define STB_IMAGE_IMPLEMENTATION
 #include "lib/stb_image.h"
@@ -36,9 +35,9 @@
 #define UNDEFINED_UINT UINT_MAX
 
 // USER DEFINES ////////////////////////////////////////////////////////////////////////////
-// #define SAVE_TIMING_STATS
+#define SAVE_TIMING_STATS
 // #define SAVE_DEBUG_IMAGE
-#define BAR_WIDTH 50
+#define RENDER_LOADING_BAR_WIDTH 50
 
 
 int outputDebugCount = 0;
@@ -393,7 +392,7 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
 }
 #endif
 
-#ifdef BAR_WIDTH
+#ifdef RENDER_LOADING_BAR_WIDTH
 /// @brief Update the loading bar
 void updatePrintLoadingBar(int progress, int total)
 {
@@ -403,11 +402,11 @@ void updatePrintLoadingBar(int progress, int total)
     }
 
     int percent = (progress * 100) / total;
-    int filled = (progress * BAR_WIDTH) / total;
+    int filled = (progress * RENDER_LOADING_BAR_WIDTH) / total;
 
     printf("[");  // Carriage return to overwrite line
     for (int i = 0; i < filled; i++) printf("=");
-    for (int i = filled; i < BAR_WIDTH; i++) printf(" ");
+    for (int i = filled; i < RENDER_LOADING_BAR_WIDTH; i++) printf(" ");
     printf("] %d%%\n", percent);
 
     fflush(stdout);
@@ -493,7 +492,7 @@ int main(int argc, char *args[])
         double stopSeamRemoveTime = omp_get_wtime();
         timingStats.seamRemoves += stopSeamRemoveTime - startSeamRemoveTime;
 
-#ifdef BAR_WIDTH
+#ifdef RENDER_LOADING_BAR_WIDTH
         updatePrintLoadingBar(i + 1, seamCount);
 #endif
     }
@@ -533,7 +532,7 @@ int main(int argc, char *args[])
 
     // Output timing stats to file //////////////////////////////////////////////////////////////////////////
 #ifdef SAVE_TIMING_STATS
-    FILE *timingFile = fopen("timing_stats/timing_stats_parallel.txt", "a");
+    FILE *timingFile = fopen("../timing_stats/timing_stats_parallel.txt", "a");
     fprintf(timingFile, "--------------- %s ---------------\n", imageInPath);
     fprintf(timingFile, "Arguments: imageInPath=%s, imageOutPath=%s, outputWidth=%s\n", args[1], args[2], args[3]);
     fprintf(timingFile, "--------------- Timing Stats ---------------\n");

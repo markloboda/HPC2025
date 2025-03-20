@@ -4,7 +4,7 @@
 #SBATCH --output=seam_carving_parallel.log
 #SBATCH --ntasks=1
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=32
 #SBATCH --time=5:00
 #SBATCH --mem-per-cpu=20000
 #SBATCH --reservation=fri
@@ -17,4 +17,4 @@
 gcc -O2 -lm --openmp ../parallel_seam_carving.c -o ../parallel_seam_carving.out
 
 # Run
-srun ../parallel_seam_carving.out ../parallel_test_images/720x480.png ../parallel_output_images/720x480.png 80
+srun ../parallel_seam_carving.out ../test_images/3840x2160.png ../output_images/3840x2160_parallel.png 128
