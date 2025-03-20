@@ -235,7 +235,6 @@ void updateEnergyOnSeam(ImageProcessData* data)
     int oldWidth = data->width + 1;
 
     /// Parallel:
-    // - TODO ask Mark
     #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
@@ -272,6 +271,47 @@ void updateEnergyOnSeam(ImageProcessData* data)
     free(data->imgEnergy);
 
     data->imgEnergy = imgEnergyNew;
+}
+
+void updateEnergyOnSeamUpgrade(ImageProcessData* data)
+{
+    int oldWidth = data->width + 1;
+
+    /// Parallel:
+    // TODO: The elements write into the same array. This causes problems as the energy on the right can get updated before the energy on the left.
+    // Have to probably loop through x first and synchronize on each step of x.
+    #pragma omp parallel for
+    for (int y = 0; y < data->height; y++)
+    {
+        for (int x = data->seamPath[y] - 2; x < oldWidth; x++)
+        {
+            // Get data.
+            int seamX0 = y > 0 ? data->seamPath[y - 1] : INT_MAX;
+            int seamX1 = data->seamPath[y];
+            int seamX2 = y < data->height - 1 ? data->seamPath[y + 1] : INT_MAX;
+
+            int insertOffsetX = -(x > seamX1);
+            int idx = getPixelIdx(x + insertOffsetX, y, data->width);
+
+            // Should recalculate.
+            int difX0 = abs(x - seamX0);
+            int difX1 = abs(x - seamX1);
+            int difX2 = abs(x - seamX2);
+            bool shouldRecalculate = difX0 <= 1 || difX1 <= 1 || difX2 <= 1;
+
+            // Recalculate and/or insert.
+            if (shouldRecalculate)
+            {
+                int newX, newY;
+                getPixelPos(idx, data->width, &newX, &newY);
+                data->imgEnergy[idx] = calculatePixelEnergy(data->img, newX, newY, data->width, data->height, data->channelCount);
+            }
+            else
+            {
+                data->imgEnergy[idx] = data->imgEnergy[getPixelIdx(x, y, oldWidth)];
+            }
+        }
+    }
 }
 
 /// @brief Calculate the cumulative energy of the image from the bottom to the top
@@ -322,6 +362,7 @@ void triangleSeamIdentification(ImageProcessData* data)
     data->imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
 
     // Fill bottom row with energy values
+    #pragma omp parallel
     for (int x = 0; x < data->width; x++)
     {
         data->imgSeam[getPixelIdx(x, data->height - 1, data->width)] = getEnergyPixelE(data->imgEnergy, x, data->height - 1, data->width, data->height);
@@ -558,6 +599,7 @@ int main(int argc, char *args[])
         startEnergyTime = omp_get_wtime();
         if (i != 0) {
             updateEnergyOnSeam(&processData);
+            // updateEnergyOnSeamUpgrade(&processData);
         }
         stopEnergyTime = omp_get_wtime();
         timingStats.energyCalculations += stopEnergyTime - startEnergyTime;
