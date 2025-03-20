@@ -52,6 +52,7 @@ typedef struct __ImageProcessData__
     int width;
     int height;
     int channelCount;
+    int removedSeams;
 } ImageProcessData;
 
 typedef struct __TimingStats__
@@ -208,17 +209,15 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
 /// @brief Calculate the energy of all pixels in the image
 static inline void calculateEnergyFull(ImageProcessData* data)
 {
-    // Allocate space for energy and calculate energy for each pixel
-    data->imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
-
     /// Parallel:
     // - Tested looping with one for loop through all data but is consistently slower in parallel and in sequential.
     // - Tested collapse(2) but also seems to be slower.
     // - Standard approach is probably the best, as each thread gets a couple of rows (as cache lines) and every pixel calculation is independent
+    int realWidth = data->width - data->removedSeams;
     #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
-        for (int x = 0; x < data->width; x++)
+        for (int x = 0; x < realWidth; x++)
         {
             unsigned int pixelIdx = getPixelIdx(x, y, data->width);
             unsigned int energy = calculatePixelEnergy(data->img, x, y, data->width, data->height, data->channelCount);
@@ -326,9 +325,10 @@ void seamIdentification(ImageProcessData* data)
     // Allocate space for seam and calculate cumulative energy for each pixel
     data->imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
 
+    int realWidth = data->width - data->removedSeams;
     // Fill bottom row with energy values
     #pragma omp parallel
-    for (int x = 0; x < data->width; x++)
+    for (int x = 0; x < realWidth; x++)
     {
         data->imgSeam[getPixelIdx(x, data->height - 1, data->width)] = getEnergyPixelE(data->imgEnergy, x, data->height - 1, data->width, data->height);
     }
@@ -338,7 +338,7 @@ void seamIdentification(ImageProcessData* data)
     for (int y = data->height - 2; y >= 0; y--)
     {
         #pragma omp parallel for
-        for (int x = 0; x < data->width; x++)
+        for (int x = 0; x < realWidth; x++)
         {
             unsigned int leftEnergy =   getEnergyPixelE(data->imgSeam, x - 1, y + 1, data->width, data->height);
             unsigned int centerEnergy = getEnergyPixelE(data->imgSeam, x    , y + 1, data->width, data->height);
@@ -355,15 +355,10 @@ void seamIdentification(ImageProcessData* data)
 /// @brief Calculate the cumulative energy of the image from the bottom to the top using the triangle approach to parallelization
 void triangleSeamIdentification(ImageProcessData* data)
 {
-    if (data->imgSeam != NULL) {
-        free(data->imgSeam);
-    }
-
-    data->imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
+    int realWidth = data->width - data->removedSeams;
 
     // Fill bottom row with energy values
-    #pragma omp parallel
-    for (int x = 0; x < data->width; x++)
+    for (int x = 0; x < realWidth; x++)
     {
         data->imgSeam[getPixelIdx(x, data->height - 1, data->width)] = getEnergyPixelE(data->imgEnergy, x, data->height - 1, data->width, data->height);
     }
@@ -373,7 +368,7 @@ void triangleSeamIdentification(ImageProcessData* data)
     for (int stripBottom = data->height - 2; stripBottom > 0; stripBottom -= STRIP_HEIGHT)
     {
         int triangleWidth = STRIP_HEIGHT * 2;
-        int triangleCount = (data->width + triangleWidth - 1) / triangleWidth;
+        int triangleCount = (realWidth + triangleWidth - 1) / triangleWidth;
 
         // Calculate each up pointing triangle in the strip
         #pragma omp parallel for
@@ -385,7 +380,7 @@ void triangleSeamIdentification(ImageProcessData* data)
                 if (y < 0) break;
 
                 int xStart = triangleIdx * triangleWidth + yLocal;
-                int xEnd = min(xStart + triangleWidth - 2 * yLocal, data->width);
+                int xEnd = min(xStart + triangleWidth - 2 * yLocal, realWidth);
                 for (int x = xStart; x < xEnd; x++)
                 {
                     unsigned int leftEnergy =   getEnergyPixelE(data->imgSeam, x - 1, y + 1, data->width, data->height);
@@ -404,7 +399,7 @@ void triangleSeamIdentification(ImageProcessData* data)
         // Calculate each down pointing triangle in the strip
         // (bottom triangles start off the image to the left)
         int bottomPointTriangleLeftStartX = -STRIP_HEIGHT;
-        triangleCount = (-bottomPointTriangleLeftStartX + data->width + triangleWidth - 1) / triangleWidth;
+        triangleCount = (-bottomPointTriangleLeftStartX + realWidth + triangleWidth - 1) / triangleWidth;
         #pragma omp parallel for
         for (int triangleIdx = 0; triangleIdx < triangleCount; triangleIdx++)
         {
@@ -436,16 +431,11 @@ void triangleSeamIdentification(ImageProcessData* data)
 /// @brief Annotate the seam in the image (with SEAM value)
 void seamAnnotate(ImageProcessData* data)
 {
-    // Allocate memory for seam path
-    if (data->seamPath != NULL)
-    {
-        free(data->seamPath);
-    }
-    data->seamPath = (int *) malloc(sizeof(int) * data->height);
+    int realWidth = data->width - data->removedSeams;
 
     // Find the minimum energy in the top row
     int curX = 0;
-    for (int x = 1; x < data->width; x++)
+    for (int x = 1; x < realWidth; x++)
     {
         if (data->imgSeam[getPixelIdx(x, 0, data->width)] < data->imgSeam[getPixelIdx(curX, 0, data->width)])
         {
@@ -485,40 +475,29 @@ void seamRemove(ImageProcessData* processData)
 
     // Allocate space for new image
     unsigned int newWidth = processData->width - 1;
-    unsigned int pixelCount = newWidth * processData->height;
-    unsigned char* image = (unsigned char *) malloc(sizeof(unsigned char) * pixelCount * processData->channelCount);
 
     // Copy image data without seam
     /// Parallel:
     // - standard for parallel, as the copying of whole lines is nicely devided between threads
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int y = 0; y < processData->height; y++)
     {
-        int seanPassed = false;  // Did we pass the sean?
-        for (int x = 0; x < processData->width; x++)
+        int seamX = processData->seamPath[y];
+        if (seamX < processData->width - 1)
         {
-            if (!isSeam(processData, x, y))
-            {
-                unsigned int pixelIdxC = getPixelIdxC(x, y, processData->width, processData->channelCount);
-                for (int channel = 0; channel < processData->channelCount; channel++)
-                {
-                    unsigned int pixelPos = getPixelIdxC(x - seanPassed, y, newWidth, processData->channelCount);
-                    image[pixelPos + channel] = processData->img[pixelIdxC + channel];
-                }
-            }
-            else
-                seanPassed = true;
+            memset(&processData->img[getPixelIdxC(processData->width - 1, y, processData->width, processData->channelCount)], 0, processData->channelCount);
+
+            // memcpy from seamX + 1 to the end to seamX
+            memcpy(&processData->img[getPixelIdxC(seamX, y, processData->width, processData->channelCount)],
+                &processData->img[getPixelIdxC(seamX + 1, y, processData->width, processData->channelCount)],
+                (processData->width - seamX) * processData->channelCount * sizeof(unsigned char));
+
         }
     }
 
-    // Free old image and set new image
-    free(processData->img);
-
     // Update process data
-    processData->img = image;
-    processData->width = processData->width - 1;
+    processData->removedSeams++;
     processData->height = processData->height;
-    processData->channelCount = processData->channelCount;
 }
 
 #ifdef RENDER_LOADING_BAR_WIDTH
@@ -565,6 +544,7 @@ int main(int argc, char *args[])
     processData.imgEnergy = NULL;
     processData.imgSeam = NULL;
     processData.seamPath = NULL;
+    processData.removedSeams = 0;
 
     // Load image //////////////////////////////////////////////////////////////////////////
     processData.img = stbi_load(imageInPath, &processData.width, &processData.height, &processData.channelCount, STB_COLOR_CHANNELS);
@@ -581,6 +561,9 @@ int main(int argc, char *args[])
         return EXIT_FAILURE;
     }
     outputHeight = processData.height;
+
+    processData.imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * processData.width * processData.height);
+    processData.imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * processData.width * processData.height);
 
     // Process image //////////////////////////////////////////////////////////////////////////
     TimingStats timingStats;
@@ -641,13 +624,24 @@ int main(int argc, char *args[])
     free(processData.imgEnergy);
     free(processData.imgSeam);
 
+    // Get final image. Have to fix data for writing.
+    int realWidth = processData.width - processData.removedSeams;
+    unsigned char *imgOut = (unsigned char *) malloc(sizeof(unsigned char) * realWidth * processData.height * processData.channelCount);
+    for (int y = 0; y < processData.height; y++)
+    {
+        // Copy row by row to new image
+        memcpy(&imgOut[getPixelIdxC(0, y, realWidth, processData.channelCount)],
+               &processData.img[getPixelIdxC(0, y, processData.width, processData.channelCount)],
+               realWidth * processData.channelCount * sizeof(unsigned char));
+    }
+
     // Output image //////////////////////////////////////////////////////////////////////////
     stbi_write_png(imageOutPath,
-                   processData.width,
+                   realWidth,
                    processData.height,
                    processData.channelCount,
-                   processData.img,
-                   processData.width * processData.channelCount);
+                   imgOut,
+                   realWidth * processData.channelCount);
 
     printf("Output image %s of size %dx%d.\n", imageOutPath, processData.width, processData.height);
 
