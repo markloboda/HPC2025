@@ -10,8 +10,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/seam_carving.out",
             "args": [
-                "${workspaceFolder}/test_images/720x480.png",
-                "${workspaceFolder}/output_images/720x480_sequental.png",
+                "${workspaceFolder}/test_images/1024x768.png",
+                "${workspaceFolder}/output_images/1024x768_sequental.png",
                 "128"
             ],
             "stopAtEntry": false,
@@ -34,8 +34,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/parallel_seam_carving.out",
             "args": [
-                "${workspaceFolder}/test_images/720x480.png",
-                "${workspaceFolder}/output_images/720x480_parallel.png",
+                "${workspaceFolder}/test_images/1024x768.png",
+                "${workspaceFolder}/output_images/1024x768_parallel.png",
                 "128"
             ],
             "stopAtEntry": false,
