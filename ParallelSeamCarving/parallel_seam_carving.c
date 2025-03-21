@@ -1,5 +1,3 @@
-// LOCAL RUNNING
-// gcc -lm --openmp -g3 -O0 seam_carving.c -o seam_carving.out; ./seam_carving.out ./test_images/720x480.png ./output_images/720x480.png 720
 
 // SYSTEM LIBS //////////////////////////////////////////////////////////////////////////
 #include <stdio.h>
@@ -33,10 +31,10 @@
 #define SEAM UINT_MAX - 1
 #define ENERGY_CHANNEL_COUNT 1
 #define UNDEFINED_UINT UINT_MAX
-#define SIM_NUM_SEAM_REMOVAL 8  
+#define SIM_NUM_SEAM_REMOVAL 8
 
 // USER DEFINES ////////////////////////////////////////////////////////////////////////////
-#define SAVE_TIMING_STATS
+// #define SAVE_TIMING_STATS
 // #define SAVE_DEBUG_IMAGE
 #define RENDER_LOADING_BAR_WIDTH 50
 
@@ -176,7 +174,7 @@ static inline void calculateEnergyFull(ImageProcessData* data)
     // - Tested looping with one for loop through all data but is consistently slower in parallel and in sequential.
     // - Tested collapse(2) but also seems to be slower.
     // - Standard approach is probably the best, as each thread gets a couple of rows (as cache lines) and every pixel calculation is independent
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
         for (int x = 0; x < data->width; x++)
@@ -198,7 +196,7 @@ void updateEnergyOnSeam(ImageProcessData* data)
 
     /// Parallel:
     // - as the rows gets processed 
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
         for (int x = 0; x < data->width; x++)
@@ -256,14 +254,14 @@ void seamIdentification(ImageProcessData* data)
     // #pragma omp parallel
     for (int x = 0; x < data->width; x++)
     {
-        data->imgSeam[getPixelIdx(x, data->height - 1, data->width)] = getEnergyPixelE(data->imgEnergy, x, data->height - 1, data->width, data->height, data->width, data->height);
+        data->imgSeam[getPixelIdx(x, data->height - 1, data->width)] = getEnergyPixelE(data->imgEnergy, x, data->height - 1, data->width, data->height, 0, data->width);
     }
 
     /// Parallel:
     // - each row has to be calculated before starting the next row, we can only parallelize calc of a row
     for (int y = data->height - 2; y >= 0; y--)
     {
-        #pragma omp parallel for
+        // #pragma omp parallel for
         for (int x = 0; x < data->width; x++)
         {
             unsigned int leftEnergy =   getEnergyPixelE(data->imgSeam, x - 1, y + 1, data->width, data->height, 0, data->width);
@@ -283,7 +281,7 @@ void seamAnnotate(ImageProcessData* data)
 {
     const int stripWidth = data->width / SIM_NUM_SEAM_REMOVAL;
 
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int seamIdx = 0; seamIdx < SIM_NUM_SEAM_REMOVAL; seamIdx++)
     {
         int lowX = seamIdx * stripWidth;
@@ -382,8 +380,7 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
 {
     int debugWidth = processData->width + SIM_NUM_SEAM_REMOVAL;
     int debugHeight = processData->height;
-    int debugChannelCount = 3;
-    const int stripWidth = processData->width / SIM_NUM_SEAM_REMOVAL;
+    int debugChannelCount = processData->channelCount;
     unsigned char *debugImgData = (unsigned char *) malloc(sizeof(unsigned char *) * debugWidth * debugHeight * debugChannelCount);
 
     for (int y = 0; y < processData->height; y++)
@@ -477,7 +474,7 @@ int main(int argc, char *args[])
         printf("Error: Incorrect value for number of seams.\n");
         return EXIT_FAILURE;
     }
-    if (seamCount % SIM_NUM_SEAM_REMOVAL)
+    if (seamCount % SIM_NUM_SEAM_REMOVAL || processData.width % SIM_NUM_SEAM_REMOVAL)
     {   // TODO fix: the num of max num of simultaneously removed seams has to devide num of total removed seams 
         printf("Error: seamCount should be devidable by the SIM_NUM_SEAM_REMOVAL!\n");
         return EXIT_FAILURE;

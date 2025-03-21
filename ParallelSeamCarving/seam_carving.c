@@ -1,5 +1,3 @@
-// LOCAL RUNNING
-// gcc -lm --openmp -g3 -O0 seam_carving.c -o seam_carving.out; ./seam_carving.out ./test_images/720x480.png ./output_images/720x480.png 720
 
 // SYSTEM LIBS //////////////////////////////////////////////////////////////////////////
 #include <stdio.h>
