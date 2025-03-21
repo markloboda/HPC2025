@@ -142,7 +142,7 @@ static inline bool isSeam(ImageProcessData* data, int x, int y, int seanIdx)
 /// @brief Calculate the energy of a pixel using the sobel operator
 static inline unsigned int calculatePixelEnergy(unsigned char *data, int x, int y, int width, int height, int channelCount, int limitLowX, int limitHighX)
 {
-    int energy = 0;
+    int energyTotal = 0;
     for (int rgbChannel = 0; rgbChannel < channelCount; rgbChannel++)
     {
         int Gx = -     getPixelE(data, x - 1, y - 1, width, height, channelCount, limitLowX, limitHighX)[rgbChannel]
@@ -159,32 +159,34 @@ static inline unsigned int calculatePixelEnergy(unsigned char *data, int x, int 
                  - 2 * getPixelE(data,     x, y + 1, width, height, channelCount, limitLowX, limitHighX)[rgbChannel]
                  -     getPixelE(data, x + 1, y + 1, width, height, channelCount, limitLowX, limitHighX)[rgbChannel];
 
-        energy += sqrt(pow(Gx, 2) + pow(Gy, 2));
+        energyTotal += sqrt(pow(Gx, 2) + pow(Gy, 2));
     }
-
-    return energy / channelCount;
+    int energy = energy / channelCount;
+    return energy;
 }
 
 #ifdef SAVE_DEBUG_IMAGE
 /// @brief Output the debug image with the seam annotated and energy values
 void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
 {
-    int debugWidth = processData->width + 1; // + 1 because it was reduced by 1 in refreshProcessData
+    int debugWidth = processData->width + SIM_NUM_SEAM_REMOVAL;
     int debugHeight = processData->height;
-    int debugChannelCount = 3;
+    int debugChannelCount = processData->channelCount;
     unsigned char *debugImgData = (unsigned char *) malloc(sizeof(unsigned char *) * debugWidth * debugHeight * debugChannelCount);
 
     for (int y = 0; y < processData->height; y++)
     {
+        int seanPassedCount = 0;
         for (int x = 0; x < processData->width; x++)
         {
             unsigned char *pixel = &debugImgData[getPixelIdxC(x, y, debugWidth, debugChannelCount)];
 
-            if (isSeam(processData, x, y))
+            if (isSeam(processData, x, y, seanPassedCount))
             {
                 pixel[0] = 180;
                 pixel[1] = 0;
                 pixel[2] = 0;
+                seanPassedCount++;
             }
             else
             {
@@ -214,7 +216,7 @@ static inline void calculateEnergyFull(ImageProcessData* data)
     // - Tested looping with one for loop through all data but is consistently slower in parallel and in sequential.
     // - Tested collapse(2) but also seems to be slower.
     // - Standard approach is probably the best, as each thread gets a couple of rows (as cache lines) and every pixel calculation is independent
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
         for (int x = 0; x < data->width; x++)
@@ -235,7 +237,7 @@ void updateEnergyOnSeam(ImageProcessData* data)
     const int stripWidth = oldWidth / SIM_NUM_SEAM_REMOVAL;
 
     /// Parallel:
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
         for (int x = 0; x < oldWidth; x++)
@@ -279,40 +281,44 @@ void updateEnergyOnSeam(ImageProcessData* data)
 
 void updateEnergyOnSeamUpgrade(ImageProcessData* data)
 {
-    int oldWidth = data->width + 1;
+    int oldWidth = data->width + SIM_NUM_SEAM_REMOVAL;
+    const int stripWidth = oldWidth / SIM_NUM_SEAM_REMOVAL;
 
     /// Parallel:
     // TODO: The elements write into the same array. This causes problems as the energy on the right can get updated before the energy on the left.
     // Have to probably loop through x first and synchronize on each step of x.
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
-        for (int x = data->seamPath[y] - 2; x < oldWidth; x++)
+        for (int stripIdx = 0; stripIdx < SIM_NUM_SEAM_REMOVAL; stripIdx++)
         {
-            // Get data.
-            int seamX0 = y > 0 ? data->seamPath[y - 1] : INT_MAX;
-            int seamX1 = data->seamPath[y];
-            int seamX2 = y < data->height - 1 ? data->seamPath[y + 1] : INT_MAX;
-
-            int insertOffsetX = -(x > seamX1);
-            int idx = getPixelIdx(x + insertOffsetX, y, data->width);
-
-            // Should recalculate.
-            int difX0 = abs(x - seamX0);
-            int difX1 = abs(x - seamX1);
-            int difX2 = abs(x - seamX2);
-            bool shouldRecalculate = difX0 <= 1 || difX1 <= 1 || difX2 <= 1;
-
-            // Recalculate and/or insert.
-            if (shouldRecalculate)
+            for (int x = data->seamPath[stripIdx][y] - 2; x < oldWidth; x++)
             {
-                int newX, newY;
-                getPixelPos(idx, data->width, &newX, &newY);
-                data->imgEnergy[idx] = calculatePixelEnergy(data->img, newX, newY, data->width, data->height, data->channelCount);
-            }
-            else
-            {
-                data->imgEnergy[idx] = data->imgEnergy[getPixelIdx(x, y, oldWidth)];
+                // Get data.
+                int seamX0 = y > 0 ? data->seamPath[stripIdx][y - 1] : INT_MAX;
+                int seamX1 = data->seamPath[stripIdx][y];
+                int seamX2 = y < data->height - 1 ? data->seamPath[stripIdx][y + 1] : INT_MAX;
+
+                int insertOffsetX = -(x > seamX1);
+                int idx = getPixelIdx(x + insertOffsetX, y, data->width);
+
+                // Should recalculate.
+                int difX0 = abs(x - seamX0);
+                int difX1 = abs(x - seamX1);
+                int difX2 = abs(x - seamX2);
+                bool shouldRecalculate = difX0 <= 1 || difX1 <= 1 || difX2 <= 1;
+
+                // Recalculate and/or insert.
+                if (shouldRecalculate)
+                {
+                    int newX, newY;
+                    getPixelPos(idx, data->width, &newX, &newY);
+                    data->imgEnergy[idx] = calculatePixelEnergy(data->img, newX, newY, data->width, data->height, data->channelCount, 0, data->width);
+                }
+                else
+                {
+                    data->imgEnergy[idx] = data->imgEnergy[getPixelIdx(x, y, oldWidth)];
+                }
             }
         }
     }
@@ -331,7 +337,7 @@ void seamIdentification(ImageProcessData* data)
     data->imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
 
     // Fill bottom row with energy values
-    #pragma omp parallel
+    // #pragma omp parallel
     for (int x = 0; x < data->width; x++)
     {
         data->imgSeam[getPixelIdx(x, data->height - 1, data->width)] = getEnergyPixelE(data->imgEnergy, x, data->height - 1, data->width, data->height, 0, data->width);
@@ -341,7 +347,7 @@ void seamIdentification(ImageProcessData* data)
     // - each row has to be calculated before starting the next row, we can only parallelize calc of a row
     for (int y = data->height - 2; y >= 0; y--)
     {
-        #pragma omp parallel for
+        // #pragma omp parallel for
         for (int x = 0; x < data->width; x++)
         {
             unsigned int leftEnergy =   getEnergyPixelE(data->imgSeam, x - 1, y + 1, data->width, data->height, 0, data->width);
@@ -356,12 +362,92 @@ void seamIdentification(ImageProcessData* data)
     }
 }
 
+/// @brief Calculate the cumulative energy of the image from the bottom to the top using the triangle approach to parallelization
+void triangleSeamIdentification(ImageProcessData* data)
+{
+    if (data->imgSeam != NULL) {
+        free(data->imgSeam);
+    }
+
+    data->imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
+
+    // Fill bottom row with energy values
+    for (int x = 0; x < data->width; x++)
+    {
+        data->imgSeam[getPixelIdx(x, data->height - 1, data->width)] = getEnergyPixelE(data->imgEnergy, x, data->height - 1, data->width, data->height, 0, data->width);
+    }
+
+    // Separate steps by horizontal STRIPS of height STRIP_HEIGHT
+    // (skip the bottom row as it is already correct)
+    for (int stripBottom = data->height - 2; stripBottom > 0; stripBottom -= STRIP_HEIGHT)
+    {
+        int triangleWidth = STRIP_HEIGHT * 2;
+        int triangleCount = (data->width + triangleWidth - 1) / triangleWidth;
+
+        // Calculate each up pointing triangle in the strip
+        // #pragma omp parallel for
+        for (int triangleIdx = 0; triangleIdx < triangleCount; triangleIdx++)
+        {
+            for (int yLocal = 0; yLocal < STRIP_HEIGHT; yLocal++)
+            {
+                int y = stripBottom - yLocal;
+                if (y < 0) break;
+
+                int xStart = triangleIdx * triangleWidth + yLocal;
+                int xEnd = min(xStart + triangleWidth - 2 * yLocal, data->width);
+                for (int x = xStart; x < xEnd; x++)
+                {
+                    unsigned int leftEnergy =   getEnergyPixelE(data->imgSeam, x - 1, y + 1, data->width, data->height, 0, data->width);
+                    unsigned int centerEnergy = getEnergyPixelE(data->imgSeam, x    , y + 1, data->width, data->height, 0, data->width);
+                    unsigned int rightEnergy =  getEnergyPixelE(data->imgSeam, x + 1, y + 1, data->width, data->height, 0, data->width);
+
+                    unsigned int curEnergy = getEnergyPixelE(data->imgEnergy, x, y, data->width, data->height, 0, data->width);
+                    unsigned int minEnergy = min(leftEnergy, min(centerEnergy, rightEnergy));
+
+                    data->imgSeam[getPixelIdx(x, y, data->width)] = curEnergy + minEnergy;
+                }
+            }
+        }
+
+
+        // Calculate each down pointing triangle in the strip
+        // (bottom triangles start off the image to the left)
+        int bottomPointTriangleLeftStartX = -STRIP_HEIGHT;
+        triangleCount = (-bottomPointTriangleLeftStartX + data->width + triangleWidth - 1) / triangleWidth;
+        // #pragma omp parallel for
+        for (int triangleIdx = 0; triangleIdx < triangleCount; triangleIdx++)
+        {
+            for (int yLocal = 0; yLocal < STRIP_HEIGHT; yLocal++)
+            {
+                int y = stripBottom - yLocal;
+                if (y < 0) break;
+
+                int invYLocal = STRIP_HEIGHT - yLocal - 1;  // Inverted yLocal as the triangle is pointing down
+                int xStart = bottomPointTriangleLeftStartX + triangleIdx * triangleWidth + invYLocal;
+                int xEnd = min(xStart + triangleWidth - 2 * invYLocal, data->width);
+                int clampedXStart = max(0, xStart);
+                for (int x = clampedXStart; x < xEnd; x++)
+                {
+                    unsigned int leftEnergy =   getEnergyPixelE(data->imgSeam, x - 1, y + 1, data->width, data->height, 0, data->width);
+                    unsigned int centerEnergy = getEnergyPixelE(data->imgSeam, x    , y + 1, data->width, data->height, 0, data->width);
+                    unsigned int rightEnergy =  getEnergyPixelE(data->imgSeam, x + 1, y + 1, data->width, data->height, 0, data->width);
+
+                    unsigned int curEnergy = getEnergyPixelE(data->imgEnergy, x, y, data->width, data->height, 0, data->width);
+                    unsigned int minEnergy = min(leftEnergy, min(centerEnergy, rightEnergy));
+
+                    data->imgSeam[getPixelIdx(x, y, data->width)] = curEnergy + minEnergy;
+                }
+            }
+        }
+    }
+}
+
 /// @brief Annotate the seam in the image
 void seamAnnotate(ImageProcessData* data)
 {
     const int stripWidth = data->width / SIM_NUM_SEAM_REMOVAL;
 
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int seamIdx = 0; seamIdx < SIM_NUM_SEAM_REMOVAL; seamIdx++)
     {
         int lowX = seamIdx * stripWidth;
@@ -424,7 +510,7 @@ void seamRemove(ImageProcessData* processData)
     // Copy image data without seam
     /// Parallel:
     // - standard for parallel, as the copying of whole lines is nicely devided between threads
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int y = 0; y < processData->height; y++)
     {
         int seanPassedCount = 0;
@@ -515,7 +601,7 @@ int main(int argc, char *args[])
     }
     if (seamCount % SIM_NUM_SEAM_REMOVAL || processData.width % SIM_NUM_SEAM_REMOVAL)
     {   // TODO fix: the num of max num of simultaneously removed seams has to devide num of total removed seams 
-        printf("Error: seamCount should be devidable by the SIM_NUM_SEAM_REMOVAL!\n");
+        printf("Error: seamCount and image width should be devidable by the SIM_NUM_SEAM_REMOVAL!\n");
         return EXIT_FAILURE;
     }
 
@@ -545,8 +631,8 @@ int main(int argc, char *args[])
 
         // Seam identification step
         double startSeamTime = omp_get_wtime();
-        // seamIdentification(&processData);
-        triangleSeamIdentification(&processData);
+        seamIdentification(&processData);
+        // triangleSeamIdentification(&processData);
         double stopSeamTime = omp_get_wtime();
         timingStats.seamIdentifications += stopSeamTime - startSeamTime;
 
