@@ -1,0 +1,1925 @@
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.489486s
+Energy Calculations: 0.160162s [32.720358 %]
+Seam Identifications: 0.198067s [40.464262 %]
+Seam Annotates: 0.000823s [0.168067 %]
+Seam Removes: 0.130412s [26.642554 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.859428s
+Energy Calculations: 0.278706s [32.429226 %]
+Seam Identifications: 0.349741s [40.694660 %]
+Seam Annotates: 0.001423s [0.165555 %]
+Seam Removes: 0.229514s [26.705480 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.753293s
+Energy Calculations: 0.247297s [32.828802 %]
+Seam Identifications: 0.304058s [40.363786 %]
+Seam Annotates: 0.001229s [0.163155 %]
+Seam Removes: 0.200677s [26.639886 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.555359s
+Energy Calculations: 0.182443s [32.851388 %]
+Seam Identifications: 0.224122s [40.356206 %]
+Seam Annotates: 0.000901s [0.162310 %]
+Seam Removes: 0.147867s [26.625432 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.466001s
+Energy Calculations: 0.151920s [32.600784 %]
+Seam Identifications: 0.188765s [40.507559 %]
+Seam Annotates: 0.000765s [0.164160 %]
+Seam Removes: 0.124528s [26.722716 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.463172s
+Energy Calculations: 0.150775s [32.552735 %]
+Seam Identifications: 0.187864s [40.560207 %]
+Seam Annotates: 0.000763s [0.164796 %]
+Seam Removes: 0.123750s [26.717962 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.463655s
+Energy Calculations: 0.151131s [32.595692 %]
+Seam Identifications: 0.187883s [40.522215 %]
+Seam Annotates: 0.000758s [0.163423 %]
+Seam Removes: 0.123861s [26.714147 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.465399s
+Energy Calculations: 0.151343s [32.519012 %]
+Seam Identifications: 0.189138s [40.639992 %]
+Seam Annotates: 0.000782s [0.168026 %]
+Seam Removes: 0.124114s [26.668199 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.464324s
+Energy Calculations: 0.151541s [32.636907 %]
+Seam Identifications: 0.187787s [40.443104 %]
+Seam Annotates: 0.000785s [0.169078 %]
+Seam Removes: 0.124191s [26.746555 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.465392s
+Energy Calculations: 0.151730s [32.602559 %]
+Seam Identifications: 0.188305s [40.461510 %]
+Seam Annotates: 0.000782s [0.167974 %]
+Seam Removes: 0.124555s [26.763360 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.517344s
+Energy Calculations: 0.148841s [28.770137 %]
+Seam Identifications: 0.243724s [47.110629 %]
+Seam Annotates: 0.001405s [0.271615 %]
+Seam Removes: 0.123335s [23.840011 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.510075s
+Energy Calculations: 0.145734s [28.571029 %]
+Seam Identifications: 0.242175s [47.478282 %]
+Seam Annotates: 0.001417s [0.277899 %]
+Seam Removes: 0.120709s [23.664948 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.565940s
+Energy Calculations: 0.159815s [28.238926 %]
+Seam Identifications: 0.272500s [48.150006 %]
+Seam Annotates: 0.001595s [0.281840 %]
+Seam Removes: 0.131988s [23.321909 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.538049s
+Energy Calculations: 0.150858s [28.037912 %]
+Seam Identifications: 0.260431s [48.402827 %]
+Seam Annotates: 0.001541s [0.286445 %]
+Seam Removes: 0.125176s [23.264890 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.518693s
+Energy Calculations: 0.152037s [29.311511 %]
+Seam Identifications: 0.239489s [46.171573 %]
+Seam Annotates: 0.001375s [0.265050 %]
+Seam Removes: 0.125758s [24.245084 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.332057s
+Energy Calculations: 0.071546s [21.546410 %]
+Seam Identifications: 0.201209s [60.594601 %]
+Seam Annotates: 0.001435s [0.432171 %]
+Seam Removes: 0.057826s [17.414453 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.331807s
+Energy Calculations: 0.071544s [21.561903 %]
+Seam Identifications: 0.200801s [60.517317 %]
+Seam Annotates: 0.001463s [0.440929 %]
+Seam Removes: 0.057963s [17.468862 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.330742s
+Energy Calculations: 0.071447s [21.602146 %]
+Seam Identifications: 0.199779s [60.403295 %]
+Seam Annotates: 0.001425s [0.430804 %]
+Seam Removes: 0.058051s [17.551784 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.332329s
+Energy Calculations: 0.071434s [21.494867 %]
+Seam Identifications: 0.201401s [60.602830 %]
+Seam Annotates: 0.001445s [0.434693 %]
+Seam Removes: 0.058011s [17.456027 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.331955s
+Energy Calculations: 0.071473s [21.530949 %]
+Seam Identifications: 0.201013s [60.554330 %]
+Seam Annotates: 0.001444s [0.435101 %]
+Seam Removes: 0.057987s [17.468315 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.516958s
+Energy Calculations: 0.039461s [7.633307 %]
+Seam Identifications: 0.443082s [85.709353 %]
+Seam Annotates: 0.001777s [0.343658 %]
+Seam Removes: 0.032586s [6.303500 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.519179s
+Energy Calculations: 0.039927s [7.690492 %]
+Seam Identifications: 0.443478s [85.418978 %]
+Seam Annotates: 0.002637s [0.507831 %]
+Seam Removes: 0.033076s [6.370835 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.518203s
+Energy Calculations: 0.040083s [7.734970 %]
+Seam Identifications: 0.442282s [85.349210 %]
+Seam Annotates: 0.002621s [0.505754 %]
+Seam Removes: 0.033147s [6.396451 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.519636s
+Energy Calculations: 0.040089s [7.714884 %]
+Seam Identifications: 0.443431s [85.334945 %]
+Seam Annotates: 0.002650s [0.509963 %]
+Seam Removes: 0.033403s [6.428154 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.517601s
+Energy Calculations: 0.039342s [7.600836 %]
+Seam Identifications: 0.443917s [85.764257 %]
+Seam Annotates: 0.001775s [0.342981 %]
+Seam Removes: 0.032515s [6.281941 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.709628s
+Energy Calculations: 0.024299s [3.424207 %]
+Seam Identifications: 0.663112s [93.445006 %]
+Seam Annotates: 0.004002s [0.564010 %]
+Seam Removes: 0.018152s [2.558018 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.708239s
+Energy Calculations: 0.026256s [3.707272 %]
+Seam Identifications: 0.659751s [93.153825 %]
+Seam Annotates: 0.004068s [0.574406 %]
+Seam Removes: 0.018107s [2.556574 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.705414s
+Energy Calculations: 0.024198s [3.430325 %]
+Seam Identifications: 0.658854s [93.399607 %]
+Seam Annotates: 0.004272s [0.605628 %]
+Seam Removes: 0.018041s [2.557532 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.710579s
+Energy Calculations: 0.024290s [3.418375 %]
+Seam Identifications: 0.663542s [93.380470 %]
+Seam Annotates: 0.004304s [0.605738 %]
+Seam Removes: 0.018404s [2.589940 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.708754s
+Energy Calculations: 0.024683s [3.482530 %]
+Seam Identifications: 0.661228s [93.294430 %]
+Seam Annotates: 0.004156s [0.586375 %]
+Seam Removes: 0.018636s [2.629380 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.422733s
+Energy Calculations: 0.042749s [3.004709 %]
+Seam Identifications: 1.360240s [95.607535 %]
+Seam Annotates: 0.005689s [0.399862 %]
+Seam Removes: 0.014013s [0.984936 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.373091s
+Energy Calculations: 0.037535s [2.733640 %]
+Seam Identifications: 1.314851s [95.758473 %]
+Seam Annotates: 0.006079s [0.442724 %]
+Seam Removes: 0.014556s [1.060100 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.212080s
+Energy Calculations: 0.022894s [1.888791 %]
+Seam Identifications: 1.171508s [96.652731 %]
+Seam Annotates: 0.005700s [0.470236 %]
+Seam Removes: 0.011930s [0.984291 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.183971s
+Energy Calculations: 0.031143s [2.630414 %]
+Seam Identifications: 1.135680s [95.921271 %]
+Seam Annotates: 0.005860s [0.494968 %]
+Seam Removes: 0.011228s [0.948297 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.207246s
+Energy Calculations: 0.034094s [2.824107 %]
+Seam Identifications: 1.157115s [95.847471 %]
+Seam Annotates: 0.004644s [0.384677 %]
+Seam Removes: 0.011343s [0.939554 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.065239s
+Energy Calculations: 0.350553s [32.908432 %]
+Seam Identifications: 0.421027s [39.524210 %]
+Seam Annotates: 0.001877s [0.176200 %]
+Seam Removes: 0.291740s [27.387311 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.051828s
+Energy Calculations: 0.345217s [32.820684 %]
+Seam Identifications: 0.415590s [39.511202 %]
+Seam Annotates: 0.001811s [0.172151 %]
+Seam Removes: 0.289179s [27.492973 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.052338s
+Energy Calculations: 0.344778s [32.763034 %]
+Seam Identifications: 0.416272s [39.556936 %]
+Seam Annotates: 0.001830s [0.173875 %]
+Seam Removes: 0.289434s [27.503949 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.051605s
+Energy Calculations: 0.344511s [32.760468 %]
+Seam Identifications: 0.416181s [39.575818 %]
+Seam Annotates: 0.001864s [0.177247 %]
+Seam Removes: 0.288998s [27.481553 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.051820s
+Energy Calculations: 0.344259s [32.729865 %]
+Seam Identifications: 0.416603s [39.607834 %]
+Seam Annotates: 0.001839s [0.174842 %]
+Seam Removes: 0.289072s [27.483055 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.052711s
+Energy Calculations: 0.344877s [32.760827 %]
+Seam Identifications: 0.416939s [39.606216 %]
+Seam Annotates: 0.001814s [0.172270 %]
+Seam Removes: 0.289058s [27.458482 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.050410s
+Energy Calculations: 0.343835s [32.733403 %]
+Seam Identifications: 0.415970s [39.600751 %]
+Seam Annotates: 0.001901s [0.180996 %]
+Seam Removes: 0.288678s [27.482439 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.051700s
+Energy Calculations: 0.344602s [32.766195 %]
+Seam Identifications: 0.416278s [39.581447 %]
+Seam Annotates: 0.001809s [0.172047 %]
+Seam Removes: 0.288985s [27.477892 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.050474s
+Energy Calculations: 0.344404s [32.785546 %]
+Seam Identifications: 0.415273s [39.531921 %]
+Seam Annotates: 0.001931s [0.183801 %]
+Seam Removes: 0.288846s [27.496688 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.051642s
+Energy Calculations: 0.343991s [32.709913 %]
+Seam Identifications: 0.416918s [39.644467 %]
+Seam Annotates: 0.001880s [0.178809 %]
+Seam Removes: 0.288831s [27.464711 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.151007s
+Energy Calculations: 0.347675s [30.206195 %]
+Seam Identifications: 0.508797s [44.204492 %]
+Seam Annotates: 0.003388s [0.294363 %]
+Seam Removes: 0.291103s [25.291143 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.023335s
+Energy Calculations: 0.309388s [30.233348 %]
+Seam Identifications: 0.456055s [44.565568 %]
+Seam Annotates: 0.003071s [0.300128 %]
+Seam Removes: 0.254777s [24.896695 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.763333s
+Energy Calculations: 0.231086s [30.273324 %]
+Seam Identifications: 0.340663s [44.628365 %]
+Seam Annotates: 0.002335s [0.305946 %]
+Seam Removes: 0.189219s [24.788524 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.657108s
+Energy Calculations: 0.197543s [30.062435 %]
+Seam Identifications: 0.295168s [44.919234 %]
+Seam Annotates: 0.001992s [0.303079 %]
+Seam Removes: 0.162384s [24.711879 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.658402s
+Energy Calculations: 0.197641s [30.018304 %]
+Seam Identifications: 0.296605s [45.049236 %]
+Seam Annotates: 0.002048s [0.310982 %]
+Seam Removes: 0.162085s [24.617923 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.684884s
+Energy Calculations: 0.173551s [25.340244 %]
+Seam Identifications: 0.363530s [53.079078 %]
+Seam Annotates: 0.003340s [0.487741 %]
+Seam Removes: 0.144421s [21.086952 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.684346s
+Energy Calculations: 0.172980s [25.276646 %]
+Seam Identifications: 0.364468s [53.257926 %]
+Seam Annotates: 0.003238s [0.473183 %]
+Seam Removes: 0.143617s [20.986057 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.731515s
+Energy Calculations: 0.180790s [24.714445 %]
+Seam Identifications: 0.396190s [54.160267 %]
+Seam Annotates: 0.003594s [0.491247 %]
+Seam Removes: 0.150890s [20.627123 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.664641s
+Energy Calculations: 0.174583s [26.267274 %]
+Seam Identifications: 0.340998s [51.305535 %]
+Seam Annotates: 0.003142s [0.472703 %]
+Seam Removes: 0.145877s [21.948257 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.713060s
+Energy Calculations: 0.173041s [24.267384 %]
+Seam Identifications: 0.391020s [54.836954 %]
+Seam Annotates: 0.003668s [0.514385 %]
+Seam Removes: 0.145287s [20.375122 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.885284s
+Energy Calculations: 0.089163s [10.071699 %]
+Seam Identifications: 0.715921s [80.869032 %]
+Seam Annotates: 0.005789s [0.653920 %]
+Seam Removes: 0.074347s [8.398135 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.881999s
+Energy Calculations: 0.090884s [10.304270 %]
+Seam Identifications: 0.709231s [80.411726 %]
+Seam Annotates: 0.005818s [0.659609 %]
+Seam Removes: 0.076002s [8.616971 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.861147s
+Energy Calculations: 0.092251s [10.712539 %]
+Seam Identifications: 0.687358s [79.818896 %]
+Seam Annotates: 0.004919s [0.571257 %]
+Seam Removes: 0.076553s [8.889604 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.856703s
+Energy Calculations: 0.092002s [10.739059 %]
+Seam Identifications: 0.684332s [79.879748 %]
+Seam Annotates: 0.004504s [0.525749 %]
+Seam Removes: 0.075798s [8.847637 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.828691s
+Energy Calculations: 0.089532s [10.804055 %]
+Seam Identifications: 0.660206s [79.668504 %]
+Seam Annotates: 0.005150s [0.621408 %]
+Seam Removes: 0.073733s [8.897465 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.443121s
+Energy Calculations: 0.054118s [3.750067 %]
+Seam Identifications: 1.336871s [92.637500 %]
+Seam Annotates: 0.009274s [0.642629 %]
+Seam Removes: 0.042809s [2.966415 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.140053s
+Energy Calculations: 0.063069s [5.532099 %]
+Seam Identifications: 1.025018s [89.909699 %]
+Seam Annotates: 0.007411s [0.650099 %]
+Seam Removes: 0.044504s [3.903712 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.084556s
+Energy Calculations: 0.051372s [4.736700 %]
+Seam Identifications: 0.983703s [90.701038 %]
+Seam Annotates: 0.006927s [0.638704 %]
+Seam Removes: 0.042501s [3.918757 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.331834s
+Energy Calculations: 0.053105s [3.987347 %]
+Seam Identifications: 1.229348s [92.304933 %]
+Seam Annotates: 0.008932s [0.670624 %]
+Seam Removes: 0.040385s [3.032296 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.317381s
+Energy Calculations: 0.053340s [4.048966 %]
+Seam Identifications: 1.214154s [92.164234 %]
+Seam Annotates: 0.008243s [0.625746 %]
+Seam Removes: 0.041582s [3.156417 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.171711s
+Energy Calculations: 0.055349s [2.548621 %]
+Seam Identifications: 2.071105s [95.367434 %]
+Seam Annotates: 0.014373s [0.661831 %]
+Seam Removes: 0.030808s [1.418584 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.037584s
+Energy Calculations: 0.057985s [2.845769 %]
+Seam Identifications: 1.938050s [95.115129 %]
+Seam Annotates: 0.012779s [0.627159 %]
+Seam Removes: 0.028726s [1.409798 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.984354s
+Energy Calculations: 0.056618s [2.853208 %]
+Seam Identifications: 1.893986s [95.445995 %]
+Seam Annotates: 0.012373s [0.623525 %]
+Seam Removes: 0.021319s [1.074360 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.137465s
+Energy Calculations: 0.064198s [3.003477 %]
+Seam Identifications: 2.042214s [95.543722 %]
+Seam Annotates: 0.009530s [0.445835 %]
+Seam Removes: 0.021478s [1.004858 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.999328s
+Energy Calculations: 0.060312s [3.016608 %]
+Seam Identifications: 1.904471s [95.255548 %]
+Seam Annotates: 0.013139s [0.657151 %]
+Seam Removes: 0.021384s [1.069542 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.087168s
+Energy Calculations: 1.007373s [32.630978 %]
+Seam Identifications: 1.204418s [39.013672 %]
+Seam Annotates: 0.004577s [0.148255 %]
+Seam Removes: 0.870725s [28.204660 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.084635s
+Energy Calculations: 1.006576s [32.631920 %]
+Seam Identifications: 1.202902s [38.996570 %]
+Seam Annotates: 0.004349s [0.140997 %]
+Seam Removes: 0.870741s [28.228334 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.089337s
+Energy Calculations: 1.006332s [32.574365 %]
+Seam Identifications: 1.206943s [39.068041 %]
+Seam Annotates: 0.004823s [0.156130 %]
+Seam Removes: 0.871186s [28.199781 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.088374s
+Energy Calculations: 1.006846s [32.601173 %]
+Seam Identifications: 1.205356s [39.028819 %]
+Seam Annotates: 0.004768s [0.154372 %]
+Seam Removes: 0.871335s [28.213396 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.088051s
+Energy Calculations: 1.006540s [32.594655 %]
+Seam Identifications: 1.206288s [39.063083 %]
+Seam Annotates: 0.004474s [0.144867 %]
+Seam Removes: 0.870698s [28.195704 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.087317s
+Energy Calculations: 1.006199s [32.591366 %]
+Seam Identifications: 1.205287s [39.039937 %]
+Seam Annotates: 0.004727s [0.153117 %]
+Seam Removes: 0.871032s [28.213227 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.087848s
+Energy Calculations: 1.006022s [32.580037 %]
+Seam Identifications: 1.205937s [39.054290 %]
+Seam Annotates: 0.004682s [0.151626 %]
+Seam Removes: 0.871134s [28.211695 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.089661s
+Energy Calculations: 1.006099s [32.563402 %]
+Seam Identifications: 1.208043s [39.099521 %]
+Seam Annotates: 0.004308s [0.139427 %]
+Seam Removes: 0.871172s [28.196368 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.086402s
+Energy Calculations: 1.006055s [32.596381 %]
+Seam Identifications: 1.205048s [39.043783 %]
+Seam Annotates: 0.004675s [0.151486 %]
+Seam Removes: 0.870555s [28.206136 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.636050s
+Energy Calculations: 1.229754s [33.821152 %]
+Seam Identifications: 1.393668s [38.329162 %]
+Seam Annotates: 0.005396s [0.148409 %]
+Seam Removes: 1.007162s [27.699338 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.692629s
+Energy Calculations: 0.842911s [31.304378 %]
+Seam Identifications: 1.122948s [41.704511 %]
+Seam Annotates: 0.006703s [0.248942 %]
+Seam Removes: 0.720005s [26.739861 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.679860s
+Energy Calculations: 0.524393s [31.216452 %]
+Seam Identifications: 0.709163s [42.215632 %]
+Seam Annotates: 0.003588s [0.213583 %]
+Seam Removes: 0.442626s [26.348963 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.693058s
+Energy Calculations: 0.527771s [31.172633 %]
+Seam Identifications: 0.714748s [42.216426 %]
+Seam Annotates: 0.003975s [0.234784 %]
+Seam Removes: 0.446497s [26.372208 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.678582s
+Energy Calculations: 0.523083s [31.162181 %]
+Seam Identifications: 0.709539s [42.270138 %]
+Seam Annotates: 0.004352s [0.259294 %]
+Seam Removes: 0.441535s [26.304032 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.683018s
+Energy Calculations: 0.524370s [31.156519 %]
+Seam Identifications: 0.712126s [42.312432 %]
+Seam Annotates: 0.004102s [0.243721 %]
+Seam Removes: 0.442301s [26.280252 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.694446s
+Energy Calculations: 0.507578s [29.955391 %]
+Seam Identifications: 0.746967s [44.083256 %]
+Seam Annotates: 0.003482s [0.205501 %]
+Seam Removes: 0.436349s [25.751688 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.428534s
+Energy Calculations: 0.413430s [28.940873 %]
+Seam Identifications: 0.662317s [46.363378 %]
+Seam Annotates: 0.004620s [0.323395 %]
+Seam Removes: 0.348104s [24.367887 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.036202s
+Energy Calculations: 0.293660s [28.340072 %]
+Seam Identifications: 0.490849s [47.369985 %]
+Seam Annotates: 0.003408s [0.328857 %]
+Seam Removes: 0.248220s [23.954796 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.064952s
+Energy Calculations: 0.299994s [28.169707 %]
+Seam Identifications: 0.509226s [47.816770 %]
+Seam Annotates: 0.003627s [0.340565 %]
+Seam Removes: 0.252062s [23.668899 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.045756s
+Energy Calculations: 0.294651s [28.175852 %]
+Seam Identifications: 0.498379s [47.657295 %]
+Seam Annotates: 0.004166s [0.398360 %]
+Seam Removes: 0.248511s [23.763721 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.482426s
+Energy Calculations: 0.243325s [16.413956 %]
+Seam Identifications: 1.010065s [68.135949 %]
+Seam Annotates: 0.007013s [0.473098 %]
+Seam Removes: 0.221960s [14.972746 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.359732s
+Energy Calculations: 0.231162s [17.000584 %]
+Seam Identifications: 0.918403s [67.542989 %]
+Seam Annotates: 0.005591s [0.411164 %]
+Seam Removes: 0.204517s [15.041013 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.087622s
+Energy Calculations: 0.159478s [14.663008 %]
+Seam Identifications: 0.789427s [72.582912 %]
+Seam Annotates: 0.004295s [0.394868 %]
+Seam Removes: 0.134374s [12.354845 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.090326s
+Energy Calculations: 0.154556s [14.175236 %]
+Seam Identifications: 0.802830s [73.632139 %]
+Seam Annotates: 0.004768s [0.437332 %]
+Seam Removes: 0.128143s [11.752722 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.093633s
+Energy Calculations: 0.153311s [14.018497 %]
+Seam Identifications: 0.808771s [73.952691 %]
+Seam Annotates: 0.004534s [0.414589 %]
+Seam Removes: 0.126978s [11.610674 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.042579s
+Energy Calculations: 0.140174s [6.862620 %]
+Seam Identifications: 1.765422s [86.431009 %]
+Seam Annotates: 0.012535s [0.613675 %]
+Seam Removes: 0.124391s [6.089898 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.761131s
+Energy Calculations: 0.133314s [7.569802 %]
+Seam Identifications: 1.515287s [86.040549 %]
+Seam Annotates: 0.009397s [0.533588 %]
+Seam Removes: 0.103079s [5.853007 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.630881s
+Energy Calculations: 0.113426s [6.954918 %]
+Seam Identifications: 1.437385s [88.135472 %]
+Seam Annotates: 0.008748s [0.536394 %]
+Seam Removes: 0.071271s [4.370087 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.624478s
+Energy Calculations: 0.112750s [6.940665 %]
+Seam Identifications: 1.433763s [88.259926 %]
+Seam Annotates: 0.008406s [0.517483 %]
+Seam Removes: 0.069511s [4.278978 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.579336s
+Energy Calculations: 0.111143s [7.037345 %]
+Seam Identifications: 1.390732s [88.058028 %]
+Seam Annotates: 0.008516s [0.539224 %]
+Seam Removes: 0.068897s [4.362432 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.743171s
+Energy Calculations: 0.126366s [3.375905 %]
+Seam Identifications: 3.529410s [94.289293 %]
+Seam Annotates: 0.017558s [0.469061 %]
+Seam Removes: 0.069781s [1.864215 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 4.037375s
+Energy Calculations: 0.134084s [3.321068 %]
+Seam Identifications: 3.830016s [94.864027 %]
+Seam Annotates: 0.013707s [0.339509 %]
+Seam Removes: 0.059514s [1.474076 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.591684s
+Energy Calculations: 0.137897s [3.839332 %]
+Seam Identifications: 3.375632s [93.984659 %]
+Seam Annotates: 0.015392s [0.428536 %]
+Seam Removes: 0.062735s [1.746679 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.483553s
+Energy Calculations: 0.139948s [4.017398 %]
+Seam Identifications: 3.267514s [93.798307 %]
+Seam Annotates: 0.016648s [0.477899 %]
+Seam Removes: 0.059399s [1.705125 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.383557s
+Energy Calculations: 0.138127s [4.082291 %]
+Seam Identifications: 3.172308s [93.756593 %]
+Seam Annotates: 0.013390s [0.395746 %]
+Seam Removes: 0.059696s [1.764293 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 11.075000s
+Energy Calculations: 3.632189s [32.796291 %]
+Seam Identifications: 4.239873s [38.283279 %]
+Seam Annotates: 0.023389s [0.211185 %]
+Seam Removes: 3.179412s [28.708011 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 11.151440s
+Energy Calculations: 3.701412s [33.192236 %]
+Seam Identifications: 4.244651s [38.063701 %]
+Seam Annotates: 0.023045s [0.206653 %]
+Seam Removes: 3.182224s [28.536443 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 11.077585s
+Energy Calculations: 3.636382s [32.826486 %]
+Seam Identifications: 4.238439s [38.261400 %]
+Seam Annotates: 0.023120s [0.208708 %]
+Seam Removes: 3.179495s [28.702058 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 11.075603s
+Energy Calculations: 3.634431s [32.814742 %]
+Seam Identifications: 4.239439s [38.277274 %]
+Seam Annotates: 0.022995s [0.207620 %]
+Seam Removes: 3.178622s [28.699315 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 11.070062s
+Energy Calculations: 3.633551s [32.823222 %]
+Seam Identifications: 4.235023s [38.256541 %]
+Seam Annotates: 0.022913s [0.206979 %]
+Seam Removes: 3.178466s [28.712266 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 11.076950s
+Energy Calculations: 3.634758s [32.813712 %]
+Seam Identifications: 4.239907s [38.276843 %]
+Seam Annotates: 0.023205s [0.209492 %]
+Seam Removes: 3.178952s [28.698801 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 11.067670s
+Energy Calculations: 3.631154s [32.808655 %]
+Seam Identifications: 4.235388s [38.268112 %]
+Seam Annotates: 0.023251s [0.210079 %]
+Seam Removes: 3.177741s [28.711925 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 11.077473s
+Energy Calculations: 3.635439s [32.818306 %]
+Seam Identifications: 4.234699s [38.228020 %]
+Seam Annotates: 0.023170s [0.209166 %]
+Seam Removes: 3.184049s [28.743461 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 11.070812s
+Energy Calculations: 3.630915s [32.797189 %]
+Seam Identifications: 4.237824s [38.279252 %]
+Seam Annotates: 0.023245s [0.209966 %]
+Seam Removes: 3.178697s [28.712415 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 11.070547s
+Energy Calculations: 3.632847s [32.815424 %]
+Seam Identifications: 4.237804s [38.279989 %]
+Seam Annotates: 0.023265s [0.210148 %]
+Seam Removes: 3.176502s [28.693274 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 6.613309s
+Energy Calculations: 2.207124s [33.373975 %]
+Seam Identifications: 2.579602s [39.006221 %]
+Seam Annotates: 0.021300s [0.322081 %]
+Seam Removes: 1.805181s [27.296180 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 5.772109s
+Energy Calculations: 1.869201s [32.383331 %]
+Seam Identifications: 2.286831s [39.618634 %]
+Seam Annotates: 0.019813s [0.343256 %]
+Seam Removes: 1.596161s [27.653001 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 5.816041s
+Energy Calculations: 1.878099s [32.291703 %]
+Seam Identifications: 2.308817s [39.697401 %]
+Seam Annotates: 0.019534s [0.335866 %]
+Seam Removes: 1.609499s [27.673438 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 5.763130s
+Energy Calculations: 1.860065s [32.275261 %]
+Seam Identifications: 2.286829s [39.680331 %]
+Seam Annotates: 0.019462s [0.337705 %]
+Seam Removes: 1.596668s [27.704880 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 5.770371s
+Energy Calculations: 1.864173s [32.305940 %]
+Seam Identifications: 2.289835s [39.682625 %]
+Seam Annotates: 0.019443s [0.336940 %]
+Seam Removes: 1.596824s [27.672807 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 4.123762s
+Energy Calculations: 1.288416s [31.243702 %]
+Seam Identifications: 1.745369s [42.324684 %]
+Seam Annotates: 0.018250s [0.442563 %]
+Seam Removes: 1.071626s [25.986615 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.194137s
+Energy Calculations: 0.966772s [30.267090 %]
+Seam Identifications: 1.381419s [43.248564 %]
+Seam Annotates: 0.016189s [0.506821 %]
+Seam Removes: 0.829671s [25.974821 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.204332s
+Energy Calculations: 0.971758s [30.326370 %]
+Seam Identifications: 1.383271s [43.168797 %]
+Seam Annotates: 0.016344s [0.510068 %]
+Seam Removes: 0.832879s [25.992274 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.189857s
+Energy Calculations: 0.965070s [30.254332 %]
+Seam Identifications: 1.380836s [43.288345 %]
+Seam Annotates: 0.016667s [0.522496 %]
+Seam Removes: 0.827184s [25.931683 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.201733s
+Energy Calculations: 0.970392s [30.308319 %]
+Seam Identifications: 1.384179s [43.232176 %]
+Seam Annotates: 0.016767s [0.523692 %]
+Seam Removes: 0.830300s [25.932826 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.313421s
+Energy Calculations: 0.715394s [21.590779 %]
+Seam Identifications: 1.976443s [59.649597 %]
+Seam Annotates: 0.019095s [0.576287 %]
+Seam Removes: 0.602396s [18.180482 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.692128s
+Energy Calculations: 0.525098s [19.504929 %]
+Seam Identifications: 1.713985s [63.666550 %]
+Seam Annotates: 0.016988s [0.631019 %]
+Seam Removes: 0.435983s [16.194746 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.648229s
+Energy Calculations: 0.511475s [19.313834 %]
+Seam Identifications: 1.693472s [63.947329 %]
+Seam Annotates: 0.016842s [0.635971 %]
+Seam Removes: 0.426366s [16.100055 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.714036s
+Energy Calculations: 0.540574s [19.917725 %]
+Seam Identifications: 1.711987s [63.079033 %]
+Seam Annotates: 0.016674s [0.614360 %]
+Seam Removes: 0.444724s [16.386068 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.682696s
+Energy Calculations: 0.523868s [19.527662 %]
+Seam Identifications: 1.706102s [63.596557 %]
+Seam Annotates: 0.017006s [0.633923 %]
+Seam Removes: 0.435633s [16.238615 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.401543s
+Energy Calculations: 0.422829s [12.430510 %]
+Seam Identifications: 2.616514s [76.921384 %]
+Seam Annotates: 0.016972s [0.498936 %]
+Seam Removes: 0.345169s [10.147426 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.198439s
+Energy Calculations: 0.408512s [12.772239 %]
+Seam Identifications: 2.473176s [77.324472 %]
+Seam Annotates: 0.016477s [0.515151 %]
+Seam Removes: 0.300222s [9.386517 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.252174s
+Energy Calculations: 0.416272s [12.799811 %]
+Seam Identifications: 2.511899s [77.237519 %]
+Seam Annotates: 0.016764s [0.515470 %]
+Seam Removes: 0.307189s [9.445639 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.035035s
+Energy Calculations: 0.382668s [12.608353 %]
+Seam Identifications: 2.365788s [77.949269 %]
+Seam Annotates: 0.015979s [0.526472 %]
+Seam Removes: 0.270558s [8.914485 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.020697s
+Energy Calculations: 0.416477s [13.787436 %]
+Seam Identifications: 2.334383s [77.279611 %]
+Seam Annotates: 0.015936s [0.527559 %]
+Seam Removes: 0.253849s [8.403651 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 5.935028s
+Energy Calculations: 0.349263s [5.884777 %]
+Seam Identifications: 5.340801s [89.987797 %]
+Seam Annotates: 0.036422s [0.613686 %]
+Seam Removes: 0.208484s [3.512771 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 5.301930s
+Energy Calculations: 0.425511s [8.025596 %]
+Seam Identifications: 4.645143s [87.612300 %]
+Seam Annotates: 0.030182s [0.569271 %]
+Seam Removes: 0.201062s [3.792238 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 6.184481s
+Energy Calculations: 0.437066s [7.067136 %]
+Seam Identifications: 5.469725s [88.442744 %]
+Seam Annotates: 0.030022s [0.485434 %]
+Seam Removes: 0.247637s [4.004164 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 6.519209s
+Energy Calculations: 0.377753s [5.794467 %]
+Seam Identifications: 5.888560s [90.326302 %]
+Seam Annotates: 0.034823s [0.534157 %]
+Seam Removes: 0.218036s [3.344520 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 6.460639s
+Energy Calculations: 0.432216s [6.689982 %]
+Seam Identifications: 5.774533s [89.380214 %]
+Seam Annotates: 0.031611s [0.489291 %]
+Seam Removes: 0.222222s [3.439631 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 46.807081s
+Energy Calculations: 15.181962s [32.435183 %]
+Seam Identifications: 18.135608s [38.745438 %]
+Seam Annotates: 0.062550s [0.133633 %]
+Seam Removes: 13.426853s [28.685517 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 46.766649s
+Energy Calculations: 15.171518s [32.440892 %]
+Seam Identifications: 18.116519s [38.738116 %]
+Seam Annotates: 0.062096s [0.132779 %]
+Seam Removes: 13.416405s [28.687977 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 46.810180s
+Energy Calculations: 15.181987s [32.433089 %]
+Seam Identifications: 18.127513s [38.725578 %]
+Seam Annotates: 0.063834s [0.136368 %]
+Seam Removes: 13.436735s [28.704728 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 46.758331s
+Energy Calculations: 15.169291s [32.441900 %]
+Seam Identifications: 18.105279s [38.720970 %]
+Seam Annotates: 0.062853s [0.134421 %]
+Seam Removes: 13.420779s [28.702433 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 46.752309s
+Energy Calculations: 15.172330s [32.452579 %]
+Seam Identifications: 18.095339s [38.704695 %]
+Seam Annotates: 0.063838s [0.136545 %]
+Seam Removes: 13.420671s [28.705900 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 46.734575s
+Energy Calculations: 15.157904s [32.434025 %]
+Seam Identifications: 18.096977s [38.722889 %]
+Seam Annotates: 0.063748s [0.136405 %]
+Seam Removes: 13.415814s [28.706399 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 46.725637s
+Energy Calculations: 15.153525s [32.430858 %]
+Seam Identifications: 18.091174s [38.717876 %]
+Seam Annotates: 0.063847s [0.136642 %]
+Seam Removes: 13.416986s [28.714399 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 46.756658s
+Energy Calculations: 15.183500s [32.473449 %]
+Seam Identifications: 18.087243s [38.683780 %]
+Seam Annotates: 0.063759s [0.136364 %]
+Seam Removes: 13.422026s [28.706128 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 46.730206s
+Energy Calculations: 15.149892s [32.419912 %]
+Seam Identifications: 18.103918s [38.741360 %]
+Seam Annotates: 0.063834s [0.136600 %]
+Seam Removes: 13.412452s [28.701890 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 46.772254s
+Energy Calculations: 15.163816s [32.420537 %]
+Seam Identifications: 18.123063s [38.747465 %]
+Seam Annotates: 0.064076s [0.136996 %]
+Seam Removes: 13.421179s [28.694746 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 25.637893s
+Energy Calculations: 8.335109s [32.510898 %]
+Seam Identifications: 10.333298s [40.304785 %]
+Seam Annotates: 0.063732s [0.248584 %]
+Seam Removes: 6.905665s [26.935386 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 25.389768s
+Energy Calculations: 8.101566s [31.908783 %]
+Seam Identifications: 10.339012s [40.721175 %]
+Seam Annotates: 0.064121s [0.252547 %]
+Seam Removes: 6.884955s [27.117047 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 25.364589s
+Energy Calculations: 8.096060s [31.918752 %]
+Seam Identifications: 10.301008s [40.611769 %]
+Seam Annotates: 0.064802s [0.255481 %]
+Seam Removes: 6.902616s [27.213593 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 25.371918s
+Energy Calculations: 8.104991s [31.944733 %]
+Seam Identifications: 10.331375s [40.719723 %]
+Seam Annotates: 0.063648s [0.250861 %]
+Seam Removes: 6.871805s [27.084296 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 25.355045s
+Energy Calculations: 8.084622s [31.885655 %]
+Seam Identifications: 10.322310s [40.711070 %]
+Seam Annotates: 0.062603s [0.246904 %]
+Seam Removes: 6.885399s [27.155933 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 15.752011s
+Energy Calculations: 4.485524s [28.475879 %]
+Seam Identifications: 7.494771s [47.579769 %]
+Seam Annotates: 0.047359s [0.300653 %]
+Seam Removes: 3.724276s [23.643177 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 15.519991s
+Energy Calculations: 4.442482s [28.624259 %]
+Seam Identifications: 7.370800s [47.492295 %]
+Seam Annotates: 0.046144s [0.297320 %]
+Seam Removes: 3.660490s [23.585646 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 15.478865s
+Energy Calculations: 4.426667s [28.598138 %]
+Seam Identifications: 7.346608s [47.462190 %]
+Seam Annotates: 0.045630s [0.294790 %]
+Seam Removes: 3.659874s [23.644331 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 15.669472s
+Energy Calculations: 4.478582s [28.581574 %]
+Seam Identifications: 7.454081s [47.570726 %]
+Seam Annotates: 0.047170s [0.301032 %]
+Seam Removes: 3.689559s [23.546159 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 15.616717s
+Energy Calculations: 4.462833s [28.577278 %]
+Seam Identifications: 7.420543s [47.516664 %]
+Seam Annotates: 0.046942s [0.300588 %]
+Seam Removes: 3.686310s [23.604894 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 15.207090s
+Energy Calculations: 2.887111s [18.985294 %]
+Seam Identifications: 10.085377s [66.320232 %]
+Seam Annotates: 0.048470s [0.318735 %]
+Seam Removes: 2.186044s [14.375162 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 14.427459s
+Energy Calculations: 2.937731s [20.362081 %]
+Seam Identifications: 9.315566s [64.568306 %]
+Seam Annotates: 0.046926s [0.325258 %]
+Seam Removes: 2.127145s [14.743724 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 14.094000s
+Energy Calculations: 2.893904s [20.532881 %]
+Seam Identifications: 9.018982s [63.991637 %]
+Seam Annotates: 0.047777s [0.338986 %]
+Seam Removes: 2.133254s [15.135902 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 13.997237s
+Energy Calculations: 2.987731s [21.345150 %]
+Seam Identifications: 8.755907s [62.554537 %]
+Seam Annotates: 0.048370s [0.345570 %]
+Seam Removes: 2.205137s [15.754092 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 14.464391s
+Energy Calculations: 2.946887s [20.373393 %]
+Seam Identifications: 9.301669s [64.307367 %]
+Seam Annotates: 0.048689s [0.336614 %]
+Seam Removes: 2.167051s [14.981970 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 14.849304s
+Energy Calculations: 2.513720s [16.928204 %]
+Seam Identifications: 10.603250s [71.405701 %]
+Seam Annotates: 0.048272s [0.325079 %]
+Seam Removes: 1.683982s [11.340480 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 14.640222s
+Energy Calculations: 2.416058s [16.502877 %]
+Seam Identifications: 10.508581s [71.778834 %]
+Seam Annotates: 0.047592s [0.325074 %]
+Seam Removes: 1.667903s [11.392604 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 14.372709s
+Energy Calculations: 2.395057s [16.663922 %]
+Seam Identifications: 10.308327s [71.721531 %]
+Seam Annotates: 0.047397s [0.329769 %]
+Seam Removes: 1.621836s [11.284136 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 14.610148s
+Energy Calculations: 2.392658s [16.376682 %]
+Seam Identifications: 10.506943s [71.915375 %]
+Seam Annotates: 0.047155s [0.322756 %]
+Seam Removes: 1.663319s [11.384681 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 14.554995s
+Energy Calculations: 2.421305s [16.635560 %]
+Seam Identifications: 10.414640s [71.553714 %]
+Seam Annotates: 0.047198s [0.324275 %]
+Seam Removes: 1.671773s [11.485905 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 17.637843s
+Energy Calculations: 1.475244s [8.364087 %]
+Seam Identifications: 15.077170s [85.481942 %]
+Seam Annotates: 0.059680s [0.338364 %]
+Seam Removes: 1.025657s [5.815092 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 17.083153s
+Energy Calculations: 1.470181s [8.606030 %]
+Seam Identifications: 14.522006s [85.007758 %]
+Seam Annotates: 0.057792s [0.338300 %]
+Seam Removes: 1.033086s [6.047396 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 17.930417s
+Energy Calculations: 1.435586s [8.006426 %]
+Seam Identifications: 15.409367s [85.939816 %]
+Seam Annotates: 0.059629s [0.332555 %]
+Seam Removes: 1.025750s [5.720728 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 18.816542s
+Energy Calculations: 1.454253s [7.728590 %]
+Seam Identifications: 16.281733s [86.528827 %]
+Seam Annotates: 0.064312s [0.341784 %]
+Seam Removes: 1.016159s [5.400347 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 16.591250s
+Energy Calculations: 1.455598s [8.773289 %]
+Seam Identifications: 14.063594s [84.765125 %]
+Seam Annotates: 0.061850s [0.372788 %]
+Seam Removes: 1.010128s [6.088316 %]
+
