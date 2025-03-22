@@ -1,5 +1,3 @@
-// LOCAL RUNNING
-// gcc -lm --openmp -g3 -O0 seam_carving.c -o seam_carving.out; ./seam_carving.out ./test_images/720x480.png ./output_images/720x480.png 720
 
 // SYSTEM LIBS //////////////////////////////////////////////////////////////////////////
 #include <stdio.h>
@@ -39,7 +37,6 @@
 #define SAVE_TIMING_STATS
 // #define SAVE_DEBUG_IMAGE
 // #define RENDER_LOADING_BAR_WIDTH 50
-
 
 int outputDebugCount = 0;
 
@@ -441,8 +438,6 @@ void seamAnnotate(ImageProcessData* data)
 /// @brief Remove the seam from the image
 void seamRemove(ImageProcessData* processData)
 {
-    // TODO: optimization: move pixels to the left (those after removed seam), then track the number of removed seams for index calc
-
     // Allocate space for new image
     unsigned int newWidth = processData->width - 1;
     unsigned int pixelCount = newWidth * processData->height;
@@ -545,6 +540,7 @@ int main(int argc, char *args[])
     // Process image //////////////////////////////////////////////////////////////////////////
     TimingStats timingStats = {0};
     timingStats.cpus = omp_get_max_threads() / 2;
+
     double startTotalProcessingTime = omp_get_wtime();
     // printf("Seam count: %d\n", seamCount);
 

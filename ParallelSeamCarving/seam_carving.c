@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-
 // IMPORTED LIBS //////////////////////////////////////////////////////////////////////////
 #define STB_IMAGE_IMPLEMENTATION
 #include "lib/stb_image.h"
@@ -163,6 +162,45 @@ static inline unsigned int calculatePixelEnergy(unsigned char *data, int x, int 
 
     return energy / channelCount;
 }
+
+#ifdef SAVE_DEBUG_IMAGE
+/// @brief Output the debug image with the seam annotated and energy values
+void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
+{
+    int debugWidth = processData->width + 1; // + 1 because it was reduced by 1 in refreshProcessData
+    int debugHeight = processData->height;
+    int debugChannelCount = 3;
+    unsigned char *debugImgData = (unsigned char *) malloc(sizeof(unsigned char *) * debugWidth * debugHeight * debugChannelCount);
+
+    for (int y = 0; y < processData->height; y++)
+    {
+        for (int x = 0; x < processData->width; x++)
+        {
+            unsigned char *pixel = &debugImgData[getPixelIdxC(x, y, debugWidth, debugChannelCount)];
+
+            if (isSeam(processData, x, y))
+            {
+                pixel[0] = 180;
+                pixel[1] = 0;
+                pixel[2] = 0;
+            }
+            else
+            {
+                unsigned int pixelPos = getPixelIdx(x, y, debugWidth);
+                pixel[0] = processData->imgEnergy[pixelPos];
+                pixel[1] = processData->imgEnergy[pixelPos];
+                pixel[2] = processData->imgEnergy[pixelPos];
+            }
+        }
+    }
+
+    // Use path from imageOut.fPath and append debug_$count
+    stbi_write_png(imageOutPath, debugWidth, debugHeight, debugChannelCount, debugImgData, debugWidth * debugChannelCount);
+    free(debugImgData);
+
+    outputDebugCount++;
+}
+#endif
 
 /// @brief Calculate the energy of all pixels in the image
 static inline void calculateEnergyFull(ImageProcessData* data)
@@ -339,45 +377,6 @@ void seamRemove(ImageProcessData* processData)
     processData->channelCount = processData->channelCount;
 }
 
-#ifdef SAVE_DEBUG_IMAGE
-/// @brief Output the debug image with the seam annotated and energy values
-void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
-{
-    int debugWidth = processData->width + 1; // + 1 because it was reduced by 1 in refreshProcessData
-    int debugHeight = processData->height;
-    int debugChannelCount = 3;
-    unsigned char *debugImgData = (unsigned char *) malloc(sizeof(unsigned char *) * debugWidth * debugHeight * debugChannelCount);
-
-    for (int y = 0; y < processData->height; y++)
-    {
-        for (int x = 0; x < processData->width; x++)
-        {
-            unsigned char *pixel = &debugImgData[getPixelIdxC(x, y, debugWidth, debugChannelCount)];
-
-            if (isSeam(processData, x, y))
-            {
-                pixel[0] = 180;
-                pixel[1] = 0;
-                pixel[2] = 0;
-            }
-            else
-            {
-                unsigned int pixelPos = getPixelIdx(x, y, debugWidth);
-                pixel[0] = processData->imgEnergy[pixelPos];
-                pixel[1] = processData->imgEnergy[pixelPos];
-                pixel[2] = processData->imgEnergy[pixelPos];
-            }
-        }
-    }
-
-    // Use path from imageOut.fPath and append debug_$count
-    stbi_write_png(imageOutPath, debugWidth, debugHeight, debugChannelCount, debugImgData, debugWidth * debugChannelCount);
-    free(debugImgData);
-
-    outputDebugCount++;
-}
-#endif
-
 #ifdef RENDER_LOADING_BAR_WIDTH
 /// @brief Update the loading bar
 void updatePrintLoadingBar(int progress, int total)
@@ -435,7 +434,6 @@ int main(int argc, char *args[])
     if (seamCount >= processData.width || seamCount < 0)
     {
         printf("Error: Incorrect value for number of seams.\n");
-
         return EXIT_FAILURE;
     }
     outputHeight = processData.height;
@@ -443,6 +441,7 @@ int main(int argc, char *args[])
     // Process image //////////////////////////////////////////////////////////////////////////
     TimingStats timingStats = {0};
     timingStats.cpus = 1;
+
     double startTotalProcessingTime = omp_get_wtime();
     // printf("Seam count: %d\n", seamCount);
 
