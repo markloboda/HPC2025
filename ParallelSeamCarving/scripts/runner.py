@@ -5,12 +5,12 @@ from typing import List
 
 NUM_THREADS = [
     1,
-    # 2,
-    # 4,
-    # 8,
-    # 16,
-    # 32,
-    # 64
+    2,
+    4,
+    8,
+    16,
+    32,
+    64
 ]
 
 PROGRAMS = [
@@ -23,9 +23,9 @@ PROGRAMS = [
 IMAGES = [
     "test_images/720x480.png",
     "test_images/1024x768.png",
-    # "test_images/1920x1200.png",
-    # "test_images/3840x2160.png",
-    # "test_images/7680x4320.png",
+    "test_images/1920x1200.png",
+    "test_images/3840x2160.png",
+    "test_images/7680x4320.png",
 ]
 
 OUT_IMAGES = [
@@ -36,7 +36,7 @@ OUT_IMAGES = [
     "output_images/7680x4320.png",
 ]
 
-NUM_RUNS = 1
+NUM_RUNS = 5
 
 @dataclass
 class SlurmJob:
@@ -85,13 +85,15 @@ if __name__ == "__main__":
                 image = IMAGES[image_index]
                 outs = OUT_IMAGES[image_index].split(".")
                 out_image = f"{outs[0]}_{program}_{1}.{outs[1]}"
-                jobs.append(SlurmJob(1, program, image, out_image, 128))
+                for i in range(NUM_RUNS):
+                    jobs.append(SlurmJob(1, program, image, out_image, 128))
             else:
                 for num_threads in NUM_THREADS:
                     image = IMAGES[image_index]
                     outs = OUT_IMAGES[image_index].split(".")
                     out_image = f"{outs[0]}_{program}_{num_threads}.{outs[1]}"
-                    jobs.append(SlurmJob(num_threads, program, image, out_image, 128))
+                    for i in range(NUM_RUNS):
+                        jobs.append(SlurmJob(num_threads, program, image, out_image, 128))
 
     print(jobs)
 
@@ -102,6 +104,6 @@ if __name__ == "__main__":
     compile_programs()
 
     print("Running jobs...")
-    run_slurm_jobs(jobs * NUM_RUNS, "scripts/runner_run.sh")
+    run_slurm_jobs(jobs, "scripts/runner_run.sh")
 
     os.chdir(original_dir)
