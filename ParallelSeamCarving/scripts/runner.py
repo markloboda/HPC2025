@@ -4,21 +4,20 @@ from dataclasses import dataclass
 from typing import List
 
 NUM_THREADS = [
-    # 1,
-    # 2,
-    # 4,
-    # 8,
-    # 16,
-    # 32,
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
     64,
-    128
 ]
 
 PROGRAMS = [
-#    "seam_carving.c",
-    # "seam_carving_optimized.c",
-    # "parallel_seam_carving.c",
-    # "parallel_seam_carving_triangles.c",
+   "seam_carving.c",
+    "seam_carving_optimized.c",
+    "parallel_seam_carving.c",
+    "parallel_seam_carving_triangles.c",
      "parallel_seam_carving_triangles_greedy.c",
 ]
 

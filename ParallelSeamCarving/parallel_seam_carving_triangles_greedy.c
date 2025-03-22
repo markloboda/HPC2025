@@ -689,12 +689,12 @@ int main(int argc, char *args[])
     free(processData.imgEnergy);
 
     // Output image //////////////////////////////////////////////////////////////////////////
-    // stbi_write_png(imageOutPath,
-    //                processData.width,
-    //                processData.height,
-    //                processData.channelCount,
-    //                processData.img,
-    //                processData.width * processData.channelCount);
+    stbi_write_png(imageOutPath,
+                   processData.width,
+                   processData.height,
+                   processData.channelCount,
+                   processData.img,
+                   processData.width * processData.channelCount);
 
     printf("Output image %s of size %dx%d.\n", imageOutPath, processData.width, processData.height);
 
