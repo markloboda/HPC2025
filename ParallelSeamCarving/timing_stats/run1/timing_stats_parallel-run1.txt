@@ -1,0 +1,211 @@
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.886455s
+Energy Calculations: 0.278867s [31.458676 %]
+Seam Identifications: 0.349905s [39.472434 %]
+Seam Annotates: 0.001458s [0.164420 %]
+Seam Removes: 0.256184s [28.899837 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.858329s
+Energy Calculations: 0.270379s [31.500613 %]
+Seam Identifications: 0.338489s [39.435826 %]
+Seam Annotates: 0.001380s [0.160819 %]
+Seam Removes: 0.248044s [28.898434 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.557666s
+Energy Calculations: 0.153992s [27.613591 %]
+Seam Identifications: 0.260090s [46.639053 %]
+Seam Annotates: 0.001560s [0.279650 %]
+Seam Removes: 0.141985s [25.460598 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.353822s
+Energy Calculations: 0.076469s [21.612239 %]
+Seam Identifications: 0.205833s [58.174073 %]
+Seam Annotates: 0.001463s [0.413613 %]
+Seam Removes: 0.070019s [19.789220 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.534699s
+Energy Calculations: 0.038704s [7.238513 %]
+Seam Identifications: 0.457920s [85.640620 %]
+Seam Annotates: 0.001817s [0.339738 %]
+Seam Removes: 0.036203s [6.770647 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.746613s
+Energy Calculations: 0.024794s [3.320930 %]
+Seam Identifications: 0.697843s [93.467892 %]
+Seam Annotates: 0.003866s [0.517768 %]
+Seam Removes: 0.020042s [2.684336 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/720x480.png ---------------
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.288563s
+Energy Calculations: 0.028303s [2.196446 %]
+Seam Identifications: 1.241456s [96.344262 %]
+Seam Annotates: 0.004827s [0.374568 %]
+Seam Removes: 0.013918s [1.080150 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.924122s
+Energy Calculations: 0.613099s [31.863810 %]
+Seam Identifications: 0.737521s [38.330243 %]
+Seam Annotates: 0.002966s [0.154142 %]
+Seam Removes: 0.570499s [29.649831 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.105629s
+Energy Calculations: 0.353451s [31.968318 %]
+Seam Identifications: 0.423597s [38.312759 %]
+Seam Annotates: 0.001871s [0.169186 %]
+Seam Removes: 0.326686s [29.547504 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.175938s
+Energy Calculations: 0.343509s [29.211446 %]
+Seam Identifications: 0.508062s [43.204831 %]
+Seam Annotates: 0.002911s [0.247556 %]
+Seam Removes: 0.321410s [27.332187 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.719931s
+Energy Calculations: 0.168248s [23.370070 %]
+Seam Identifications: 0.390347s [54.220094 %]
+Seam Annotates: 0.003475s [0.482753 %]
+Seam Removes: 0.157807s [21.919684 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.925708s
+Energy Calculations: 0.089261s [9.642463 %]
+Seam Identifications: 0.746519s [80.643040 %]
+Seam Annotates: 0.006119s [0.661032 %]
+Seam Removes: 0.083734s [9.045437 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.386692s
+Energy Calculations: 0.056688s [4.087982 %]
+Seam Identifications: 1.276997s [92.089439 %]
+Seam Annotates: 0.009252s [0.667214 %]
+Seam Removes: 0.043685s [3.150289 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1024x768.png ---------------
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.413591s
+Energy Calculations: 0.056119s [2.325134 %]
+Seam Identifications: 2.316044s [95.958393 %]
+Seam Annotates: 0.013293s [0.550736 %]
+Seam Removes: 0.028069s [1.162957 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 4.064622s
+Energy Calculations: 1.327976s [32.671581 %]
+Seam Identifications: 1.515379s [37.282165 %]
+Seam Annotates: 0.005775s [0.142078 %]
+Seam Removes: 1.215442s [29.902953 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.185586s
+Energy Calculations: 1.006298s [31.589116 %]
+Seam Identifications: 1.209955s [37.982168 %]
+Seam Annotates: 0.005240s [0.164500 %]
+Seam Removes: 0.964060s [30.263177 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.670827s
+Energy Calculations: 0.818149s [30.632805 %]
+Seam Identifications: 1.074768s [40.241011 %]
+Seam Annotates: 0.005878s [0.220065 %]
+Seam Removes: 0.771967s [28.903658 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.779300s
+Energy Calculations: 0.505982s [28.437113 %]
+Seam Identifications: 0.786224s [44.187249 %]
+Seam Annotates: 0.004912s [0.276074 %]
+Seam Removes: 0.482100s [27.094909 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.586624s
+Energy Calculations: 0.257424s [16.224656 %]
+Seam Identifications: 1.078248s [67.958620 %]
+Seam Annotates: 0.006595s [0.415660 %]
+Seam Removes: 0.244297s [15.397310 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.115189s
+Energy Calculations: 0.146441s [6.923322 %]
+Seam Identifications: 1.822575s [86.166062 %]
+Seam Annotates: 0.012100s [0.572039 %]
+Seam Removes: 0.134010s [6.335602 %]
+
+--------------- PARALLEL SEAM CARVING ---------------
+--------------- test_images/1920x1200.png ---------------
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.596712s
+Energy Calculations: 0.143114s [3.979031 %]
+Seam Identifications: 3.367044s [93.614512 %]
+Seam Annotates: 0.014434s [0.401311 %]
+Seam Removes: 0.072072s [2.003820 %]
+
+------------------------------------------- RUN 2 --------------------------------------------

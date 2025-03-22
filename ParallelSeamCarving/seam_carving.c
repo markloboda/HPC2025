@@ -34,9 +34,9 @@
 #define UNDEFINED_UINT UINT_MAX
 
 // USER DEFINES ////////////////////////////////////////////////////////////////////////////
-// #define SAVE_TIMING_STATS
+#define SAVE_TIMING_STATS
 // #define SAVE_DEBUG_IMAGE
-#define RENDER_LOADING_BAR_WIDTH 50
+// #define RENDER_LOADING_BAR_WIDTH 50
 
 int outputDebugCount = 0;
 
@@ -440,7 +440,7 @@ int main(int argc, char *args[])
     outputHeight = processData.height;
 
     // Process image //////////////////////////////////////////////////////////////////////////
-    TimingStats timingStats;
+    TimingStats timingStats = {0};
     double startTotalProcessingTime = omp_get_wtime();
     // printf("Seam count: %d\n", seamCount);
 
@@ -510,23 +510,24 @@ int main(int argc, char *args[])
 
     // Output timing stats //////////////////////////////////////////////////////////////////////////
     printf("--------------- Timing Stats ---------------\n");
-    printf("Total Processing Time: %f s\n", timingStats.totalProcessingTime);
-    printf("Energy Calculations: %f s [%f \%]\n", timingStats.energyCalculations, timingStats.energyCalculations / timingStats.totalProcessingTime * 100);
-    printf("Seam Identifications: %f s [%f \%]\n", timingStats.seamIdentifications, timingStats.seamIdentifications / timingStats.totalProcessingTime * 100);
-    printf("Seam Annotates: %f s [%f \%]\n", timingStats.seamAnnotates, timingStats.seamAnnotates / timingStats.totalProcessingTime * 100);
-    printf("Seam Removes: %f s [%f \%]\n", timingStats.seamRemoves, timingStats.seamRemoves / timingStats.totalProcessingTime * 100);
+    printf("Total Processing Time: %fs\n", timingStats.totalProcessingTime);
+    printf("Energy Calculations: %fs [%f %%]\n", timingStats.energyCalculations, timingStats.energyCalculations / timingStats.totalProcessingTime * 100);
+    printf("Seam Identifications: %fs [%f %%]\n", timingStats.seamIdentifications, timingStats.seamIdentifications / timingStats.totalProcessingTime * 100);
+    printf("Seam Annotates: %fs [%f %%]\n", timingStats.seamAnnotates, timingStats.seamAnnotates / timingStats.totalProcessingTime * 100);
+    printf("Seam Removes: %fs [%f %%]\n", timingStats.seamRemoves, timingStats.seamRemoves / timingStats.totalProcessingTime * 100);
 
     // Output timing stats to file //////////////////////////////////////////////////////////////////////////
 #ifdef SAVE_TIMING_STATS
-    FILE *timingFile = fopen("../timing_stats/timing_stats_sequential.txt", "a");
+    FILE *timingFile = fopen("./timing_stats/timing_stats_sequential.txt", "a");
+    fprintf(timingFile, "--------------- SEAM CARVING SEQUENTIAL ---------------\n", imageInPath);
     fprintf(timingFile, "--------------- %s ---------------\n", imageInPath);
-    fprintf(timingFile, "Arguments: imageInPath=%s, imageOutPath=%s, outputWidth=%s\n", args[1], args[2], args[3]);
+    fprintf(timingFile, "Arguments: imageInPath=%s, imageOutPath=%s, seamCount=%s\n", args[1], args[2], args[3]);
     fprintf(timingFile, "--------------- Timing Stats ---------------\n");
-    fprintf(timingFile, "Total Processing Time: %f s\n", timingStats.totalProcessingTime);
-    fprintf(timingFile, "Energy Calculations: %f s [%f \%]\n", timingStats.energyCalculations, timingStats.energyCalculations / timingStats.totalProcessingTime * 100);
-    fprintf(timingFile, "Seam Identifications: %f s [%f \%]\n", timingStats.seamIdentifications, timingStats.seamIdentifications / timingStats.totalProcessingTime * 100);
-    fprintf(timingFile, "Seam Annotates: %f s [%f \%]\n", timingStats.seamAnnotates, timingStats.seamAnnotates / timingStats.totalProcessingTime * 100);
-    fprintf(timingFile, "Seam Removes: %f s [%f \%]\n", timingStats.seamRemoves, timingStats.seamRemoves / timingStats.totalProcessingTime * 100);
+    fprintf(timingFile, "Total Processing Time: %fs\n", timingStats.totalProcessingTime);
+    fprintf(timingFile, "Energy Calculations: %fs [%f %%]\n", timingStats.energyCalculations, timingStats.energyCalculations / timingStats.totalProcessingTime * 100);
+    fprintf(timingFile, "Seam Identifications: %fs [%f %%]\n", timingStats.seamIdentifications, timingStats.seamIdentifications / timingStats.totalProcessingTime * 100);
+    fprintf(timingFile, "Seam Annotates: %fs [%f %%]\n", timingStats.seamAnnotates, timingStats.seamAnnotates / timingStats.totalProcessingTime * 100);
+    fprintf(timingFile, "Seam Removes: %fs [%f %%]\n", timingStats.seamRemoves, timingStats.seamRemoves / timingStats.totalProcessingTime * 100);
     fprintf(timingFile, "\n");
     fclose(timingFile);
 #endif
