@@ -13,4 +13,4 @@ PROGRAM=$1
 PROGRAM_OUT="bin/$(basename "$PROGRAM" .c).out"
 
 # Compile the program
-gcc -O2 -lm --openmp "$PROGRAM" -o "$PROGRAM_OUT"
+gcc -O0 -lm --openmp "$PROGRAM" -o "$PROGRAM_OUT"

@@ -4,40 +4,41 @@ from dataclasses import dataclass
 from typing import List
 
 NUM_THREADS = [
-    1,
-    2,
-    4,
-    8,
-    16,
-    32,
-    64
+    # 1,
+    # 2,
+    # 4,
+    # 8,
+    # 16,
+    # 32,
+    64,
+    128
 ]
 
 PROGRAMS = [
-    "seam_carving.c",
+#    "seam_carving.c",
     # "seam_carving_optimized.c",
     # "parallel_seam_carving.c",
     # "parallel_seam_carving_triangles.c",
-    # "parallel_seam_carving_triangles_greedy.c",
+     "parallel_seam_carving_triangles_greedy.c",
 ]
 
 IMAGES = [
-    # "test_images/720x480.png",
-    # "test_images/1024x768.png",
-    # "test_images/1920x1200.png",
+     "test_images/720x480.png",
+    "test_images/1024x768.png",
+    "test_images/1920x1200.png",
     "test_images/3840x2160.png",
     "test_images/7680x4320.png",
 ]
 
 OUT_IMAGES = [
-    # "output_images/720x480.png",
-    # "output_images/1024x768.png",
-    # "output_images/1920x1200.png",
+     "output_images/720x480.png",
+    "output_images/1024x768.png",
+    "output_images/1920x1200.png",
     "output_images/3840x2160.png",
     "output_images/7680x4320.png",
 ]
 
-NUM_RUNS = 5
+NUM_RUNS = 1
 
 @dataclass
 class SlurmJob:

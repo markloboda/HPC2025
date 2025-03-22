@@ -1,0 +1,385 @@
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving_triangles_greedy.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.285155s
+Energy Calculations: 0.530046s [41.243711 %]
+Seam Identifications: 0.574696s [44.718039 %]
+Seam Annotates: 0.004626s [0.359963 %]
+Seam Removes: 0.175781s [13.677783 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving_triangles_greedy.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.032397s
+Energy Calculations: 0.458311s [44.392933 %]
+Seam Identifications: 0.438173s [42.442325 %]
+Seam Annotates: 0.003293s [0.318991 %]
+Seam Removes: 0.132613s [12.845163 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving_triangles_greedy.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.677574s
+Energy Calculations: 0.265471s [39.179599 %]
+Seam Identifications: 0.314960s [46.483579 %]
+Seam Annotates: 0.002378s [0.350892 %]
+Seam Removes: 0.094758s [13.984961 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving_triangles_greedy.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.350875s
+Energy Calculations: 0.138115s [39.363065 %]
+Seam Identifications: 0.165659s [47.213204 %]
+Seam Annotates: 0.001199s [0.341781 %]
+Seam Removes: 0.045895s [13.080206 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving_triangles_greedy.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.250363s
+Energy Calculations: 0.078664s [31.419997 %]
+Seam Identifications: 0.144612s [57.760935 %]
+Seam Annotates: 0.001244s [0.496944 %]
+Seam Removes: 0.025830s [10.317073 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving_triangles_greedy.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.201981s
+Energy Calculations: 0.038962s [19.289959 %]
+Seam Identifications: 0.148866s [73.703301 %]
+Seam Annotates: 0.001997s [0.988773 %]
+Seam Removes: 0.012142s [6.011420 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/720x480.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_parallel_seam_carving_triangles_greedy.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.243806s
+Energy Calculations: 0.030020s [12.313211 %]
+Seam Identifications: 0.204568s [83.906147 %]
+Seam Annotates: 0.002415s [0.990657 %]
+Seam Removes: 0.006790s [2.784808 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving_triangles_greedy.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.171004s
+Energy Calculations: 1.183252s [54.502545 %]
+Seam Identifications: 0.753572s [34.710772 %]
+Seam Annotates: 0.004226s [0.194649 %]
+Seam Removes: 0.229949s [10.591828 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving_triangles_greedy.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.594880s
+Energy Calculations: 0.652908s [40.937759 %]
+Seam Identifications: 0.716416s [44.919734 %]
+Seam Annotates: 0.003946s [0.247438 %]
+Seam Removes: 0.221606s [13.894838 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving_triangles_greedy.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.561609s
+Energy Calculations: 0.609613s [39.037512 %]
+Seam Identifications: 0.728853s [46.673240 %]
+Seam Annotates: 0.003790s [0.242685 %]
+Seam Removes: 0.219348s [14.046279 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving_triangles_greedy.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.835456s
+Energy Calculations: 0.333096s [39.869969 %]
+Seam Identifications: 0.388311s [46.478881 %]
+Seam Annotates: 0.001991s [0.238361 %]
+Seam Removes: 0.112052s [13.412055 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving_triangles_greedy.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.496349s
+Energy Calculations: 0.166689s [33.582944 %]
+Seam Identifications: 0.270763s [54.550955 %]
+Seam Annotates: 0.002570s [0.517809 %]
+Seam Removes: 0.056313s [11.345520 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving_triangles_greedy.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.379598s
+Energy Calculations: 0.087185s [22.967864 %]
+Seam Identifications: 0.259216s [68.287028 %]
+Seam Annotates: 0.003675s [0.968047 %]
+Seam Removes: 0.029511s [7.774280 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1024x768.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_parallel_seam_carving_triangles_greedy.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.392947s
+Energy Calculations: 0.046936s [11.944561 %]
+Seam Identifications: 0.323798s [82.402580 %]
+Seam Annotates: 0.003882s [0.987882 %]
+Seam Removes: 0.018318s [4.661789 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving_triangles_greedy.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 4.865958s
+Energy Calculations: 2.045575s [42.038495 %]
+Seam Identifications: 2.147117s [44.125277 %]
+Seam Annotates: 0.008000s [0.164413 %]
+Seam Removes: 0.665253s [13.671574 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving_triangles_greedy.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 4.532684s
+Energy Calculations: 1.701631s [37.541348 %]
+Seam Identifications: 2.156368s [47.573760 %]
+Seam Annotates: 0.008067s [0.177981 %]
+Seam Removes: 0.666608s [14.706693 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving_triangles_greedy.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.217568s
+Energy Calculations: 1.267634s [39.397277 %]
+Seam Identifications: 1.497387s [46.537848 %]
+Seam Annotates: 0.004448s [0.138231 %]
+Seam Removes: 0.448090s [13.926351 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving_triangles_greedy.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.458629s
+Energy Calculations: 0.747999s [30.423422 %]
+Seam Identifications: 1.440246s [58.579222 %]
+Seam Annotates: 0.003019s [0.122786 %]
+Seam Removes: 0.267356s [10.874196 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving_triangles_greedy.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.240921s
+Energy Calculations: 0.428076s [34.496603 %]
+Seam Identifications: 0.649034s [52.302552 %]
+Seam Annotates: 0.004424s [0.356525 %]
+Seam Removes: 0.159372s [12.843060 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving_triangles_greedy.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.855864s
+Energy Calculations: 0.231572s [27.057139 %]
+Seam Identifications: 0.526664s [61.535994 %]
+Seam Annotates: 0.005650s [0.660161 %]
+Seam Removes: 0.091964s [10.745148 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/1920x1200.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_parallel_seam_carving_triangles_greedy.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 0.717344s
+Energy Calculations: 0.124649s [17.376460 %]
+Seam Identifications: 0.540005s [75.278335 %]
+Seam Annotates: 0.005654s [0.788171 %]
+Seam Removes: 0.047024s [6.555264 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving_triangles_greedy.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 16.250678s
+Energy Calculations: 5.988660s [36.851754 %]
+Seam Identifications: 7.800128s [47.998787 %]
+Seam Annotates: 0.025524s [0.157065 %]
+Seam Removes: 2.436349s [14.992290 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving_triangles_greedy.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 16.170292s
+Energy Calculations: 5.904804s [36.516375 %]
+Seam Identifications: 7.800358s [48.238820 %]
+Seam Annotates: 0.025865s [0.159957 %]
+Seam Removes: 2.439250s [15.084760 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving_triangles_greedy.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 8.878508s
+Energy Calculations: 3.689333s [41.553529 %]
+Seam Identifications: 3.954906s [44.544718 %]
+Seam Annotates: 0.012539s [0.141229 %]
+Seam Removes: 1.221716s [13.760381 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving_triangles_greedy.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 5.130350s
+Energy Calculations: 2.302420s [44.878416 %]
+Seam Identifications: 2.178798s [42.468788 %]
+Seam Annotates: 0.006925s [0.134984 %]
+Seam Removes: 0.642195s [12.517565 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving_triangles_greedy.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 3.418465s
+Energy Calculations: 1.259588s [36.846605 %]
+Seam Identifications: 1.734341s [50.734502 %]
+Seam Annotates: 0.008192s [0.239646 %]
+Seam Removes: 0.416322s [12.178616 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving_triangles_greedy.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 2.641523s
+Energy Calculations: 0.692848s [26.229119 %]
+Seam Identifications: 1.665905s [63.066066 %]
+Seam Annotates: 0.009405s [0.356027 %]
+Seam Removes: 0.273352s [10.348252 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/3840x2160.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_parallel_seam_carving_triangles_greedy.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 1.810838s
+Energy Calculations: 0.387597s [21.404272 %]
+Seam Identifications: 1.246487s [68.834811 %]
+Seam Annotates: 0.011101s [0.613057 %]
+Seam Removes: 0.165635s [9.146860 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving_triangles_greedy.c_1.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 64.489663s
+Energy Calculations: 23.015681s [35.688946 %]
+Seam Identifications: 31.528377s [48.889039 %]
+Seam Annotates: 0.056723s [0.087957 %]
+Seam Removes: 9.888871s [15.334041 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 1
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving_triangles_greedy.c_2.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 64.491313s
+Energy Calculations: 23.011084s [35.680904 %]
+Seam Identifications: 31.540060s [48.905904 %]
+Seam Annotates: 0.056755s [0.088004 %]
+Seam Removes: 9.883403s [15.325170 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 2
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving_triangles_greedy.c_4.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 33.460953s
+Energy Calculations: 12.417002s [37.108930 %]
+Seam Identifications: 16.060635s [47.998141 %]
+Seam Annotates: 0.028599s [0.085470 %]
+Seam Removes: 4.954705s [14.807425 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 4
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving_triangles_greedy.c_8.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 18.085738s
+Energy Calculations: 6.883210s [38.058775 %]
+Seam Identifications: 8.648721s [47.820669 %]
+Seam Annotates: 0.014949s [0.082655 %]
+Seam Removes: 2.538846s [14.037835 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 8
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving_triangles_greedy.c_16.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 10.282495s
+Energy Calculations: 4.039772s [39.287858 %]
+Seam Identifications: 4.940427s [48.046973 %]
+Seam Annotates: 0.015045s [0.146313 %]
+Seam Removes: 1.287234s [12.518693 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 16
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving_triangles_greedy.c_32.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 6.932640s
+Energy Calculations: 2.396920s [34.574426 %]
+Seam Identifications: 3.792285s [54.701884 %]
+Seam Annotates: 0.014300s [0.206276 %]
+Seam Removes: 0.729119s [10.517194 %]
+
+--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------
+--------------- test_images/7680x4320.png ---------------
+CPUs: 32
+Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_parallel_seam_carving_triangles_greedy.c_64.png, seamCount=128
+--------------- Timing Stats ---------------
+Total Processing Time: 5.504037s
+Energy Calculations: 1.377063s [25.019152 %]
+Seam Identifications: 3.621311s [65.793734 %]
+Seam Annotates: 0.013674s [0.248442 %]
+Seam Removes: 0.491973s [8.938397 %]
+

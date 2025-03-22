@@ -137,14 +137,14 @@ static inline unsigned int getEnergyPixelE(unsigned int* data, int x, int y, int
 }
 
 /// @brief Returns true if the observed position with coordinates x and y is considered as part of seam
-static inline bool isSeam(ImageProcessData* data, int x, int y, int seanIdx)
+static inline bool isSeam(ImageProcessData* data, int x, int y, int seamIdx)
 {
-    if (data->seamPath == NULL || y >= data->height || seanIdx >= SIM_NUM_SEAM_REMOVAL)
+    if (data->seamPath == NULL || y >= data->height || seamIdx >= SIM_NUM_SEAM_REMOVAL)
     {
         return false;
     }
 
-    return data->seamPath[seanIdx][y] == x;
+    return data->seamPath[seamIdx][y] == x;
 }
 
 /// @brief Calculate the energy of a pixel using the sobel operator
@@ -478,13 +478,6 @@ void seamAnnotate(ImageProcessData* data)
         int lowX = seamIdx * stripWidth;
         int highX = lowX + stripWidth;
 
-        // Allocate memory for seam path
-        if (data->seamPath[seamIdx] != NULL)
-        {
-                free(data->seamPath[seamIdx]);
-        }
-        data->seamPath[seamIdx] = (int *) malloc(sizeof(int) * data->height);
-
         // Find the minimum energy in the top row on each image strip
         int curX = lowX;
         const int top_row = 0;
@@ -628,6 +621,11 @@ int main(int argc, char *args[])
     {   // TODO fix: the num of of simultaneously removed seams has to divide num of total removed seams and image width
         printf("Error: seamCount and image width should be divisible by the SIM_NUM_SEAM_REMOVAL!\n");
         return EXIT_FAILURE;
+    }
+
+    for (int seamIdx = 0; seamIdx < SIM_NUM_SEAM_REMOVAL; seamIdx++)
+    {
+        processData.seamPath[seamIdx] = (int *) malloc(sizeof(int) * processData.height);
     }
 
     outputHeight = processData.height;

@@ -9,6 +9,7 @@ def parse_log(file_path, idx):
         content = f.read()
 
     splitters = [
+        "--------------- PARALLEL SEAM CARVING TRIANGLES GREEDY ---------------",
         "--------------- PARALLEL SEAM CARVING TRIANGLES ---------------",
         "--------------- PARALLEL SEAM CARVING ---------------",
         "--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------",
@@ -83,6 +84,7 @@ def save_results(file_path, averages):
 
 def main():
     file_paths = [
+        "main_run/raw/timing_stats_parallel_triangles_greedy.txt",
         "main_run/raw/timing_stats_parallel_triangles.txt",
         "main_run/raw/timing_stats_parallel.txt",
         "main_run/raw/timing_stats_sequential_optimized.txt",
