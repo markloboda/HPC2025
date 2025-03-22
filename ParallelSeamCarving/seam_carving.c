@@ -58,6 +58,7 @@ typedef struct __TimingStats__
     double seamIdentifications;
     double seamAnnotates;
     double seamRemoves;
+    int cpus;
 } TimingStats;
 
 // FUNCTIONS //////////////////////////////////////////////////////////////////////////////
@@ -441,6 +442,7 @@ int main(int argc, char *args[])
 
     // Process image //////////////////////////////////////////////////////////////////////////
     TimingStats timingStats = {0};
+    timingStats.cpus = 1;
     double startTotalProcessingTime = omp_get_wtime();
     // printf("Seam count: %d\n", seamCount);
 
@@ -497,12 +499,12 @@ int main(int argc, char *args[])
     free(processData.imgSeam);
 
     // Output image //////////////////////////////////////////////////////////////////////////
-    stbi_write_png(imageOutPath,
-                   processData.width,
-                   processData.height,
-                   processData.channelCount,
-                   processData.img,
-                   processData.width * processData.channelCount);
+    // stbi_write_png(imageOutPath,
+    //                processData.width,
+    //                processData.height,
+    //                processData.channelCount,
+    //                processData.img,
+    //                processData.width * processData.channelCount);
 
     printf("Output image %s of size %dx%d.\n", imageOutPath, processData.width, processData.height);
 
@@ -510,6 +512,7 @@ int main(int argc, char *args[])
 
     // Output timing stats //////////////////////////////////////////////////////////////////////////
     printf("--------------- Timing Stats ---------------\n");
+    printf("CPUs: %d\n", timingStats.cpus);
     printf("Total Processing Time: %fs\n", timingStats.totalProcessingTime);
     printf("Energy Calculations: %fs [%f %%]\n", timingStats.energyCalculations, timingStats.energyCalculations / timingStats.totalProcessingTime * 100);
     printf("Seam Identifications: %fs [%f %%]\n", timingStats.seamIdentifications, timingStats.seamIdentifications / timingStats.totalProcessingTime * 100);
@@ -521,6 +524,7 @@ int main(int argc, char *args[])
     FILE *timingFile = fopen("./timing_stats/timing_stats_sequential.txt", "a");
     fprintf(timingFile, "--------------- SEAM CARVING SEQUENTIAL ---------------\n", imageInPath);
     fprintf(timingFile, "--------------- %s ---------------\n", imageInPath);
+    fprintf(timingFile, "CPUs: %d\n", timingStats.cpus);
     fprintf(timingFile, "Arguments: imageInPath=%s, imageOutPath=%s, seamCount=%s\n", args[1], args[2], args[3]);
     fprintf(timingFile, "--------------- Timing Stats ---------------\n");
     fprintf(timingFile, "Total Processing Time: %fs\n", timingStats.totalProcessingTime);

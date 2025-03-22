@@ -5,12 +5,12 @@ from typing import List
 
 NUM_THREADS = [
     1,
-    2,
-    4,
-    8,
-    16,
-    32,
-    64
+    # 2,
+    # 4,
+    # 8,
+    # 16,
+    # 32,
+    # 64
 ]
 
 PROGRAMS = [
@@ -23,9 +23,9 @@ PROGRAMS = [
 IMAGES = [
     "test_images/720x480.png",
     "test_images/1024x768.png",
-    "test_images/1920x1200.png",
-    "test_images/3840x2160.png",
-    "test_images/7680x4320.png",
+    # "test_images/1920x1200.png",
+    # "test_images/3840x2160.png",
+    # "test_images/7680x4320.png",
 ]
 
 OUT_IMAGES = [
@@ -36,7 +36,7 @@ OUT_IMAGES = [
     "output_images/7680x4320.png",
 ]
 
-NUM_RUNS = 2
+NUM_RUNS = 1
 
 @dataclass
 class SlurmJob:
@@ -81,7 +81,13 @@ if __name__ == "__main__":
     jobs = []
     for image_index in range(len(IMAGES)):
         for program in PROGRAMS:
-            for num_threads in NUM_THREADS:
+            if (program == "seam_carving.c"):
+                image = IMAGES[image_index]
+                outs = OUT_IMAGES[image_index].split(".")
+                out_image = f"{outs[0]}_{program}_{1}.{outs[1]}"
+                jobs.append(SlurmJob(1, program, image, out_image, 128))
+            else:
+                for num_threads in NUM_THREADS:
                     image = IMAGES[image_index]
                     outs = OUT_IMAGES[image_index].split(".")
                     out_image = f"{outs[0]}_{program}_{num_threads}.{outs[1]}"
