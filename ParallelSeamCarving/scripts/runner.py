@@ -10,19 +10,25 @@ NUM_THREADS = [
     8,
     16,
     32,
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
     64,
 ]
 
 PROGRAMS = [
-   "seam_carving.c",
+    "seam_carving.c",
     "seam_carving_optimized.c",
     "parallel_seam_carving.c",
     "parallel_seam_carving_triangles.c",
-     "parallel_seam_carving_triangles_greedy.c",
+    "parallel_seam_carving_triangles_greedy.c",
 ]
 
 IMAGES = [
-     "test_images/720x480.png",
+    "test_images/720x480.png",
     "test_images/1024x768.png",
     "test_images/1920x1200.png",
     "test_images/3840x2160.png",
@@ -30,7 +36,7 @@ IMAGES = [
 ]
 
 OUT_IMAGES = [
-     "output_images/720x480.png",
+    "output_images/720x480.png",
     "output_images/1024x768.png",
     "output_images/1920x1200.png",
     "output_images/3840x2160.png",
