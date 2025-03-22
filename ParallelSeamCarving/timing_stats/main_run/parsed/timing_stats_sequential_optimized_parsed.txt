@@ -1,0 +1,35 @@
+Image: test_images/1024x768.png, CPUs: 1, Seam Count: 128,
+  Avg Total Time: 1.033936s
+  Avg Energy Calculations: 0.455606s
+  Avg Seam Identifications: 0.313843s
+  Avg Seam Annotates: 0.002137s
+  Avg Seam Removes: 0.262323s
+
+Image: test_images/1920x1200.png, CPUs: 1, Seam Count: 128,
+  Avg Total Time: 2.441875s
+  Avg Energy Calculations: 1.048107s
+  Avg Seam Identifications: 0.766809s
+  Avg Seam Annotates: 0.004557s
+  Avg Seam Removes: 0.622361s
+
+Image: test_images/3840x2160.png, CPUs: 1, Seam Count: 128,
+  Avg Total Time: 8.571746s
+  Avg Energy Calculations: 3.629719s
+  Avg Seam Identifications: 2.707147s
+  Avg Seam Annotates: 0.021128s
+  Avg Seam Removes: 2.213594s
+
+Image: test_images/720x480.png, CPUs: 1, Seam Count: 128,
+  Avg Total Time: 0.566724s
+  Avg Energy Calculations: 0.252795s
+  Avg Seam Identifications: 0.170123s
+  Avg Seam Annotates: 0.001220s
+  Avg Seam Removes: 0.142554s
+
+Image: test_images/7680x4320.png, CPUs: 1, Seam Count: 128,
+  Avg Total Time: 38.937947s
+  Avg Energy Calculations: 16.227502s
+  Avg Seam Identifications: 12.314239s
+  Avg Seam Annotates: 0.059571s
+  Avg Seam Removes: 10.336476s
+

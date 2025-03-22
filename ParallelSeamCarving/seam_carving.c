@@ -205,6 +205,10 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
 /// @brief Calculate the energy of all pixels in the image
 static inline void calculateEnergyFull(ImageProcessData* data)
 {
+    if (data->imgEnergy!= NULL) {
+        free(data->imgEnergy);
+    }
+
     // Allocate space for energy and calculate energy for each pixel
     data->imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
 
@@ -455,9 +459,7 @@ int main(int argc, char *args[])
 
         // Energy step
         startEnergyTime = omp_get_wtime();
-        if (i != 0) {
-            updateEnergyOnSeam(&processData);
-        }
+        calculateEnergyFull(&processData);
         stopEnergyTime = omp_get_wtime();
         timingStats.energyCalculations += stopEnergyTime - startEnergyTime;
 
@@ -494,8 +496,9 @@ int main(int argc, char *args[])
 #endif
 
     // Free process data //////////////////////////////////////////////////////////////////////////
-    free(processData.imgEnergy);
+    free(processData.seamPath);
     free(processData.imgSeam);
+    free(processData.imgEnergy);
 
     // Output image //////////////////////////////////////////////////////////////////////////
     // stbi_write_png(imageOutPath,

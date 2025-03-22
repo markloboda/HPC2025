@@ -206,6 +206,10 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
 /// @brief Calculate the energy of all pixels in the image
 static inline void calculateEnergyFull(ImageProcessData* data)
 {
+    if (data->imgEnergy!= NULL) {
+        free(data->imgEnergy);
+    }
+
     // Allocate space for energy and calculate energy for each pixel
     data->imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
 
@@ -232,8 +236,6 @@ void updateEnergyOnSeam(ImageProcessData* data)
 
     int oldWidth = data->width + 1;
 
-    /// Parallel:
-    // - TODO ask Mark
     #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
@@ -272,43 +274,6 @@ void updateEnergyOnSeam(ImageProcessData* data)
     data->imgEnergy = imgEnergyNew;
 }
 
-/// @brief Calculate the cumulative energy of the image from the bottom to the top
-void seamIdentification(ImageProcessData* data)
-{
-    // Free if already allocated
-    if (data->imgSeam != NULL)
-    {
-        free(data->imgSeam);
-    }
-
-    // Allocate space for seam and calculate cumulative energy for each pixel
-    data->imgSeam = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
-
-    // Fill bottom row with energy values
-    #pragma omp parallel
-    for (int x = 0; x < data->width; x++)
-    {
-        data->imgSeam[getPixelIdx(x, data->height - 1, data->width)] = getEnergyPixelE(data->imgEnergy, x, data->height - 1, data->width, data->height);
-    }
-
-    /// Parallel:
-    // - each row has to be calculated before starting the next row, we can only parallelize calc of a row
-    for (int y = data->height - 2; y >= 0; y--)
-    {
-        #pragma omp parallel for
-        for (int x = 0; x < data->width; x++)
-        {
-            unsigned int leftEnergy =   getEnergyPixelE(data->imgSeam, x - 1, y + 1, data->width, data->height);
-            unsigned int centerEnergy = getEnergyPixelE(data->imgSeam, x    , y + 1, data->width, data->height);
-            unsigned int rightEnergy =  getEnergyPixelE(data->imgSeam, x + 1, y + 1, data->width, data->height);
-
-            unsigned int curEnergy = getEnergyPixelE(data->imgEnergy, x, y, data->width, data->height);
-            unsigned int minEnergy = min(leftEnergy, min(centerEnergy, rightEnergy));
-
-            data->imgSeam[getPixelIdx(x, y, data->width)] = curEnergy + minEnergy;
-        }
-    }
-}
 
 /// @brief Calculate the cumulative energy of the image from the bottom to the top using the triangle approach to parallelization
 void triangleSeamIdentification(ImageProcessData* data)
@@ -562,7 +527,6 @@ int main(int argc, char *args[])
 
         // Seam identification step
         double startSeamTime = omp_get_wtime();
-        // seamIdentification(&processData);
         triangleSeamIdentification(&processData);
         double stopSeamTime = omp_get_wtime();
         timingStats.seamIdentifications += stopSeamTime - startSeamTime;
@@ -594,8 +558,9 @@ int main(int argc, char *args[])
 #endif
 
     // Free process data //////////////////////////////////////////////////////////////////////////
-    free(processData.imgEnergy);
+    free(processData.seamPath);
     free(processData.imgSeam);
+    free(processData.imgEnergy);
 
     // Output image //////////////////////////////////////////////////////////////////////////
     // stbi_write_png(imageOutPath,

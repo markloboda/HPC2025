@@ -1,4 +1,4 @@
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/720x480.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_seam_carving.c_1.png, seamCount=128
@@ -9,7 +9,7 @@ Seam Identifications: 0.192774s [30.050253 %]
 Seam Annotates: 0.001404s [0.218924 %]
 Seam Removes: 0.161666s [25.201093 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/720x480.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_seam_carving.c_1.png, seamCount=128
@@ -20,7 +20,7 @@ Seam Identifications: 0.194740s [30.048372 %]
 Seam Annotates: 0.001327s [0.204772 %]
 Seam Removes: 0.163591s [25.242103 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/720x480.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_seam_carving.c_1.png, seamCount=128
@@ -31,7 +31,7 @@ Seam Identifications: 0.182729s [30.077401 %]
 Seam Annotates: 0.001337s [0.220006 %]
 Seam Removes: 0.152884s [25.164861 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/720x480.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_seam_carving.c_1.png, seamCount=128
@@ -42,7 +42,7 @@ Seam Identifications: 0.153255s [29.867582 %]
 Seam Annotates: 0.001098s [0.213910 %]
 Seam Removes: 0.128266s [24.997546 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/720x480.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/720x480.png, imageOutPath=output_images/720x480_seam_carving.c_1.png, seamCount=128
@@ -53,7 +53,7 @@ Seam Identifications: 0.127116s [30.023947 %]
 Seam Annotates: 0.000932s [0.220191 %]
 Seam Removes: 0.106364s [25.122459 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/1024x768.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_seam_carving.c_1.png, seamCount=128
@@ -64,7 +64,7 @@ Seam Identifications: 0.443247s [30.424955 %]
 Seam Annotates: 0.003013s [0.206818 %]
 Seam Removes: 0.370948s [25.462247 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/1024x768.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_seam_carving.c_1.png, seamCount=128
@@ -75,7 +75,7 @@ Seam Identifications: 0.375731s [30.134173 %]
 Seam Annotates: 0.002546s [0.204192 %]
 Seam Removes: 0.314384s [25.214048 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/1024x768.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_seam_carving.c_1.png, seamCount=128
@@ -86,7 +86,7 @@ Seam Identifications: 0.264714s [30.354268 %]
 Seam Annotates: 0.001773s [0.203323 %]
 Seam Removes: 0.220327s [25.264579 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/1024x768.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_seam_carving.c_1.png, seamCount=128
@@ -97,7 +97,7 @@ Seam Identifications: 0.242629s [30.474350 %]
 Seam Annotates: 0.001665s [0.209119 %]
 Seam Removes: 0.202847s [25.477687 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/1024x768.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/1024x768.png, imageOutPath=output_images/1024x768_seam_carving.c_1.png, seamCount=128
@@ -108,7 +108,7 @@ Seam Identifications: 0.242894s [30.448747 %]
 Seam Annotates: 0.001686s [0.211358 %]
 Seam Removes: 0.203111s [25.461591 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/1920x1200.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_seam_carving.c_1.png, seamCount=128
@@ -119,7 +119,7 @@ Seam Identifications: 0.833323s [30.594299 %]
 Seam Annotates: 0.004739s [0.173968 %]
 Seam Removes: 0.680820s [24.995332 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/1920x1200.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_seam_carving.c_1.png, seamCount=128
@@ -130,7 +130,7 @@ Seam Identifications: 0.751858s [31.701258 %]
 Seam Annotates: 0.004419s [0.186337 %]
 Seam Removes: 0.608129s [25.641092 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/1920x1200.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_seam_carving.c_1.png, seamCount=128
@@ -141,7 +141,7 @@ Seam Identifications: 0.749253s [31.584297 %]
 Seam Annotates: 0.004611s [0.194372 %]
 Seam Removes: 0.608135s [25.635541 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/1920x1200.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_seam_carving.c_1.png, seamCount=128
@@ -152,7 +152,7 @@ Seam Identifications: 0.749684s [31.626518 %]
 Seam Annotates: 0.004587s [0.193520 %]
 Seam Removes: 0.606784s [25.598074 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/1920x1200.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/1920x1200.png, imageOutPath=output_images/1920x1200_seam_carving.c_1.png, seamCount=128
@@ -163,7 +163,7 @@ Seam Identifications: 0.749925s [31.626047 %]
 Seam Annotates: 0.004429s [0.186766 %]
 Seam Removes: 0.607939s [25.638167 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/3840x2160.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_seam_carving.c_1.png, seamCount=128
@@ -174,7 +174,7 @@ Seam Identifications: 2.709905s [31.609175 %]
 Seam Annotates: 0.021250s [0.247866 %]
 Seam Removes: 2.213205s [25.815518 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/3840x2160.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_seam_carving.c_1.png, seamCount=128
@@ -185,7 +185,7 @@ Seam Identifications: 2.707471s [31.584158 %]
 Seam Annotates: 0.021201s [0.247319 %]
 Seam Removes: 2.213936s [25.826796 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/3840x2160.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_seam_carving.c_1.png, seamCount=128
@@ -196,7 +196,7 @@ Seam Identifications: 2.701001s [31.533448 %]
 Seam Annotates: 0.021019s [0.245390 %]
 Seam Removes: 2.213420s [25.841075 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/3840x2160.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_seam_carving.c_1.png, seamCount=128
@@ -207,7 +207,7 @@ Seam Identifications: 2.710357s [31.597918 %]
 Seam Annotates: 0.021000s [0.244824 %]
 Seam Removes: 2.214087s [25.812296 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/3840x2160.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/3840x2160.png, imageOutPath=output_images/3840x2160_seam_carving.c_1.png, seamCount=128
@@ -218,7 +218,7 @@ Seam Identifications: 2.707002s [31.586324 %]
 Seam Annotates: 0.021171s [0.247036 %]
 Seam Removes: 2.213321s [25.825868 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/7680x4320.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_seam_carving.c_1.png, seamCount=128
@@ -229,7 +229,7 @@ Seam Identifications: 12.317140s [31.645718 %]
 Seam Annotates: 0.060040s [0.154257 %]
 Seam Removes: 10.330541s [26.541663 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/7680x4320.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_seam_carving.c_1.png, seamCount=128
@@ -240,7 +240,7 @@ Seam Identifications: 12.329842s [31.605162 %]
 Seam Annotates: 0.060105s [0.154069 %]
 Seam Removes: 10.344095s [26.515086 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/7680x4320.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_seam_carving.c_1.png, seamCount=128
@@ -251,7 +251,7 @@ Seam Identifications: 12.306778s [31.628554 %]
 Seam Annotates: 0.059251s [0.152275 %]
 Seam Removes: 10.332147s [26.553730 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/7680x4320.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_seam_carving.c_1.png, seamCount=128
@@ -262,7 +262,7 @@ Seam Identifications: 12.306518s [31.606836 %]
 Seam Annotates: 0.059231s [0.152122 %]
 Seam Removes: 10.341007s [26.558814 %]
 
---------------- SEAM CARVING SEQUENTIAL ---------------
+--------------- SEAM CARVING SEQUENTIAL OPTIMIZED ---------------
 --------------- test_images/7680x4320.png ---------------
 CPUs: 1
 Arguments: imageInPath=test_images/7680x4320.png, imageOutPath=output_images/7680x4320_seam_carving.c_1.png, seamCount=128

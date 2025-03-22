@@ -205,6 +205,10 @@ void outputDebugImage(ImageProcessData* processData, char* imageOutPath)
 /// @brief Calculate the energy of all pixels in the image
 static inline void calculateEnergyFull(ImageProcessData* data)
 {
+    if (data->imgEnergy!= NULL) {
+        free(data->imgEnergy);
+    }
+
     // Allocate space for energy and calculate energy for each pixel
     data->imgEnergy = (unsigned int *) malloc(sizeof(unsigned int) * data->width * data->height);
 
@@ -231,8 +235,6 @@ void updateEnergyOnSeam(ImageProcessData* data)
 
     int oldWidth = data->width + 1;
 
-    /// Parallel:
-    // - TODO ask Mark
     #pragma omp parallel for
     for (int y = 0; y < data->height; y++)
     {
@@ -512,8 +514,9 @@ int main(int argc, char *args[])
 #endif
 
     // Free process data //////////////////////////////////////////////////////////////////////////
-    free(processData.imgEnergy);
+    free(processData.seamPath);
     free(processData.imgSeam);
+    free(processData.imgEnergy);
 
     // Output image //////////////////////////////////////////////////////////////////////////
     // stbi_write_png(imageOutPath,

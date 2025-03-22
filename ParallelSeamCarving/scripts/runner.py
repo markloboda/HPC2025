@@ -15,23 +15,24 @@ NUM_THREADS = [
 
 PROGRAMS = [
     "seam_carving.c",
-    "parallel_seam_carving.c",
-    "parallel_seam_carving_triangles.c",
+    # "seam_carving_optimized.c",
+    # "parallel_seam_carving.c",
+    # "parallel_seam_carving_triangles.c",
     # "parallel_seam_carving_triangles_greedy.c",
 ]
 
 IMAGES = [
-    "test_images/720x480.png",
-    "test_images/1024x768.png",
-    "test_images/1920x1200.png",
+    # "test_images/720x480.png",
+    # "test_images/1024x768.png",
+    # "test_images/1920x1200.png",
     "test_images/3840x2160.png",
     "test_images/7680x4320.png",
 ]
 
 OUT_IMAGES = [
-    "output_images/720x480.png",
-    "output_images/1024x768.png",
-    "output_images/1920x1200.png",
+    # "output_images/720x480.png",
+    # "output_images/1024x768.png",
+    # "output_images/1920x1200.png",
     "output_images/3840x2160.png",
     "output_images/7680x4320.png",
 ]
@@ -81,7 +82,7 @@ if __name__ == "__main__":
     jobs = []
     for image_index in range(len(IMAGES)):
         for program in PROGRAMS:
-            if (program == "seam_carving.c"):
+            if (program == "seam_carving.c" or program == "seam_carving_optimized.c"):
                 image = IMAGES[image_index]
                 outs = OUT_IMAGES[image_index].split(".")
                 out_image = f"{outs[0]}_{program}_{1}.{outs[1]}"
