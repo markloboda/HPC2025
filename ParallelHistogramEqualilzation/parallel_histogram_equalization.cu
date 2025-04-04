@@ -116,7 +116,6 @@ int main(int argc, char *args[])
     result.equalize = elapsedTimeEqualizeMS;
     result.sum = elapsedTimeHistogramMS + elapsedTimeCumulativeMS + elapsedTimeEqualizeMS;
     result.total = elapsedTimeMain;
-    write(STDOUT_FILENO, &result, sizeof(struct execution_result));
 
     FILE *timingFile = fopen("./timing_stats/timing_stats_parallel.txt", "a");
     fprintf(timingFile, "--------------- HISTOGRAM EQUALIZATION - Parallel ---------------\n");

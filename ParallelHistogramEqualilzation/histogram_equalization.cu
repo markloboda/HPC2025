@@ -1,7 +1,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <math.h>
-#include <time.h>
+
+#include <cuda_runtime.h>
+#include <cuda.h>
+#include "helper_cuda.h"
 
 // STB image library
 #define STB_IMAGE_IMPLEMENTATION
@@ -18,7 +21,6 @@
 #define WRITE_OUTPUT_IMAGE
 
 // Macros
-#define ELAPSED_TIME_MS(start, stop) (stop - start) / (double)CLOCKS_PER_SEC * 1000
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define CLAMP(a, min, max) ((a) < (min) ? (min) : ((a) > (max) ? (max) : (a)))
@@ -169,8 +171,26 @@ int main(int argc, char *args[])
     unsigned int *histogram = (unsigned int *) calloc(HISTOGRAM_LEVELS, sizeof(unsigned int));
     unsigned int *CDF = (unsigned int *) calloc(HISTOGRAM_LEVELS, sizeof(unsigned int));
 
-    clock_t startMain, stopMain;
-    startMain = clock();
+    // Create time events
+    cudaEvent_t startMain, stopMain,
+                startTimeRGBtoYUV, stopTimeRGBtoYUV, 
+                startTimeHistogramMS, stopTimeHistogramMS, 
+                startTimeCumulativeMS, stopTimeCumulativeMS, 
+                startTimeEqualizeMS, stopTimeEqualizeMS, 
+                startTimeYUVtoRGB, stopTimeYUVtoRGB;
+
+    cudaEventCreate(&startMain);
+    cudaEventCreate(&stopMain);
+    cudaEventCreate(&startTimeRGBtoYUV);
+    cudaEventCreate(&stopTimeRGBtoYUV);
+    cudaEventCreate(&startTimeHistogramMS);
+    cudaEventCreate(&stopTimeHistogramMS);
+    cudaEventCreate(&startTimeCumulativeMS);
+    cudaEventCreate(&stopTimeCumulativeMS);
+    cudaEventCreate(&startTimeEqualizeMS);
+    cudaEventCreate(&stopTimeEqualizeMS);
+    cudaEventCreate(&startTimeYUVtoRGB);
+    cudaEventCreate(&stopTimeYUVtoRGB);
 
     float elapsedTimeRGBtoYUV = 0,
           elapsedTimeHistogramMS= 0,
@@ -179,42 +199,48 @@ int main(int argc, char *args[])
           elapsedTimeYUVtoRGB= 0,
           elapsedMain= 0;
 
-    clock_t start, stop;
+    cudaEventRecord(startMain);
+
     // 1. Transform the image from RGB to YUV
-    start = clock();
+    cudaEventRecord(startTimeRGBtoYUV);
     RGBtoYUV(image, imageWidthPixel, imageHeightPixel);
-    stop = clock();
-    elapsedTimeRGBtoYUV = ELAPSED_TIME_MS(start, stop);
+    cudaEventRecord(stopTimeRGBtoYUV);
 
     // 2. Compute the luminance histogram
-    start = clock();
+    cudaEventRecord(startTimeHistogramMS);
     CalculateHistogram(image, imageWidthPixel, imageHeightPixel, histogram);
-    stop = clock();
-    elapsedTimeHistogramMS = ELAPSED_TIME_MS(start, stop) + elapsedTimeRGBtoYUV; // add RGB to YUV time to compare with CUDA implementation
+    cudaEventRecord(stopTimeHistogramMS);
 
     // 3. Calculate the cumulative histogram
-    start = clock();
+    cudaEventRecord(startTimeCumulativeMS);
     CalculateCDF(histogram, CDF);
-    stop = clock();
-    elapsedTimeCumulativeMS = ELAPSED_TIME_MS(start, stop);
+    cudaEventRecord(stopTimeCumulativeMS);
 
     // 4. Calculate new pixel luminances from original luminance based on the histogram equalization formula
     // 5. Assign new luminance to each pixel
-    start = clock();
+    cudaEventRecord(startTimeEqualizeMS);
     Equalize(image, imageWidthPixel, imageHeightPixel, CDF);
-    stop = clock();
-    elapsedTimeEqualizeMS = ELAPSED_TIME_MS(start, stop);
+    cudaEventRecord(stopTimeEqualizeMS);
 
     // 6. Convert the image back to RGB colour space
-    start = clock();
+    cudaEventRecord(startTimeYUVtoRGB);
     YUVtoRGB(image, imageWidthPixel, imageHeightPixel);
-    stop = clock();
-    elapsedTimeYUVtoRGB = ELAPSED_TIME_MS(start, stop);
+    cudaEventRecord(stopTimeYUVtoRGB);
 
+    // End the time recording and calculate elapsed times
+    cudaEventRecord(stopMain);
+    cudaEventSynchronize(stopMain);
+
+    cudaEventElapsedTime(&elapsedMain, startMain, stopMain);
+    cudaEventElapsedTime(&elapsedTimeRGBtoYUV, startTimeRGBtoYUV, stopTimeRGBtoYUV);
+    cudaEventElapsedTime(&elapsedTimeHistogramMS, startTimeHistogramMS, stopTimeHistogramMS);
+    cudaEventElapsedTime(&elapsedTimeCumulativeMS, startTimeCumulativeMS, stopTimeCumulativeMS);
+    cudaEventElapsedTime(&elapsedTimeEqualizeMS, startTimeEqualizeMS, stopTimeEqualizeMS);
+    cudaEventElapsedTime(&elapsedTimeYUVtoRGB, startTimeYUVtoRGB, stopTimeYUVtoRGB);
+    
+    elapsedTimeHistogramMS += elapsedTimeRGBtoYUV; // add RGB to YUV time to compare with CUDA implementation
     elapsedTimeEqualizeMS += elapsedTimeYUVtoRGB; // add YUV to RGB time to compare with CUDA implementation
 
-    stopMain = clock();
-    elapsedMain = ELAPSED_TIME_MS(startMain, stopMain);
 
 // Output timing stats to file //////////////////////////////////////////////////////////////////////////
 #ifdef SAVE_TIMING_STATS
@@ -246,6 +272,20 @@ int main(int argc, char *args[])
     // Write output image:
     stbi_write_png(imageOutPath, imageWidthPixel, imageHeightPixel, COLOR_CHANNELS, image, imageWidthPixel * COLOR_CHANNELS);
 #endif
+
+    // Clean-up events
+    cudaEventDestroy(startMain);
+    cudaEventDestroy(stopMain);
+    cudaEventDestroy(startTimeRGBtoYUV);
+    cudaEventDestroy(stopTimeRGBtoYUV);
+    cudaEventDestroy(startTimeHistogramMS);
+    cudaEventDestroy(stopTimeHistogramMS);
+    cudaEventDestroy(startTimeCumulativeMS);
+    cudaEventDestroy(stopTimeCumulativeMS);
+    cudaEventDestroy(startTimeEqualizeMS);
+    cudaEventDestroy(stopTimeEqualizeMS);
+    cudaEventDestroy(startTimeYUVtoRGB);
+    cudaEventDestroy(stopTimeYUVtoRGB);
 
     // Free memory
     stbi_image_free(image);
