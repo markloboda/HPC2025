@@ -9,10 +9,13 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "lib/stb_image_write.h"
 
-// Settings
+// Constants
 #define HISTOGRAM_LEVELS 256
 #define COLOR_CHANNELS 3
+
+// Settings
 #define SAVE_TIMING_STATS
+#define WRITE_OUTPUT_IMAGE
 
 // Macros
 #define ELAPSED_TIME_MS(start, stop) (stop - start) / (double)CLOCKS_PER_SEC * 1000
@@ -45,7 +48,7 @@ unsigned int findMin(unsigned int *cdf)
 unsigned char scale(unsigned int cdf, unsigned int cdfmin, unsigned int imageSize)
 {
     int scale = CLAMP255(floor(((float)(cdf - cdfmin) / (float)(imageSize - cdfmin)) * (HISTOGRAM_LEVELS - 1.0)));
-    return (unsigned char)scale;
+    return (unsigned char) scale;
 }
 
 void RGBtoYUV(unsigned char *image, int width, int height)
@@ -61,7 +64,7 @@ void RGBtoYUV(unsigned char *image, int width, int height)
             float b = (float)image[pixelIdx + 2];
 
             // YUV conversion formula
-            unsigned char y = (unsigned char) CLAMP255((    0.299f * r +    0.587f * g +    0.114f * b));
+            unsigned char y = (unsigned char) CLAMP255((    0.299f * r +    0.587f * g +    0.114f * b) +   0.0f);
             unsigned char u = (unsigned char) CLAMP255((-0.168736f * r - 0.331264f * g +      0.5f * b) + 128.0f);
             unsigned char v = (unsigned char) CLAMP255((      0.5f * r - 0.418688f * g - 0.081312f * b) + 128.0f);
 
@@ -73,15 +76,9 @@ void RGBtoYUV(unsigned char *image, int width, int height)
     }
 }
 
-void CalculateHistogram(unsigned char *image, int width, int heigth, unsigned int *histogram)
+void CalculateHistogram(unsigned char *image, int width, int height, unsigned int *histogram)
 {
-    // clear histogram:
-    for (int i = 0; i < HISTOGRAM_LEVELS; i++)
-    {
-        histogram[i] = 0;
-    }
-    // calculate histogram:
-    for (int y = 0; y < heigth; y++)
+    for (int y = 0; y < height; y++)
     {
         for (int x = 0; x < width; x++)
         {
@@ -93,12 +90,6 @@ void CalculateHistogram(unsigned char *image, int width, int heigth, unsigned in
 
 void CalculateCDF(unsigned int *histogram, unsigned int *cdf)
 {
-    // clear cdf:
-    for (int i = 0; i < HISTOGRAM_LEVELS; i++)
-    {
-        cdf[i] = 0;
-    }
-    // calculate cdf from histogram:
     cdf[0] = histogram[0];
     for (int i = 1; i < HISTOGRAM_LEVELS; i++)
     {
@@ -106,13 +97,12 @@ void CalculateCDF(unsigned int *histogram, unsigned int *cdf)
     }
 }
 
-void Equalize(unsigned char *image, int width, int heigth, unsigned int *cdf)
+void Equalize(unsigned char *image, int width, int height, unsigned int *cdf)
 {
-    unsigned int imageSize = width * heigth;
+    unsigned int imageSize = width * height;
     unsigned int cdfmin = findMin(cdf);
 
-    // equalize:
-    for (int y = 0; y < heigth; y++)
+    for (int y = 0; y < height; y++)
     {
         for (int x = 0; x < width; x++)
         {
@@ -161,32 +151,33 @@ int main(int argc, char *args[])
     char *imageInPath = args[1];
     char *imageOutPath = args[2];
 
-    // read image from file
+    // Read image from file
     int imageWidthPixel, imageHeightPixel, cpp;
     unsigned char *image = stbi_load(imageInPath, &imageWidthPixel, &imageHeightPixel, &cpp, COLOR_CHANNELS);
     if (image == NULL)
     {
         printf("Error in loading the image\n");
-        return 1;
+        return EXIT_FAILURE;
     }
     if (cpp != COLOR_CHANNELS)
     {
         printf("Error: Image is not RGB\n");
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    // allocate memory for raw output image data, histogram, and CDF
-    unsigned int *histogram = (unsigned int *)malloc(HISTOGRAM_LEVELS * sizeof(unsigned int));
-    unsigned int *CDF = (unsigned int *)malloc(HISTOGRAM_LEVELS * sizeof(unsigned int));
+    // Allocate memory for raw output image data, histogram, and CDF
+    unsigned int *histogram = (unsigned int *) calloc(HISTOGRAM_LEVELS, sizeof(unsigned int));
+    unsigned int *CDF = (unsigned int *) calloc(HISTOGRAM_LEVELS, sizeof(unsigned int));
 
     clock_t startMain, stopMain;
     startMain = clock();
 
     float elapsedTimeRGBtoYUV = 0,
-    elapsedTimeHistogramMS= 0,
-    elapsedTimeCumulativeMS= 0, elapsedTimeEqualizeMS= 0,
-    elapsedTimeYUVtoRGB= 0,
-    elapsedMain= 0;
+          elapsedTimeHistogramMS= 0,
+          elapsedTimeCumulativeMS= 0, 
+          elapsedTimeEqualizeMS= 0,
+          elapsedTimeYUVtoRGB= 0,
+          elapsedMain= 0;
 
     clock_t start, stop;
     // 1. Transform the image from RGB to YUV
@@ -214,20 +205,19 @@ int main(int argc, char *args[])
     stop = clock();
     elapsedTimeEqualizeMS = ELAPSED_TIME_MS(start, stop);
 
+    // 6. Convert the image back to RGB colour space
     start = clock();
     YUVtoRGB(image, imageWidthPixel, imageHeightPixel);
     stop = clock();
     elapsedTimeYUVtoRGB = ELAPSED_TIME_MS(start, stop);
 
     elapsedTimeEqualizeMS += elapsedTimeYUVtoRGB; // add YUV to RGB time to compare with CUDA implementation
-    //
 
     stopMain = clock();
     elapsedMain = ELAPSED_TIME_MS(startMain, stopMain);
 
 // Output timing stats to file //////////////////////////////////////////////////////////////////////////
 #ifdef SAVE_TIMING_STATS
-    // execution stats
     struct execution_result result;
     result.width = imageWidthPixel;
     result.height = imageHeightPixel;
@@ -238,7 +228,7 @@ int main(int argc, char *args[])
     result.total = elapsedMain;
 
     FILE *timingFile = fopen("./timing_stats/timing_stats_serial.txt", "a");
-    fprintf(timingFile, "--------------- HISTOGRAM EQUALIZATION - Serial ---------------\n", imageInPath);
+    fprintf(timingFile, "--------------- HISTOGRAM EQUALIZATION - Serial ---------------\n");
     fprintf(timingFile, "--------------- %s ---------------\n", imageInPath);
     fprintf(timingFile, "Image width: %d\n", imageWidthPixel);
     fprintf(timingFile, "Image height: %d\n", imageHeightPixel);
@@ -252,14 +242,15 @@ int main(int argc, char *args[])
     fclose(timingFile);
 #endif
 
-    // write output image:
+#ifdef WRITE_OUTPUT_IMAGE
+    // Write output image:
     stbi_write_png(imageOutPath, imageWidthPixel, imageHeightPixel, COLOR_CHANNELS, image, imageWidthPixel * COLOR_CHANNELS);
+#endif
 
     // Free memory
     stbi_image_free(image);
-    free(image);
     free(histogram);
     free(CDF);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

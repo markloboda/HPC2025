@@ -14,12 +14,15 @@
 #include <cuda_runtime.h>
 #include "lib/helper_cuda.h"
 
-// Settings
+// Constants
 #define HISTOGRAM_LEVELS 256
 #define COLOR_CHANNELS 3
 #define NUM_BANKS 16
 #define LOG_NUM_BANKS 4
+
+// Settings
 #define SAVE_TIMING_STATS
+#define WRITE_OUTPUT_IMAGE
 
 // Macros
 #define ELAPSED_TIME_MS(start, stop) (stop - start) / (double)CLOCKS_PER_SEC * 1000
@@ -60,7 +63,7 @@ int main(int argc, char *args[])
     if (argc != 3)
     {
         printf("Error: Invalid amount of arguments. [%d]\n", argc);
-        exit(1);
+        return EXIT_FAILURE;
     }
 
     char *imageInPath = args[1];
@@ -72,12 +75,12 @@ int main(int argc, char *args[])
     if (image == NULL)
     {
         printf("Error: Couldn't load image\n");
-        exit(1);
+        return EXIT_FAILURE;
     }
     if (cpp != COLOR_CHANNELS)
     {
         printf("Error: Image is not RGB\n");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     imageSizeBytes = imageWidthPixel * imageHeightPixel * COLOR_CHANNELS * sizeof(unsigned char);
@@ -116,7 +119,7 @@ int main(int argc, char *args[])
     write(STDOUT_FILENO, &result, sizeof(struct execution_result));
 
     FILE *timingFile = fopen("./timing_stats/timing_stats_parallel.txt", "a");
-    fprintf(timingFile, "--------------- HISTOGRAM EQUALIZATION - Parallel ---------------\n", imageInPath);
+    fprintf(timingFile, "--------------- HISTOGRAM EQUALIZATION - Parallel ---------------\n");
     fprintf(timingFile, "--------------- %s ---------------\n", imageInPath);
     fprintf(timingFile, "Image width: %d\n", imageWidthPixel);
     fprintf(timingFile, "Image height: %d\n", imageHeightPixel);
@@ -130,15 +133,17 @@ int main(int argc, char *args[])
     fclose(timingFile);
 #endif
 
+#ifdef WRITE_OUTPUT_IMAGE
     // write output image:
     stbi_write_png(imageOutPath, imageWidthPixel, imageHeightPixel, COLOR_CHANNELS, image, imageWidthPixel * COLOR_CHANNELS);
+#endif
 
     stbi_image_free(image);
     free(image);
     free(histogram);
     free(cumulativeDistributionHistogram);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void calculateHistogram(unsigned char *image, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *histogram)
