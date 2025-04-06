@@ -97,19 +97,25 @@ void CalculateCDF(unsigned int *histogram, unsigned int *cdf)
     }
 }
 
-void Equalize(unsigned char *image, int width, int height, unsigned int *cdf)
+void CalculateNewLuminances(unsigned int *newLuminances, int width, int height, unsigned in *cdf)
 {
     unsigned int imageSize = width * height;
     unsigned int cdfmin = findMin(cdf);
 
-    // TODO: split steps into two, to create memoization table
+    for (int i = 1; i < HISTOGRAM_LEVELS; i++)
+    {
+        newLuminances[i] = scale(cdf[i], cdfmin, imageSize);
+    }
+}
 
+void Equalize(unsigned char *image, int width, int height, unsigned int *newLuminances)
+{
     for (int y = 0; y < height; y++)
     {
         for (int x = 0; x < width; x++)
         {
             unsigned int pixelIdx = (y * width + x) * COLOR_CHANNELS;
-            image[pixelIdx] = scale(cdf[image[pixelIdx]], cdfmin, imageSize);
+            image[pixelIdx] = newLuminances[image[pixelIdx]];
         }
     }
 }
@@ -170,12 +176,14 @@ int main(int argc, char *args[])
     // Allocate memory for raw output image data, histogram, and CDF
     unsigned int *histogram = (unsigned int *) calloc(HISTOGRAM_LEVELS, sizeof(unsigned int));
     unsigned int *CDF = (unsigned int *) calloc(HISTOGRAM_LEVELS, sizeof(unsigned int));
+    unsigned int *newLuminances = (unsigned int *) calloc(HISTOGRAM_LEVELS, sizeof(unsigned int));
 
     // Create time events
     cudaEvent_t startMain, stopMain,
                 startTimeRGBtoYUV, stopTimeRGBtoYUV, 
                 startTimeHistogramMS, stopTimeHistogramMS, 
                 startTimeCumulativeMS, stopTimeCumulativeMS, 
+                startTimeLuminancesMS, stopTimeLuminancesMS,
                 startTimeEqualizeMS, stopTimeEqualizeMS, 
                 startTimeYUVtoRGB, stopTimeYUVtoRGB;
 
@@ -187,6 +195,8 @@ int main(int argc, char *args[])
     cudaEventCreate(&stopTimeHistogramMS);
     cudaEventCreate(&startTimeCumulativeMS);
     cudaEventCreate(&stopTimeCumulativeMS);
+    cudaEventCreate(&startTimeLuminancesMS);
+    cudaEventCreate(&stopTimeLuminancesMS);
     cudaEventCreate(&startTimeEqualizeMS);
     cudaEventCreate(&stopTimeEqualizeMS);
     cudaEventCreate(&startTimeYUVtoRGB);
@@ -195,6 +205,7 @@ int main(int argc, char *args[])
     float elapsedTimeRGBtoYUV = 0,
           elapsedTimeHistogramMS= 0,
           elapsedTimeCumulativeMS= 0, 
+          elapsedTimeLuminancesMS= 0, 
           elapsedTimeEqualizeMS= 0,
           elapsedTimeYUVtoRGB= 0,
           elapsedMain= 0;
@@ -217,9 +228,13 @@ int main(int argc, char *args[])
     cudaEventRecord(stopTimeCumulativeMS);
 
     // 4. Calculate new pixel luminances from original luminance based on the histogram equalization formula
+    cudaEventRecord(startTimeLuminancesMS);
+    CalculateNewLuminances(newLuminances, imageWidthPixel, imageHeightPixel, CDF);
+    cudaEventRecord(stopTimeLuminancesMS);
+
     // 5. Assign new luminance to each pixel
     cudaEventRecord(startTimeEqualizeMS);
-    Equalize(image, imageWidthPixel, imageHeightPixel, CDF);
+    Equalize(image, imageWidthPixel, imageHeightPixel, newLuminances);
     cudaEventRecord(stopTimeEqualizeMS);
 
     // 6. Convert the image back to RGB colour space
@@ -235,11 +250,12 @@ int main(int argc, char *args[])
     cudaEventElapsedTime(&elapsedTimeRGBtoYUV, startTimeRGBtoYUV, stopTimeRGBtoYUV);
     cudaEventElapsedTime(&elapsedTimeHistogramMS, startTimeHistogramMS, stopTimeHistogramMS);
     cudaEventElapsedTime(&elapsedTimeCumulativeMS, startTimeCumulativeMS, stopTimeCumulativeMS);
+    cudaEventElapsedTime(&elapsedTimeLuminancesMS, startTimeLuminancesMS, stopTimeLuminancesMS);
     cudaEventElapsedTime(&elapsedTimeEqualizeMS, startTimeEqualizeMS, stopTimeEqualizeMS);
     cudaEventElapsedTime(&elapsedTimeYUVtoRGB, startTimeYUVtoRGB, stopTimeYUVtoRGB);
     
     elapsedTimeHistogramMS += elapsedTimeRGBtoYUV; // add RGB to YUV time to compare with CUDA implementation
-    elapsedTimeEqualizeMS += elapsedTimeYUVtoRGB; // add YUV to RGB time to compare with CUDA implementation
+    elapsedTimeEqualizeMS += elapsedTimeLuminancesMS + elapsedTimeYUVtoRGB; // add YUV to RGB time to compare with CUDA implementation
 
 
 // Output timing stats to file //////////////////////////////////////////////////////////////////////////
@@ -253,8 +269,9 @@ int main(int argc, char *args[])
     result.sum = elapsedTimeHistogramMS + elapsedTimeCumulativeMS + elapsedTimeEqualizeMS;
     result.total = elapsedMain;
 
+    // TODO: create folder timing_stats if it does not exist
     FILE *timingFile = fopen("./timing_stats/timing_stats_serial.txt", "a");
-    fprintf(timingFile, "--------------- HISTOGRAM EQUALIZATION - Serial ---------------\n");
+    fprintf(timingFile, "--------------- HISTOGRAM EQUALIZAstopTimeLuminancesMSTION - Serial ---------------\n");
     fprintf(timingFile, "--------------- %s ---------------\n", imageInPath);
     fprintf(timingFile, "Image width: %d\n", imageWidthPixel);
     fprintf(timingFile, "Image height: %d\n", imageHeightPixel);
@@ -282,6 +299,8 @@ int main(int argc, char *args[])
     cudaEventDestroy(stopTimeHistogramMS);
     cudaEventDestroy(startTimeCumulativeMS);
     cudaEventDestroy(stopTimeCumulativeMS);
+    cudaEventDestroy(startTimeLuminancesMS);
+    cudaEventDestroy(stopTimeLuminancesMS);
     cudaEventDestroy(startTimeEqualizeMS);
     cudaEventDestroy(stopTimeEqualizeMS);
     cudaEventDestroy(startTimeYUVtoRGB);
