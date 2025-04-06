@@ -9,6 +9,8 @@ fi
 PROGRAM=$1
 PROGRAM_OUT="bin/$(basename "$PROGRAM" .cu).out"
 
+mkdir -p bin
+
 # Load module CUDA
 module load CUDA
 

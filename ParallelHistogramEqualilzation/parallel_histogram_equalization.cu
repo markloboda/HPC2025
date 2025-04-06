@@ -25,27 +25,23 @@
 #define WRITE_OUTPUT_IMAGE
 
 // Macros
-#define ELAPSED_TIME_MS(start, stop) (stop - start) / (double)CLOCKS_PER_SEC * 1000
 #define CLAMP(a, min, max) ((a) < (min) ? (min) : ((a) > (max) ? (max) : (a)))
 #define CLAMP255(a) CLAMP(a, 0, 255)
 #define CONFLICT_FREE_OFFSET(n) ((n) >> NUM_BANKS + (n) >> (2 * LOG_NUM_BANKS))
 
-void calculateHistogram(unsigned char *image, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *histogram);
+void calculateHistogram(unsigned char *image, unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *histogram);
 __global__ void calculateHistogram_kernel(unsigned char *imageData, const int imageWidth, const int imageHeight, unsigned int *sharedHistogram);
 
 void calculateCumulativeDistribution(unsigned int *histogram, unsigned int *cumulativeDistributionHistogram);
-__global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHistogram, unsigned int *deviceOutHistogram, int histogramSize);
+__global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHistogram, unsigned int *deviceOutHistogram);
 
-void equalize(unsigned char *imageIn, unsigned char *imageOut, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *cumulativeDistributionHistogram);
-__global__ void equalize_kernel(unsigned char *deviceImageIn, unsigned char *deviceImageOut, int imageWidthPixel, int imageHeightPixel, int threadIdOffset, unsigned int *cdfmin, unsigned int *deviceCumulativeDistributionHistogram);
+void equalize(unsigned char *image, unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *cumulativeDistributionHistogram);
+__global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int threadIdOffset, unsigned int *cdfmin, unsigned int *deviceCumulativeDistributionHistogram);
 __global__ void findMin_kernel(unsigned int *deviceCumulativeDistributionHistogram, unsigned int *minimum);
 __device__ inline unsigned char scale_device(unsigned int cdf, unsigned int cdfmin, unsigned int imageSize);
 
 void printHistogram(unsigned int *histogram);
 void printKernelRuntime(float elapsedTimeMS);
-
-float elapsedTimeHistogramMS, elapsedTimeCumulativeMS, elapsedTimeEqualizeMS;
-struct cudaDeviceProp props;
 
 struct execution_result
 {
@@ -86,30 +82,66 @@ int main(int argc, char *args[])
     imageSizeBytes = imageWidthPixel * imageHeightPixel * COLOR_CHANNELS * sizeof(unsigned char);
 
     int device;
+    struct cudaDeviceProp props;
     cudaGetDeviceProperties(&props, cudaGetDevice(&device));
+
+    // Create time events
+    cudaEvent_t startMain, stopMain,
+                startTimeHistogramMS, stopTimeHistogramMS, 
+                startTimeCumulativeMS, stopTimeCumulativeMS, 
+                startTimeEqualizeMS, stopTimeEqualizeMS;
 
     cudaEvent_t startMain, stopMain,
     cudaEventCreate(&startMain);
     cudaEventCreate(&stopMain);
+    cudaEventCreate(&startTimeHistogramMS);
+    cudaEventCreate(&stopTimeHistogramMS);
+    cudaEventCreate(&startTimeCumulativeMS);
+    cudaEventCreate(&stopTimeCumulativeMS);
+    cudaEventCreate(&startTimeEqualizeMS);
+    cudaEventCreate(&stopTimeEqualizeMS);
+
+    float elapsedTimeMain = 0, 
+          elapsedTimeHistogramMS = 0, 
+          elapsedTimeCumulativeMS = 0, 
+          elapsedTimeEqualizeMS = 0;
 
     cudaEventRecord(startMain);
 
+    // copy the initial image to the GPU
+    unsigned char *deviceImage;
+    cudaMalloc((void **)&deviceImage, imageSizeBytes);
+    cudaMemcpy(deviceImage, image, imageSizeBytes, cudaMemcpyHostToDevice);
+
     // STEP 1: Image to YUV and compute the histogram
+    cudaEventRecord(startTimeHistogramMS);
     unsigned int *histogram = (unsigned int *)malloc(HISTOGRAM_LEVELS * sizeof(unsigned int));
-    calculateHistogram(image, imageWidthPixel, imageHeightPixel, imageSizeBytes, histogram);
+    calculateHistogram(image, deviceImage, imageWidthPixel, imageHeightPixel, imageSizeBytes, histogram);
+    cudaEventRecord(stopTimeHistogramMS);
 
     // STEP 2: Compute the cumulative distribution of the histogram
+    cudaEventRecord(startTimeCumulativeMS);
     unsigned int *cumulativeDistributionHistogram = (unsigned int *)malloc(HISTOGRAM_LEVELS * sizeof(unsigned int));
     calculateCumulativeDistribution(histogram, cumulativeDistributionHistogram);
+    cudaEventRecord(stopTimeCumulativeMS);
 
     // STEP 3: Transform the original image using the scaled cumulative distribution as the transformation function
-    equalize(image, image, imageWidthPixel, imageHeightPixel, imageSizeBytes, cumulativeDistributionHistogram);
-    
+    cudaEventRecord(stopTimeCumulativeMS);
+    equalize(image, imageWidthPixel, imageHeightPixel, imageSizeBytes, cumulativeDistributionHistogram);
+    cudaEventRecord(stopTimeEqualizeMS);
+
+    // recover data from the GPU to the CPU allocated memory
+    cudaMemcpy(image, deviceImage, imageSizeBytes, cudaMemcpyDeviceToHost);
+    getLastCudaError("retrieving data from GPU failed in: main()");
+
+    // End the time recording and calculate elapsed times
     cudaEventRecord(stopMain);
     cudaEventSynchronize(stopMain);
 
-    float elapsedTimeMain = 0;
     cudaEventElapsedTime(&elapsedTimeMain, startMain, stopMain);
+    cudaEventElapsedTime(&elapsedTimeHistogramMS, startTimeHistogramMS, stopTimeHistogramMS);
+    cudaEventElapsedTime(&elapsedTimeCumulativeMS, startTimeCumulativeMS, stopTimeCumulativeMS);
+    cudaEventElapsedTime(&elapsedTimeEqualizeMS, startTimeEqualizeMS, stopTimeEqualizeMS);
 
 // Output timing stats to file //////////////////////////////////////////////////////////////////////////
 #ifdef SAVE_TIMING_STATS
@@ -146,21 +178,24 @@ int main(int argc, char *args[])
     // Clean-up events
     cudaEventDestroy(startMain);
     cudaEventDestroy(stopMain);
+    cudaEventDestroy(startTimeHistogramMS);
+    cudaEventDestroy(stopTimeHistogramMS);
+    cudaEventDestroy(startTimeCumulativeMS);
+    cudaEventDestroy(stopTimeCumulativeMS);
+    cudaEventDestroy(startTimeEqualizeMS);
+    cudaEventDestroy(stopTimeEqualizeMS);
+
+    cudaFree(deviceImage);
 
     stbi_image_free(image);
-    free(image);
     free(histogram);
     free(cumulativeDistributionHistogram);
 
     return EXIT_SUCCESS;
 }
 
-void calculateHistogram(unsigned char *image, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *histogram)
+void calculateHistogram(unsigned char *image, unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *histogram)
 {
-    // pointer to the data of the image on the GPU
-    unsigned char *deviceImage;
-    cudaMalloc((void **)&deviceImage, imageSizeBytes);
-    cudaMemcpy(deviceImage, image, imageSizeBytes, cudaMemcpyHostToDevice);
     // pointer to the histogram on the GPU
     unsigned int *deviceHistogram;
     cudaMalloc((void **)&deviceHistogram, HISTOGRAM_LEVELS * sizeof(unsigned int));
@@ -171,25 +206,11 @@ void calculateHistogram(unsigned char *image, int imageWidthPixel, int imageHeig
     dim3 gridSize(ceil(imageWidthPixel * imageHeightPixel / (float)HISTOGRAM_LEVELS));
     dim3 blockSize(HISTOGRAM_LEVELS);
 
-    // create timing events
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-    cudaEventRecord(start, 0);
-
     // runs KERNEL
     calculateHistogram_kernel<<<gridSize, blockSize>>>(deviceImage, imageWidthPixel, imageHeightPixel, deviceHistogram);
     getLastCudaError("calculateHistogram_kernel() execution failed");
 
-    // get elapsedTime
-    cudaEventRecord(stop, 0);
-    cudaEventSynchronize(stop);
-    float elapsedTimeMS;
-    cudaEventElapsedTime(&elapsedTimeMS, start, stop);
-    getLastCudaError("calculating elapsed time failed in calculateHistogram() failed");
-
     // recover data from the GPU to the CPU allocated memory
-    cudaMemcpy(image, deviceImage, imageSizeBytes, cudaMemcpyDeviceToHost);
     cudaMemcpy(histogram, deviceHistogram, HISTOGRAM_LEVELS * sizeof(unsigned int), cudaMemcpyDeviceToHost);
     getLastCudaError("retrieving data from GPU failed in: calculateHistogram()");
 
@@ -200,11 +221,8 @@ void calculateHistogram(unsigned char *image, int imageWidthPixel, int imageHeig
     // printHistogram(histogram);
     // printf("--------------------------\n");
 
-    cudaFree(deviceImage);
     cudaFree(deviceHistogram);
     getLastCudaError("freeing memory in calculateHistogram() failed");
-
-    elapsedTimeHistogramMS = elapsedTimeMS;
 }
 
 __global__ void calculateHistogram_kernel(unsigned char *imageData, const int imageWidth, const int imageHeight, unsigned int *sharedHistogram)
@@ -212,7 +230,6 @@ __global__ void calculateHistogram_kernel(unsigned char *imageData, const int im
     __shared__ unsigned int blockHistogram[HISTOGRAM_LEVELS];
 
     // reset the value of the gray value
-    // TODO: test without as cudamemset is called.
     blockHistogram[threadIdx.x] = 0;
 
     __syncthreads();
@@ -231,7 +248,8 @@ __global__ void calculateHistogram_kernel(unsigned char *imageData, const int im
         float r = (float)imageData[pixelIdx + 0];
         float g = (float)imageData[pixelIdx + 1];
         float b = (float)imageData[pixelIdx + 2];
-        imageData[pixelIdx + 0] = (unsigned char) CLAMP255((    0.299f * r +    0.587f * g +    0.114f * b));
+
+        imageData[pixelIdx + 0] = (unsigned char) CLAMP255((    0.299f * r +    0.587f * g +    0.114f * b) +   0.0f);
         imageData[pixelIdx + 1] = (unsigned char) CLAMP255((-0.168736f * r - 0.331264f * g +      0.5f * b) + 128.0f);
         imageData[pixelIdx + 2] = (unsigned char) CLAMP255((      0.5f * r - 0.418688f * g - 0.081312f * b) + 128.0f);
 
@@ -260,22 +278,9 @@ void calculateCumulativeDistribution(unsigned int *histogram, unsigned int *cumu
     dim3 gridSize(1);
     dim3 blockSize(HISTOGRAM_LEVELS);
 
-    // create timing events
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-    cudaEventRecord(start, 0);
-
     // runs KERNEL
-    calculateCumulativeDistribution_kernel<<<gridSize, blockSize>>>(deviceInHistogram, deviceOutHistogram, HISTOGRAM_LEVELS);
+    calculateCumulativeDistribution_kernel<<<gridSize, blockSize>>>(deviceInHistogram, deviceOutHistogram);
     getLastCudaError("calculateCumulativeDistribution_kernel() execution failed");
-
-    // get elapsedTime
-    cudaEventRecord(stop, 0);
-    cudaEventSynchronize(stop);
-    float elapsedTimeMS;
-    cudaEventElapsedTime(&elapsedTimeMS, start, stop);
-    getLastCudaError("calculating elapsed time in calculateCumulativeDistribution() failed");
 
     // recover data from the GPU to the CPU allocated memory
     cudaMemcpy(cumulativeDistributionHistogram, deviceOutHistogram, HISTOGRAM_LEVELS * sizeof(unsigned int), cudaMemcpyDeviceToHost);
@@ -291,12 +296,10 @@ void calculateCumulativeDistribution(unsigned int *histogram, unsigned int *cumu
     cudaFree(deviceInHistogram);
     cudaFree(deviceOutHistogram);
     getLastCudaError("freeing memory in calculateCumulativeDistribution() failed");
-
-    elapsedTimeCumulativeMS = elapsedTimeMS;
 }
 
 // algorithm explained: [https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing/chapter-39-parallel-prefix-sum-scan-cuda]
-__global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHistogram, unsigned int *deviceOutHistogram, int histogramSize)
+__global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHistogram, unsigned int *deviceOutHistogram)
 {
     __shared__ unsigned int temp[HISTOGRAM_LEVELS * sizeof(unsigned int)];
     int tid = threadIdx.x;
@@ -304,13 +307,13 @@ __global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHis
 
     // a
     int ai = tid;
-    int bi = tid + (histogramSize / 2);
+    int bi = tid + (HISTOGRAM_LEVELS / 2);
     int bankOffsetA = CONFLICT_FREE_OFFSET(ai);
     int bankOffsetB = CONFLICT_FREE_OFFSET(bi);
     temp[ai + bankOffsetA] = deviceInHistogram[ai];
     temp[bi + bankOffsetB] = deviceInHistogram[bi];
 
-    for (int d = histogramSize >> 1; d > 0; d >>= 1) // build sum in place up the tree
+    for (int d = HISTOGRAM_LEVELS >> 1; d > 0; d >>= 1) // build sum in place up the tree
     {
         __syncthreads();
         if (tid < d)
@@ -329,11 +332,11 @@ __global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHis
     int lastElement;
     if (tid == 0)
     {
-        lastElement = temp[histogramSize - 1 + CONFLICT_FREE_OFFSET(histogramSize - 1)];
-        temp[histogramSize - 1 + CONFLICT_FREE_OFFSET(histogramSize - 1)] = 0;
+        lastElement = temp[HISTOGRAM_LEVELS - 1 + CONFLICT_FREE_OFFSET(HISTOGRAM_LEVELS - 1)];
+        temp[HISTOGRAM_LEVELS - 1 + CONFLICT_FREE_OFFSET(HISTOGRAM_LEVELS - 1)] = 0;
     }
 
-    for (int d = 1; d < histogramSize; d *= 2) // traverse down tree & build scan
+    for (int d = 1; d < HISTOGRAM_LEVELS; d *= 2) // traverse down tree & build scan
     {
         offset >>= 1;
         __syncthreads();
@@ -356,20 +359,11 @@ __global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHis
     deviceOutHistogram[bi - 1] = temp[bi + bankOffsetB];
 
     if (tid == 0)
-        deviceOutHistogram[histogramSize - 1] = lastElement;
+        deviceOutHistogram[HISTOGRAM_LEVELS - 1] = lastElement;
 }
 
-void equalize(unsigned char *imageIn, unsigned char *imageOut, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *cumulativeDistributionHistogram)
+void equalize(unsigned char *image, unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *cumulativeDistributionHistogram)
 {
-    // pointer to the image input on the GPU
-    unsigned char *deviceImageIn;
-    cudaMalloc((void **)&deviceImageIn, imageSizeBytes);
-    cudaMemcpy(deviceImageIn, imageIn, imageSizeBytes, cudaMemcpyHostToDevice);
-
-    // pointer to the image output on the GPU
-    unsigned char *deviceImageOut;
-    cudaMalloc((void **)&deviceImageOut, imageSizeBytes);
-
     // pointer to the cumulative distribution histogram on the GPU
     unsigned int *deviceCumulativeDistributionHistogram;
     cudaMalloc((void **)&deviceCumulativeDistributionHistogram, HISTOGRAM_LEVELS * sizeof(unsigned int));
@@ -392,35 +386,14 @@ void equalize(unsigned char *imageIn, unsigned char *imageOut, int imageWidthPix
     // pointer to the thread id offset on new iteration
     int threadIdOffset = blockSizeEqualize.x * gridSizeEqualize.x;
 
-    // create events meant for timing
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-    cudaEventRecord(start, 0);
-
-    equalize_kernel<<<gridSizeEqualize, blockSizeEqualize>>>(deviceImageIn, deviceImageOut, imageWidthPixel, imageHeightPixel, threadIdOffset, cdfmin, deviceCumulativeDistributionHistogram);
+    equalize_kernel<<<gridSizeEqualize, blockSizeEqualize>>>(deviceImage, imageWidthPixel, imageHeightPixel, threadIdOffset, cdfmin, deviceCumulativeDistributionHistogram);
     getLastCudaError("equalize_kernel() execution failed");
 
-    // get elapsedTime
-    cudaEventRecord(stop, 0);
-    cudaEventSynchronize(stop);
-    float elapsedTimeMS;
-    cudaEventElapsedTime(&elapsedTimeMS, start, stop);
-    getLastCudaError("calculating elapsed time in equalize() failed");
-
-    // recover data from the GPU to the CPU allocated memory
-    cudaMemcpy(imageOut, deviceImageOut, imageSizeBytes, cudaMemcpyDeviceToHost);
-    getLastCudaError("retrieving data from GPU failed in: equalize()");
-
-    cudaFree(deviceImageIn);
-    cudaFree(deviceImageOut);
     cudaFree(deviceCumulativeDistributionHistogram);
     getLastCudaError("freeing memory in equalize() failed");
-
-    elapsedTimeEqualizeMS = elapsedTimeMS;
 }
 
-__global__ void equalize_kernel(unsigned char *deviceImageIn, unsigned char *deviceImageOut, int imageWidthPixel, int imageHeightPixel, int threadIdOffset, unsigned int *cdfmin, unsigned int *deviceCumulativeDistributionHistogram)
+__global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int threadIdOffset, unsigned int *cdfmin, unsigned int *deviceCumulativeDistributionHistogram)
 {
     int threadId = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -429,13 +402,13 @@ __global__ void equalize_kernel(unsigned char *deviceImageIn, unsigned char *dev
         unsigned int pixelIdx = threadId * COLOR_CHANNELS;
 
         // YUV to RGB conversion
-        float y = scale_device(deviceCumulativeDistributionHistogram[deviceImageIn[pixelIdx]], *cdfmin, imageWidthPixel * imageHeightPixel);
+        float y = scale_device(deviceCumulativeDistributionHistogram[deviceImage[pixelIdx]], *cdfmin, imageWidthPixel * imageHeightPixel);
         float u = (float)deviceImageIn[pixelIdx + 1] - 128.0f;
         float v = (float)deviceImageIn[pixelIdx + 2] - 128.0f;
 
-        deviceImageOut[pixelIdx + 0] = (unsigned char)(CLAMP255((float)(y + 1.402f * v)));
-        deviceImageOut[pixelIdx + 1] = (unsigned char)(CLAMP255((float)(y - 0.344136f * u - 0.714136f * v)));
-        deviceImageOut[pixelIdx + 2] = (unsigned char)(CLAMP255((float)(y + 1.772f * u)));
+        deviceImage[pixelIdx + 0] = (unsigned char)(CLAMP255((float)(y + 1.402f * v)));
+        deviceImage[pixelIdx + 1] = (unsigned char)(CLAMP255((float)(y - 0.344136f * u - 0.714136f * v)));
+        deviceImage[pixelIdx + 2] = (unsigned char)(CLAMP255((float)(y + 1.772f * u)));
 
         threadId += threadIdOffset;
     }

@@ -4,7 +4,7 @@
 
 #include <cuda_runtime.h>
 #include <cuda.h>
-#include "helper_cuda.h"
+#include "lib/helper_cuda.h"
 
 // STB image library
 #define STB_IMAGE_IMPLEMENTATION
@@ -21,8 +21,6 @@
 #define WRITE_OUTPUT_IMAGE
 
 // Macros
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define CLAMP(a, min, max) ((a) < (min) ? (min) : ((a) > (max) ? (max) : (a)))
 #define CLAMP255(a) CLAMP(a, 0, 255)
 
@@ -103,6 +101,8 @@ void Equalize(unsigned char *image, int width, int height, unsigned int *cdf)
 {
     unsigned int imageSize = width * height;
     unsigned int cdfmin = findMin(cdf);
+
+    // TODO: split steps into two, to create memoization table
 
     for (int y = 0; y < height; y++)
     {
