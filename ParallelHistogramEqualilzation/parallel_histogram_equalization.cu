@@ -29,16 +29,18 @@
 #define CLAMP255(a) CLAMP(a, 0, 255)
 #define CONFLICT_FREE_OFFSET(n) ((n) >> NUM_BANKS + (n) >> (2 * LOG_NUM_BANKS))
 
-void calculateHistogram(unsigned char *image, unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *histogram);
+void calculateHistogram(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, unsigned int *histogram);
 __global__ void calculateHistogram_kernel(unsigned char *imageData, const int imageWidth, const int imageHeight, unsigned int *sharedHistogram);
 
 void calculateCumulativeDistribution(unsigned int *histogram, unsigned int *cumulativeDistributionHistogram);
 __global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHistogram, unsigned int *deviceOutHistogram);
 
-void equalize(unsigned char *image, unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *cumulativeDistributionHistogram);
-__global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int threadIdOffset, unsigned int *cdfmin, unsigned int *deviceCumulativeDistributionHistogram);
+void calculateNewLuminances(unsigned int *newLuminances,  int imageWidthPixel, int imageHeightPixel, unsigned int *cumulativeDistributionHistogram);
+__global__ void calculateNewLuminances_kernel(unsigned int *deviceNewLuminances, unsigned int imageSize, unsigned int *cdf, unsigned int cdfmin);
+
+void equalize(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, unsigned int *newLuminances);
+__global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int threadIdOffset, unsigned int *cdfmin, unsigned int *deviceNewLuminances)
 __global__ void findMin_kernel(unsigned int *deviceCumulativeDistributionHistogram, unsigned int *minimum);
-__device__ inline unsigned char scale_device(unsigned int cdf, unsigned int cdfmin, unsigned int imageSize);
 
 void printHistogram(unsigned int *histogram);
 void printKernelRuntime(float elapsedTimeMS);
@@ -92,7 +94,6 @@ int main(int argc, char *args[])
                 startTimeLuminancesMS, stopTimeLuminancesMS,
                 startTimeEqualizeMS, stopTimeEqualizeMS;
 
-    cudaEvent_t startMain, stopMain,
     cudaEventCreate(&startMain);
     cudaEventCreate(&stopMain);
     cudaEventCreate(&startTimeHistogramMS);
@@ -120,7 +121,7 @@ int main(int argc, char *args[])
     // STEP 1: Image to YUV and compute the histogram
     cudaEventRecord(startTimeHistogramMS);
     unsigned int *histogram = (unsigned int *)malloc(HISTOGRAM_LEVELS * sizeof(unsigned int));
-    calculateHistogram(deviceImage, imageWidthPixel, imageHeightPixel, imageSizeBytes, histogram);
+    calculateHistogram(deviceImage, imageWidthPixel, imageHeightPixel, histogram);
     cudaEventRecord(stopTimeHistogramMS);
 
     // STEP 2: Compute the cumulative distribution of the histogram
@@ -209,7 +210,7 @@ int main(int argc, char *args[])
     return EXIT_SUCCESS;
 }
 
-void calculateHistogram(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int imageSizeBytes, unsigned int *histogram)
+void calculateHistogram(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, unsigned int *histogram)
 {
     // pointer to the histogram on the GPU
     unsigned int *deviceHistogram;
@@ -393,13 +394,13 @@ void calculateNewLuminances(unsigned int *newLuminances,  int imageWidthPixel, i
     cudaMalloc((void **)&cdfmin, sizeof(unsigned int));
     getLastCudaError("setting up GPU data faled in: equalize()");
 
-    dim3 gridSizeMin(1);
-    dim3 blockSizeMin(HISTOGRAM_LEVELS);
+    dim3 gridSize(1);
+    dim3 blockSize(HISTOGRAM_LEVELS);
 
-    findMin_kernel<<<gridSizeMin, blockSizeMin>>>(deviceCumulativeDistributionHistogram, cdfmin);
+    findMin_kernel<<<gridSize, blockSize>>>(deviceCumulativeDistributionHistogram, cdfmin);
     getLastCudaError("findMin_kernel() execution failed");
 
-    calculateNewLuminances_kernel<<<gridSizeMin, blockSizeMin>>>(deviceNewLuminances, imageWidthPixel * imageHeightPixel, deviceCumulativeDistributionHistogram, cdfmin);
+    calculateNewLuminances_kernel<<<gridSize, blockSize>>>(deviceNewLuminances, imageWidthPixel * imageHeightPixel, deviceCumulativeDistributionHistogram, cdfmin);
     getLastCudaError("calculateNewLuminances_kernel() execution failed");
 
     // recover data from the GPU to the CPU allocated memory
@@ -409,6 +410,35 @@ void calculateNewLuminances(unsigned int *newLuminances,  int imageWidthPixel, i
     cudaFree(deviceCumulativeDistributionHistogram);
     cudaFree(deviceNewLuminances);
     getLastCudaError("freeing memory in luminances() failed");
+}
+
+__global__ void findMin_kernel(unsigned int *deviceCumulativeDistributionHistogram, unsigned int *minimum)
+{
+    int i = blockDim.x / 2;
+    while (i != 0)
+    {
+        if (threadIdx.x < i)
+        {
+            if (deviceCumulativeDistributionHistogram[threadIdx.x + 1] == 0 && deviceCumulativeDistributionHistogram[threadIdx.x] == 0)
+            {
+                deviceCumulativeDistributionHistogram[threadIdx.x] = UINT32_MAX;
+            }
+            else
+            {
+                deviceCumulativeDistributionHistogram[threadIdx.x] =
+                    deviceCumulativeDistributionHistogram[threadIdx.x + 1] < deviceCumulativeDistributionHistogram[threadIdx.x] && deviceCumulativeDistributionHistogram[threadIdx.x + 1] != 0
+                        ? deviceCumulativeDistributionHistogram[threadIdx.x + 1]
+                        : deviceCumulativeDistributionHistogram[threadIdx.x];
+            }
+        }
+        i /= 2;
+        __syncthreads();
+    }
+
+    if (threadIdx.x == 0)
+    {
+        *minimum = deviceCumulativeDistributionHistogram[0];
+    }
 }
 
 __global__ void calculateNewLuminances_kernel(unsigned int *deviceNewLuminances, unsigned int imageSize, unsigned int *cdf, unsigned int cdfmin)
@@ -446,8 +476,8 @@ __global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel,
 
         // YUV to RGB conversion
         float y = deviceNewLuminances[deviceImage[pixelIdx]];
-        float u = (float)deviceImageIn[pixelIdx + 1] - 128.0f;
-        float v = (float)deviceImageIn[pixelIdx + 2] - 128.0f;
+        float u = (float)deviceImage[pixelIdx + 1] - 128.0f;
+        float v = (float)deviceImage[pixelIdx + 2] - 128.0f;
 
         deviceImage[pixelIdx + 0] = (unsigned char)(CLAMP255((float)(y + 1.402f * v)));
         deviceImage[pixelIdx + 1] = (unsigned char)(CLAMP255((float)(y - 0.344136f * u - 0.714136f * v)));
@@ -455,41 +485,6 @@ __global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel,
 
         threadId += threadIdOffset;
     }
-}
-
-__global__ void findMin_kernel(unsigned int *deviceCumulativeDistributionHistogram, unsigned int *minimum)
-{
-    int i = blockDim.x / 2;
-    while (i != 0)
-    {
-        if (threadIdx.x < i)
-        {
-            if (deviceCumulativeDistributionHistogram[threadIdx.x + 1] == 0 && deviceCumulativeDistributionHistogram[threadIdx.x] == 0)
-            {
-                deviceCumulativeDistributionHistogram[threadIdx.x] = UINT32_MAX;
-            }
-            else
-            {
-                deviceCumulativeDistributionHistogram[threadIdx.x] =
-                    deviceCumulativeDistributionHistogram[threadIdx.x + 1] < deviceCumulativeDistributionHistogram[threadIdx.x] && deviceCumulativeDistributionHistogram[threadIdx.x + 1] != 0
-                        ? deviceCumulativeDistributionHistogram[threadIdx.x + 1]
-                        : deviceCumulativeDistributionHistogram[threadIdx.x];
-            }
-        }
-        i /= 2;
-        __syncthreads();
-    }
-
-    if (threadIdx.x == 0)
-    {
-        *minimum = deviceCumulativeDistributionHistogram[0];
-    }
-}
-
-__device__ inline unsigned char scale_device(unsigned int cdf, unsigned int cdfmin, unsigned int imageSize)
-{
-    int scale = CLAMP255(floor(((float)(cdf - cdfmin) / (float)(imageSize - cdfmin)) * (HISTOGRAM_LEVELS - 1.0)));
-    return (unsigned char)scale;
 }
 
 void printHistogram(unsigned int *histogram)
