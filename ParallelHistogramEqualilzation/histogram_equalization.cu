@@ -97,12 +97,12 @@ void CalculateCDF(unsigned int *histogram, unsigned int *cdf)
     }
 }
 
-void CalculateNewLuminances(unsigned int *newLuminances, int width, int height, unsigned in *cdf)
+void CalculateNewLuminances(unsigned int *newLuminances, int width, int height, unsigned int *cdf)
 {
     unsigned int imageSize = width * height;
     unsigned int cdfmin = findMin(cdf);
 
-    for (int i = 1; i < HISTOGRAM_LEVELS; i++)
+    for (int i = 0; i < HISTOGRAM_LEVELS; i++)
     {
         newLuminances[i] = scale(cdf[i], cdfmin, imageSize);
     }
