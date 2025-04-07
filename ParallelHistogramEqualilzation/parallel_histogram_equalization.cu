@@ -37,7 +37,7 @@ __global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHis
 
 void calculateNewLuminances(unsigned char *newLuminances,  int imageWidthPixel, int imageHeightPixel, unsigned int *cumulativeDistributionHistogram);
 __global__ void findMin_kernel(unsigned int *deviceCumulativeDistributionHistogram, unsigned int *minimum);
-__global__ void calculateNewLuminances_kernel(unsigned char *deviceNewLuminances, unsigned int imageSize, unsigned int *cdf, unsigned int cdfmin);
+__global__ void calculateNewLuminances_kernel(unsigned char *deviceNewLuminances, unsigned int imageSize, unsigned int *cdf, unsigned int *cdfmin);
 
 void equalize(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, unsigned char *newLuminances);
 __global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int threadIdOffset, unsigned char *deviceNewLuminances);
@@ -230,26 +230,12 @@ void calculateHistogram(unsigned char *deviceImage, int imageWidthPixel, int ima
     cudaMemcpy(histogram, deviceHistogram, HISTOGRAM_LEVELS * sizeof(unsigned int), cudaMemcpyDeviceToHost);
     getLastCudaError("retrieving data from GPU failed in: calculateHistogram()");
 
-    // /////// output:
-    // printf("---------HISTOGRAM--------\n");
-    // printKernelRuntime(elapsedTimeMS);
-    // printf("--------------------------\n");
-    // printHistogram(histogram);
-    // printf("--------------------------\n");
-
     cudaFree(deviceHistogram);
     getLastCudaError("freeing memory in calculateHistogram() failed");
 }
 
 __global__ void calculateHistogram_kernel(unsigned char *imageData, const int imageWidth, const int imageHeight, unsigned int *sharedHistogram)
 {
-    __shared__ unsigned int blockHistogram[HISTOGRAM_LEVELS];
-
-    // reset the value of the gray value
-    blockHistogram[threadIdx.x] = 0;
-
-    __syncthreads();
-
     // find index of the pixel of the thread
     int index = threadIdx.x + blockIdx.x * blockDim.x;
     int indexOffset = blockDim.x * gridDim.x;
@@ -269,14 +255,9 @@ __global__ void calculateHistogram_kernel(unsigned char *imageData, const int im
         imageData[pixelIdx + 1] = (unsigned char) CLAMP255((-0.168736f * r - 0.331264f * g +      0.5f * b) + 128.0f);
         imageData[pixelIdx + 2] = (unsigned char) CLAMP255((      0.5f * r - 0.418688f * g - 0.081312f * b) + 128.0f);
 
-        atomicAdd(&blockHistogram[imageData[pixelIdx]], 1);
+        atomicAdd(&sharedHistogram[imageData[pixelIdx]], 1);
         index += indexOffset;
     }
-
-    __syncthreads();
-
-    // add the calculated value of the thread to the main shared histogram
-    atomicAdd(&sharedHistogram[threadIdx.x], blockHistogram[threadIdx.x]);
 }
 
 void calculateCumulativeDistribution(unsigned int *histogram, unsigned int *cumulativeDistributionHistogram)
@@ -292,7 +273,7 @@ void calculateCumulativeDistribution(unsigned int *histogram, unsigned int *cumu
 
     // set up the grid and block size
     dim3 gridSize(1);
-    dim3 blockSize(HISTOGRAM_LEVELS);
+    dim3 blockSize(32);
 
     // runs KERNEL
     calculateCumulativeDistribution_kernel<<<gridSize, blockSize>>>(deviceInHistogram, deviceOutHistogram);
@@ -302,13 +283,6 @@ void calculateCumulativeDistribution(unsigned int *histogram, unsigned int *cumu
     cudaMemcpy(cumulativeDistributionHistogram, deviceOutHistogram, HISTOGRAM_LEVELS * sizeof(unsigned int), cudaMemcpyDeviceToHost);
     getLastCudaError("retrieving data from GPU failed in: calculateCumulativeDistribution()");
 
-    // /////// output:
-    // printf("------------CDF-----------\n");
-    // printKernelRuntime(elapsedTimeMS);
-    // printf("--------------------------\n");
-    // printHistogram(cumulativeDistributionHistogram);
-    // printf("--------------------------\n");
-
     cudaFree(deviceInHistogram);
     cudaFree(deviceOutHistogram);
     getLastCudaError("freeing memory in calculateCumulativeDistribution() failed");
@@ -317,65 +291,14 @@ void calculateCumulativeDistribution(unsigned int *histogram, unsigned int *cumu
 // algorithm explained: [https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing/chapter-39-parallel-prefix-sum-scan-cuda]
 __global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHistogram, unsigned int *deviceOutHistogram)
 {
-    __shared__ unsigned int temp[HISTOGRAM_LEVELS * sizeof(unsigned int)];
-    int tid = threadIdx.x;
-    int offset = 1;
-
-    // a
-    int ai = tid;
-    int bi = tid + (HISTOGRAM_LEVELS / 2);
-    int bankOffsetA = CONFLICT_FREE_OFFSET(ai);
-    int bankOffsetB = CONFLICT_FREE_OFFSET(bi);
-    temp[ai + bankOffsetA] = deviceInHistogram[ai];
-    temp[bi + bankOffsetB] = deviceInHistogram[bi];
-
-    for (int d = HISTOGRAM_LEVELS >> 1; d > 0; d >>= 1) // build sum in place up the tree
+    if (threadIdx.x == 0) // Only one thread does the work
     {
-        __syncthreads();
-        if (tid < d)
+        deviceOutHistogram[0] = deviceInHistogram[0];
+        for (int i = 1; i < HISTOGRAM_LEVELS; i++)
         {
-            // b
-            int ai = offset * (2 * tid + 1) - 1;
-            int bi = offset * (2 * tid + 2) - 1;
-            ai += CONFLICT_FREE_OFFSET(ai);
-            bi += CONFLICT_FREE_OFFSET(bi);
-
-            temp[bi] += temp[ai];
-        }
-        offset *= 2;
-    }
-    // c
-    int lastElement;
-    if (tid == 0)
-    {
-        lastElement = temp[HISTOGRAM_LEVELS - 1 + CONFLICT_FREE_OFFSET(HISTOGRAM_LEVELS - 1)];
-        temp[HISTOGRAM_LEVELS - 1 + CONFLICT_FREE_OFFSET(HISTOGRAM_LEVELS - 1)] = 0;
-    }
-
-    for (int d = 1; d < HISTOGRAM_LEVELS; d *= 2) // traverse down tree & build scan
-    {
-        offset >>= 1;
-        __syncthreads();
-        if (tid < d)
-        {
-            // d
-            int ai = offset * (2 * tid + 1) - 1;
-            int bi = offset * (2 * tid + 2) - 1;
-            ai += CONFLICT_FREE_OFFSET(ai);
-            bi += CONFLICT_FREE_OFFSET(bi);
-
-            float t = temp[ai];
-            temp[ai] = temp[bi];
-            temp[bi] += t;
+            deviceOutHistogram[i] = deviceOutHistogram[i - 1] + deviceInHistogram[i];
         }
     }
-    __syncthreads();
-    // e
-    deviceOutHistogram[ai - 1] = temp[ai + bankOffsetA];
-    deviceOutHistogram[bi - 1] = temp[bi + bankOffsetB];
-
-    if (tid == 0)
-        deviceOutHistogram[HISTOGRAM_LEVELS - 1] = lastElement;
 }
 
 void calculateNewLuminances(unsigned char *newLuminances,  int imageWidthPixel, int imageHeightPixel, unsigned int *cumulativeDistributionHistogram)
@@ -395,56 +318,41 @@ void calculateNewLuminances(unsigned char *newLuminances,  int imageWidthPixel, 
     getLastCudaError("setting up GPU data faled in: equalize()");
 
     dim3 gridSize(1);
-    dim3 blockSize(HISTOGRAM_LEVELS);
+    dim3 blockSize(HISTOGRAM_LEVELS); 
+    dim3 blockSizeMin(32);
 
-    findMin_kernel<<<gridSize, blockSize>>>(deviceCumulativeDistributionHistogram, cdfmin);
+    findMin_kernel<<<gridSize, blockSizeMin>>>(deviceCumulativeDistributionHistogram, cdfmin);
     getLastCudaError("findMin_kernel() execution failed");
 
-    calculateNewLuminances_kernel<<<gridSize, blockSize>>>(deviceNewLuminances, imageWidthPixel * imageHeightPixel, deviceCumulativeDistributionHistogram, *cdfmin);
+    calculateNewLuminances_kernel<<<gridSize, blockSize>>>(deviceNewLuminances, imageWidthPixel * imageHeightPixel, deviceCumulativeDistributionHistogram, cdfmin);
     getLastCudaError("calculateNewLuminances_kernel() execution failed");
 
     // recover data from the GPU to the CPU allocated memory
-    cudaMemcpy(deviceNewLuminances, newLuminances, HISTOGRAM_LEVELS * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    cudaMemcpy(newLuminances, deviceNewLuminances, HISTOGRAM_LEVELS * sizeof(unsigned char), cudaMemcpyDeviceToHost);
     getLastCudaError("retrieving data from GPU failed in: calculateCumulativeDistribution()");
 
     // clean up
     cudaFree(deviceCumulativeDistributionHistogram);
+    cudaFree(cdfmin);
     cudaFree(deviceNewLuminances);
     getLastCudaError("freeing memory in luminances() failed");
 }
 
 __global__ void findMin_kernel(unsigned int *deviceCumulativeDistributionHistogram, unsigned int *minimum)
 {
-    int i = blockDim.x / 2;
-    while (i != 0)
-    {
-        if (threadIdx.x < i)
-        {
-            if (deviceCumulativeDistributionHistogram[threadIdx.x + 1] == 0 && deviceCumulativeDistributionHistogram[threadIdx.x] == 0)
-            {
-                deviceCumulativeDistributionHistogram[threadIdx.x] = UINT32_MAX;
-            }
-            else
-            {
-                deviceCumulativeDistributionHistogram[threadIdx.x] =
-                    deviceCumulativeDistributionHistogram[threadIdx.x + 1] < deviceCumulativeDistributionHistogram[threadIdx.x] && deviceCumulativeDistributionHistogram[threadIdx.x + 1] != 0
-                        ? deviceCumulativeDistributionHistogram[threadIdx.x + 1]
-                        : deviceCumulativeDistributionHistogram[threadIdx.x];
-            }
-        }
-        i /= 2;
-        __syncthreads();
-    }
-
     if (threadIdx.x == 0)
     {
-        *minimum = deviceCumulativeDistributionHistogram[0];
+        *minimum = 0;
+        for (int i = 0; *minimum == 0 && i < HISTOGRAM_LEVELS; i++)
+        {
+            *minimum = deviceCumulativeDistributionHistogram[i];
+        }
     }
 }
 
-__global__ void calculateNewLuminances_kernel(unsigned char *deviceNewLuminances, unsigned int imageSize, unsigned int *cdf, unsigned int cdfmin)
+__global__ void calculateNewLuminances_kernel(unsigned char *deviceNewLuminances, unsigned int imageSize, unsigned int *cdf, unsigned int *cdfmin)
 {
-    deviceNewLuminances[threadIdx.x] =  (unsigned char) CLAMP255(floor(((float)(cdf[threadIdx.x] - cdfmin) / (float)(imageSize - cdfmin)) * (HISTOGRAM_LEVELS - 1.0)));
+    deviceNewLuminances[threadIdx.x] =  (unsigned char) CLAMP255(floor(((float)(cdf[threadIdx.x] - *cdfmin) / (float)(imageSize - *cdfmin)) * (HISTOGRAM_LEVELS - 1.0)));
 }
 
 void equalize(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, unsigned char *newLuminances)

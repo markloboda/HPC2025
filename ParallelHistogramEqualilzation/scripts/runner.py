@@ -5,7 +5,8 @@ from typing import List
 
 PROGRAMS = [
     "histogram_equalization.cu",
-    "parallel_histogram_equalization.cu"
+    "parallel_histogram_equalization",
+    "parallel_histogram_equalization_optimized.cu"
 ]
 
 IN_IMAGES = [
@@ -24,7 +25,7 @@ OUT_IMAGES = [
     "output_images/7680x4320.png",
 ]
 
-NUM_RUNS = 1
+NUM_RUNS = 5
 
 @dataclass
 class SlurmJob:
@@ -63,13 +64,15 @@ if __name__ == "__main__":
     print("runner.py started")
 
     jobs = []
-    for image_index in range(len(IN_IMAGES)):
-        for program in PROGRAMS:
+    for program in PROGRAMS:
+        cache_run = True  # First run on GPU is slower due to caching of kernels
+        for image_index in range(len(IN_IMAGES)):
             image = IN_IMAGES[image_index]
             outs = OUT_IMAGES[image_index].split(".")
             program_name = program.replace(".cu", "")
             out_image = f"{outs[0]}_{program_name}.{outs[1]}"
-            for i in range(NUM_RUNS):
+            for i in range(int(cache_run) + NUM_RUNS):
+                cache_run = False
                 jobs.append(SlurmJob(program, image, out_image))
 
     # print(jobs)

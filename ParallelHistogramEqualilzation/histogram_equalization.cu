@@ -271,7 +271,7 @@ int main(int argc, char *args[])
 
     // TODO: create folder timing_stats if it does not exist
     FILE *timingFile = fopen("./timing_stats/timing_stats_serial.txt", "a");
-    fprintf(timingFile, "--------------- HISTOGRAM EQUALIZAstopTimeLuminancesMSTION - Serial ---------------\n");
+    fprintf(timingFile, "--------------- HISTOGRAM EQUALIZATION - Serial ---------------\n");
     fprintf(timingFile, "--------------- %s ---------------\n", imageInPath);
     fprintf(timingFile, "Image width: %d\n", imageWidthPixel);
     fprintf(timingFile, "Image height: %d\n", imageHeightPixel);
