@@ -137,7 +137,7 @@ int main(int argc, char *args[])
     cudaEventRecord(stopTimeLuminancesMS);
 
     // STEP 4: Transform the original image using the scaled cumulative distribution as the transformation function
-    cudaEventRecord(stopTimeCumulativeMS);
+    cudaEventRecord(startTimeEqualizeMS);
     equalize(deviceImage, imageWidthPixel, imageHeightPixel, newLuminances);
     cudaEventRecord(stopTimeEqualizeMS);
 
@@ -151,11 +151,11 @@ int main(int argc, char *args[])
 
     cudaEventElapsedTime(&elapsedTimeMain, startMain, stopMain);
     cudaEventElapsedTime(&elapsedTimeHistogramMS, startTimeHistogramMS, stopTimeHistogramMS);
-    cudaEventElapsedTime(&elapsedTimeLuminancesMS, startTimeLuminancesMS, stopTimeLuminancesMS);
     cudaEventElapsedTime(&elapsedTimeCumulativeMS, startTimeCumulativeMS, stopTimeCumulativeMS);
+    cudaEventElapsedTime(&elapsedTimeLuminancesMS, startTimeLuminancesMS, stopTimeLuminancesMS);
     cudaEventElapsedTime(&elapsedTimeEqualizeMS, startTimeEqualizeMS, stopTimeEqualizeMS);
 
-    elapsedTimeCumulativeMS += elapsedTimeLuminancesMS;
+    elapsedTimeEqualizeMS += elapsedTimeLuminancesMS;
 
 // Output timing stats to file //////////////////////////////////////////////////////////////////////////
 #ifdef SAVE_TIMING_STATS
