@@ -35,12 +35,12 @@ __global__ void calculateHistogram_kernel(unsigned char *imageData, const int im
 void calculateCumulativeDistribution(unsigned int *histogram, unsigned int *cumulativeDistributionHistogram);
 __global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHistogram, unsigned int *deviceOutHistogram);
 
-void calculateNewLuminances(unsigned int *newLuminances,  int imageWidthPixel, int imageHeightPixel, unsigned int *cumulativeDistributionHistogram);
-__global__ void calculateNewLuminances_kernel(unsigned int *deviceNewLuminances, unsigned int imageSize, unsigned int *cdf, unsigned int cdfmin);
-
-void equalize(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, unsigned int *newLuminances);
-__global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int threadIdOffset, unsigned int *cdfmin, unsigned int *deviceNewLuminances)
+void calculateNewLuminances(unsigned char *newLuminances,  int imageWidthPixel, int imageHeightPixel, unsigned int *cumulativeDistributionHistogram);
 __global__ void findMin_kernel(unsigned int *deviceCumulativeDistributionHistogram, unsigned int *minimum);
+__global__ void calculateNewLuminances_kernel(unsigned char *deviceNewLuminances, unsigned int imageSize, unsigned int *cdf, unsigned int cdfmin);
+
+void equalize(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, unsigned char *newLuminances);
+__global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int threadIdOffset, unsigned char *deviceNewLuminances);
 
 void printHistogram(unsigned int *histogram);
 void printKernelRuntime(float elapsedTimeMS);
@@ -132,13 +132,13 @@ int main(int argc, char *args[])
 
     // STEP 3: Computation Of New Pixel Intensities 
     cudaEventRecord(startTimeLuminancesMS);
-    unsigned int *newLuminances = (unsigned int *)malloc(HISTOGRAM_LEVELS * sizeof(unsigned int));
+    unsigned char *newLuminances = (unsigned char *)malloc(HISTOGRAM_LEVELS * sizeof(unsigned char));
     calculateNewLuminances(newLuminances, imageWidthPixel, imageHeightPixel, cumulativeDistributionHistogram);
     cudaEventRecord(stopTimeLuminancesMS);
 
     // STEP 4: Transform the original image using the scaled cumulative distribution as the transformation function
     cudaEventRecord(stopTimeCumulativeMS);
-    equalize(imageWidthPixel, imageHeightPixel, imageSizeBytes, cumulativeDistributionHistogram);
+    equalize(deviceImage, imageWidthPixel, imageHeightPixel, newLuminances);
     cudaEventRecord(stopTimeEqualizeMS);
 
     // recover data from the GPU to the CPU allocated memory
@@ -378,7 +378,7 @@ __global__ void calculateCumulativeDistribution_kernel(unsigned int *deviceInHis
         deviceOutHistogram[HISTOGRAM_LEVELS - 1] = lastElement;
 }
 
-void calculateNewLuminances(unsigned int *newLuminances,  int imageWidthPixel, int imageHeightPixel, unsigned int *cumulativeDistributionHistogram)
+void calculateNewLuminances(unsigned char *newLuminances,  int imageWidthPixel, int imageHeightPixel, unsigned int *cumulativeDistributionHistogram)
 {
     // pointer to the cumulative distribution histogram on the GPU
     unsigned int *deviceCumulativeDistributionHistogram;
@@ -386,8 +386,8 @@ void calculateNewLuminances(unsigned int *newLuminances,  int imageWidthPixel, i
     cudaMemcpy(deviceCumulativeDistributionHistogram, cumulativeDistributionHistogram, HISTOGRAM_LEVELS * sizeof(unsigned int), cudaMemcpyHostToDevice);
     
     // pointer to the new luminances on the GPU
-    unsigned int *deviceNewLuminances;
-    cudaMalloc((void **)&deviceNewLuminances, HISTOGRAM_LEVELS * sizeof(unsigned int));
+    unsigned char *deviceNewLuminances;
+    cudaMalloc((void **)&deviceNewLuminances, HISTOGRAM_LEVELS * sizeof(unsigned char));
 
     // pointer to the non zero minimum in the cumulative distribution on the GPU
     unsigned int *cdfmin;
@@ -400,13 +400,14 @@ void calculateNewLuminances(unsigned int *newLuminances,  int imageWidthPixel, i
     findMin_kernel<<<gridSize, blockSize>>>(deviceCumulativeDistributionHistogram, cdfmin);
     getLastCudaError("findMin_kernel() execution failed");
 
-    calculateNewLuminances_kernel<<<gridSize, blockSize>>>(deviceNewLuminances, imageWidthPixel * imageHeightPixel, deviceCumulativeDistributionHistogram, cdfmin);
+    calculateNewLuminances_kernel<<<gridSize, blockSize>>>(deviceNewLuminances, imageWidthPixel * imageHeightPixel, deviceCumulativeDistributionHistogram, *cdfmin);
     getLastCudaError("calculateNewLuminances_kernel() execution failed");
 
     // recover data from the GPU to the CPU allocated memory
     cudaMemcpy(deviceNewLuminances, newLuminances, HISTOGRAM_LEVELS * sizeof(unsigned int), cudaMemcpyDeviceToHost);
     getLastCudaError("retrieving data from GPU failed in: calculateCumulativeDistribution()");
 
+    // clean up
     cudaFree(deviceCumulativeDistributionHistogram);
     cudaFree(deviceNewLuminances);
     getLastCudaError("freeing memory in luminances() failed");
@@ -441,17 +442,17 @@ __global__ void findMin_kernel(unsigned int *deviceCumulativeDistributionHistogr
     }
 }
 
-__global__ void calculateNewLuminances_kernel(unsigned int *deviceNewLuminances, unsigned int imageSize, unsigned int *cdf, unsigned int cdfmin)
+__global__ void calculateNewLuminances_kernel(unsigned char *deviceNewLuminances, unsigned int imageSize, unsigned int *cdf, unsigned int cdfmin)
 {
-    deviceNewLuminances[threadIdx.x] = CLAMP255(floor(((float)(cdf[threadIdx.x] - cdfmin) / (float)(imageSize - cdfmin)) * (HISTOGRAM_LEVELS - 1.0)));
+    deviceNewLuminances[threadIdx.x] =  (unsigned char) CLAMP255(floor(((float)(cdf[threadIdx.x] - cdfmin) / (float)(imageSize - cdfmin)) * (HISTOGRAM_LEVELS - 1.0)));
 }
 
-void equalize(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, unsigned int *newLuminances)
+void equalize(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, unsigned char *newLuminances)
 {
     // pointer to the new luminances on the GPU
-    unsigned int *deviceNewLuminances;
-    cudaMalloc((void **)&deviceNewLuminances, HISTOGRAM_LEVELS * sizeof(unsigned int));
-    cudaMemcpy(deviceNewLuminances, newLuminances, HISTOGRAM_LEVELS * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    unsigned char *deviceNewLuminances;
+    cudaMalloc((void **)&deviceNewLuminances, HISTOGRAM_LEVELS * sizeof(unsigned char));
+    cudaMemcpy(deviceNewLuminances, newLuminances, HISTOGRAM_LEVELS * sizeof(unsigned char), cudaMemcpyHostToDevice);
 
     dim3 gridSizeEqualize(ceil(imageWidthPixel * imageHeightPixel) / 256.0);
     dim3 blockSizeEqualize(256);
@@ -459,14 +460,14 @@ void equalize(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPi
     // pointer to the thread id offset on new iteration
     int threadIdOffset = blockSizeEqualize.x * gridSizeEqualize.x;
 
-    equalize_kernel<<<gridSizeEqualize, blockSizeEqualize>>>(deviceImage, imageWidthPixel, imageHeightPixel, threadIdOffset, cdfmin, deviceNewLuminances);
+    equalize_kernel<<<gridSizeEqualize, blockSizeEqualize>>>(deviceImage, imageWidthPixel, imageHeightPixel, threadIdOffset, deviceNewLuminances);
     getLastCudaError("equalize_kernel() execution failed");
 
     cudaFree(deviceNewLuminances);
     getLastCudaError("freeing memory in luminances() failed");
 }
 
-__global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int threadIdOffset, unsigned int *cdfmin, unsigned int *deviceNewLuminances)
+__global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel, int imageHeightPixel, int threadIdOffset, unsigned char *deviceNewLuminances)
 {
     int threadId = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -475,7 +476,7 @@ __global__ void equalize_kernel(unsigned char *deviceImage, int imageWidthPixel,
         unsigned int pixelIdx = threadId * COLOR_CHANNELS;
 
         // YUV to RGB conversion
-        float y = deviceNewLuminances[deviceImage[pixelIdx]];
+        float y = (float)deviceNewLuminances[deviceImage[pixelIdx]];
         float u = (float)deviceImage[pixelIdx + 1] - 128.0f;
         float v = (float)deviceImage[pixelIdx + 2] - 128.0f;
 

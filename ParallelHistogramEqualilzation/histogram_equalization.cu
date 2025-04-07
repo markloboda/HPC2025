@@ -97,7 +97,7 @@ void CalculateCDF(unsigned int *histogram, unsigned int *cdf)
     }
 }
 
-void CalculateNewLuminances(unsigned int *newLuminances, int width, int height, unsigned int *cdf)
+void CalculateNewLuminances(unsigned char *newLuminances, int width, int height, unsigned int *cdf)
 {
     unsigned int imageSize = width * height;
     unsigned int cdfmin = findMin(cdf);
@@ -108,7 +108,7 @@ void CalculateNewLuminances(unsigned int *newLuminances, int width, int height, 
     }
 }
 
-void Equalize(unsigned char *image, int width, int height, unsigned int *newLuminances)
+void Equalize(unsigned char *image, int width, int height, unsigned char *newLuminances)
 {
     for (int y = 0; y < height; y++)
     {
@@ -176,7 +176,7 @@ int main(int argc, char *args[])
     // Allocate memory for raw output image data, histogram, and CDF
     unsigned int *histogram = (unsigned int *) calloc(HISTOGRAM_LEVELS, sizeof(unsigned int));
     unsigned int *CDF = (unsigned int *) calloc(HISTOGRAM_LEVELS, sizeof(unsigned int));
-    unsigned int *newLuminances = (unsigned int *) calloc(HISTOGRAM_LEVELS, sizeof(unsigned int));
+    unsigned char *newLuminances = (unsigned char *) calloc(HISTOGRAM_LEVELS, sizeof(unsigned char));
 
     // Create time events
     cudaEvent_t startMain, stopMain,
