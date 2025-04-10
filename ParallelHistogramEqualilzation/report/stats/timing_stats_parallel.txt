@@ -1,0 +1,440 @@
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 1.554560 ms
+CDF: 0.081312 ms
+Equalize: 0.177376 ms
+Total time: 3.062304 ms
+Sum of all times: 1.813248 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 1.570336 ms
+CDF: 0.093792 ms
+Equalize: 0.183296 ms
+Total time: 2.608800 ms
+Sum of all times: 1.847424 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 1.505088 ms
+CDF: 0.082880 ms
+Equalize: 0.180416 ms
+Total time: 2.565152 ms
+Sum of all times: 1.768384 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 1.631712 ms
+CDF: 0.084128 ms
+Equalize: 0.210944 ms
+Total time: 2.714240 ms
+Sum of all times: 1.926784 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 1.601248 ms
+CDF: 0.081600 ms
+Equalize: 0.185344 ms
+Total time: 2.659488 ms
+Sum of all times: 1.868192 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 1.612768 ms
+CDF: 0.075328 ms
+Equalize: 0.181472 ms
+Total time: 2.628640 ms
+Sum of all times: 1.869568 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 1.573248 ms
+CDF: 0.085088 ms
+Equalize: 0.182560 ms
+Total time: 2.680128 ms
+Sum of all times: 1.840896 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 1.559936 ms
+CDF: 0.083936 ms
+Equalize: 0.184320 ms
+Total time: 2.600416 ms
+Sum of all times: 1.828192 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 27.126335 ms
+CDF: 0.545888 ms
+Equalize: 1.116736 ms
+Total time: 30.100672 ms
+Sum of all times: 28.788960 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 1.997280 ms
+CDF: 0.439072 ms
+Equalize: 0.918272 ms
+Total time: 4.580096 ms
+Sum of all times: 3.354624 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 11.475840 ms
+CDF: 0.483360 ms
+Equalize: 1.051456 ms
+Total time: 14.421504 ms
+Sum of all times: 13.010656 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 2.111840 ms
+CDF: 0.439712 ms
+Equalize: 0.892032 ms
+Total time: 4.646432 ms
+Sum of all times: 3.443584 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 4.150016 ms
+CDF: 0.586944 ms
+Equalize: 1.182432 ms
+Total time: 7.659968 ms
+Sum of all times: 5.919392 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 4.213216 ms
+CDF: 0.583232 ms
+Equalize: 1.187648 ms
+Total time: 7.698208 ms
+Sum of all times: 5.984096 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 5.356608 ms
+CDF: 4.120928 ms
+Equalize: 1.201888 ms
+Total time: 12.016896 ms
+Sum of all times: 10.679423 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 5.869792 ms
+CDF: 4.120928 ms
+Equalize: 1.202304 ms
+Total time: 12.523904 ms
+Sum of all times: 11.193024 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 3.466080 ms
+CDF: 4.027424 ms
+Equalize: 1.223104 ms
+Total time: 11.718080 ms
+Sum of all times: 8.716608 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 5.123072 ms
+CDF: 0.556128 ms
+Equalize: 1.064512 ms
+Total time: 9.442464 ms
+Sum of all times: 6.743712 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 3.878624 ms
+CDF: 0.423264 ms
+Equalize: 0.890336 ms
+Total time: 8.066240 ms
+Sum of all times: 5.192224 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 3.270208 ms
+CDF: 0.985440 ms
+Equalize: 17.330080 ms
+Total time: 24.098047 ms
+Sum of all times: 21.585728 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 3.395520 ms
+CDF: 0.444512 ms
+Equalize: 1.187360 ms
+Total time: 8.012096 ms
+Sum of all times: 5.027392 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 12.513664 ms
+CDF: 0.440544 ms
+Equalize: 0.921472 ms
+Total time: 16.885023 ms
+Sum of all times: 13.875680 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 3.441664 ms
+CDF: 0.433536 ms
+Equalize: 0.880832 ms
+Total time: 7.636000 ms
+Sum of all times: 4.756032 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 20.080353 ms
+CDF: 0.446112 ms
+Equalize: 0.878912 ms
+Total time: 23.931456 ms
+Sum of all times: 21.405376 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 5.233152 ms
+CDF: 0.526240 ms
+Equalize: 1.004096 ms
+Total time: 15.497088 ms
+Sum of all times: 6.763488 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 5.251424 ms
+CDF: 0.402080 ms
+Equalize: 0.936992 ms
+Total time: 15.624096 ms
+Sum of all times: 6.590496 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 25.340672 ms
+CDF: 0.532320 ms
+Equalize: 1.199872 ms
+Total time: 35.319969 ms
+Sum of all times: 27.072865 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 5.405568 ms
+CDF: 0.436032 ms
+Equalize: 0.952608 ms
+Total time: 15.099488 ms
+Sum of all times: 6.794208 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 5.613632 ms
+CDF: 0.810080 ms
+Equalize: 1.910016 ms
+Total time: 15.652960 ms
+Sum of all times: 8.333729 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 5.731424 ms
+CDF: 0.421184 ms
+Equalize: 0.940864 ms
+Total time: 15.203424 ms
+Sum of all times: 7.093472 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 6.204096 ms
+CDF: 0.463904 ms
+Equalize: 1.097152 ms
+Total time: 15.462272 ms
+Sum of all times: 7.765152 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 5.662880 ms
+CDF: 0.426240 ms
+Equalize: 0.966048 ms
+Total time: 15.293344 ms
+Sum of all times: 7.055168 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 17.767040 ms
+CDF: 0.430560 ms
+Equalize: 1.174400 ms
+Total time: 44.801376 ms
+Sum of all times: 19.372000 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 17.972544 ms
+CDF: 0.441376 ms
+Equalize: 1.280288 ms
+Total time: 48.622208 ms
+Sum of all times: 19.694208 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 17.757984 ms
+CDF: 0.431072 ms
+Equalize: 1.143040 ms
+Total time: 44.351486 ms
+Sum of all times: 19.332096 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 17.941792 ms
+CDF: 0.354016 ms
+Equalize: 1.126912 ms
+Total time: 43.536865 ms
+Sum of all times: 19.422718 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 17.623137 ms
+CDF: 0.376864 ms
+Equalize: 1.141536 ms
+Total time: 43.424065 ms
+Sum of all times: 19.141537 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 17.822784 ms
+CDF: 0.348896 ms
+Equalize: 1.119552 ms
+Total time: 43.198559 ms
+Sum of all times: 19.291233 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 17.587040 ms
+CDF: 0.367008 ms
+Equalize: 1.120224 ms
+Total time: 44.380222 ms
+Sum of all times: 19.074272 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Parallel ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 17.698400 ms
+CDF: 0.346944 ms
+Equalize: 1.118688 ms
+Total time: 42.926369 ms
+Sum of all times: 19.164034 ms
+-----------------------------------------------------
+

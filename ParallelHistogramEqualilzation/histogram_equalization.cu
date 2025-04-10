@@ -18,7 +18,7 @@
 
 // Settings
 #define SAVE_TIMING_STATS
-#define WRITE_OUTPUT_IMAGE
+// #define WRITE_OUTPUT_IMAGE
 
 // Macros
 #define CLAMP(a, min, max) ((a) < (min) ? (min) : ((a) > (max) ? (max) : (a)))
@@ -180,11 +180,11 @@ int main(int argc, char *args[])
 
     // Create time events
     cudaEvent_t startMain, stopMain,
-                startTimeRGBtoYUV, stopTimeRGBtoYUV, 
-                startTimeHistogramMS, stopTimeHistogramMS, 
-                startTimeCumulativeMS, stopTimeCumulativeMS, 
+                startTimeRGBtoYUV, stopTimeRGBtoYUV,
+                startTimeHistogramMS, stopTimeHistogramMS,
+                startTimeCumulativeMS, stopTimeCumulativeMS,
                 startTimeLuminancesMS, stopTimeLuminancesMS,
-                startTimeEqualizeMS, stopTimeEqualizeMS, 
+                startTimeEqualizeMS, stopTimeEqualizeMS,
                 startTimeYUVtoRGB, stopTimeYUVtoRGB;
 
     cudaEventCreate(&startMain);
@@ -204,8 +204,8 @@ int main(int argc, char *args[])
 
     float elapsedTimeRGBtoYUV = 0,
           elapsedTimeHistogramMS= 0,
-          elapsedTimeCumulativeMS= 0, 
-          elapsedTimeLuminancesMS= 0, 
+          elapsedTimeCumulativeMS= 0,
+          elapsedTimeLuminancesMS= 0,
           elapsedTimeEqualizeMS= 0,
           elapsedTimeYUVtoRGB= 0,
           elapsedMain= 0;
@@ -253,7 +253,7 @@ int main(int argc, char *args[])
     cudaEventElapsedTime(&elapsedTimeLuminancesMS, startTimeLuminancesMS, stopTimeLuminancesMS);
     cudaEventElapsedTime(&elapsedTimeEqualizeMS, startTimeEqualizeMS, stopTimeEqualizeMS);
     cudaEventElapsedTime(&elapsedTimeYUVtoRGB, startTimeYUVtoRGB, stopTimeYUVtoRGB);
-    
+
     elapsedTimeHistogramMS += elapsedTimeRGBtoYUV; // add RGB to YUV time to compare with CUDA implementation
     elapsedTimeEqualizeMS += elapsedTimeLuminancesMS + elapsedTimeYUVtoRGB; // add YUV to RGB time to compare with CUDA implementation
 

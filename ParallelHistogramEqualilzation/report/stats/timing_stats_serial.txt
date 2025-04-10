@@ -1,0 +1,440 @@
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 4.298496 ms
+CDF: 0.003296 ms
+Equalize: 3.324064 ms
+Total time: 7.651872 ms
+Sum of all times: 7.625856 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 4.315264 ms
+CDF: 0.003680 ms
+Equalize: 3.334816 ms
+Total time: 7.672768 ms
+Sum of all times: 7.653760 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 4.298848 ms
+CDF: 0.003648 ms
+Equalize: 3.322688 ms
+Total time: 7.644064 ms
+Sum of all times: 7.625184 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 4.334272 ms
+CDF: 0.003712 ms
+Equalize: 3.358816 ms
+Total time: 7.716320 ms
+Sum of all times: 7.696800 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 4.309152 ms
+CDF: 0.003872 ms
+Equalize: 3.336320 ms
+Total time: 7.668288 ms
+Sum of all times: 7.649344 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 4.309760 ms
+CDF: 0.003616 ms
+Equalize: 3.326336 ms
+Total time: 7.659008 ms
+Sum of all times: 7.639712 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 4.299264 ms
+CDF: 0.003328 ms
+Equalize: 3.326848 ms
+Total time: 7.648864 ms
+Sum of all times: 7.629440 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/720x480.png ---------------
+Image width: 720
+Image height: 480
+Histogram: 4.295136 ms
+CDF: 0.003424 ms
+Equalize: 3.335680 ms
+Total time: 7.653056 ms
+Sum of all times: 7.634240 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 7.688768 ms
+CDF: 0.003392 ms
+Equalize: 9.104159 ms
+Total time: 16.815008 ms
+Sum of all times: 16.796320 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 7.885344 ms
+CDF: 0.003648 ms
+Equalize: 9.101536 ms
+Total time: 17.009888 ms
+Sum of all times: 16.990528 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 7.802112 ms
+CDF: 0.003680 ms
+Equalize: 9.076288 ms
+Total time: 16.901249 ms
+Sum of all times: 16.882080 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 8.201888 ms
+CDF: 0.003456 ms
+Equalize: 9.065536 ms
+Total time: 17.289696 ms
+Sum of all times: 17.270880 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 7.676384 ms
+CDF: 0.003456 ms
+Equalize: 9.050464 ms
+Total time: 16.749409 ms
+Sum of all times: 16.730305 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 7.802912 ms
+CDF: 0.003520 ms
+Equalize: 9.165568 ms
+Total time: 16.992001 ms
+Sum of all times: 16.972000 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 7.956512 ms
+CDF: 0.003680 ms
+Equalize: 9.082944 ms
+Total time: 17.062368 ms
+Sum of all times: 17.043137 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1024x768.png ---------------
+Image width: 1024
+Image height: 768
+Histogram: 7.694208 ms
+CDF: 0.003168 ms
+Equalize: 9.060640 ms
+Total time: 16.777121 ms
+Sum of all times: 16.758017 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 25.464802 ms
+CDF: 0.003552 ms
+Equalize: 23.601215 ms
+Total time: 49.088928 ms
+Sum of all times: 49.069569 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 25.462849 ms
+CDF: 0.003968 ms
+Equalize: 23.863935 ms
+Total time: 49.352001 ms
+Sum of all times: 49.330750 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 25.212513 ms
+CDF: 0.003552 ms
+Equalize: 23.591873 ms
+Total time: 48.828159 ms
+Sum of all times: 48.807938 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 25.199713 ms
+CDF: 0.004192 ms
+Equalize: 23.575489 ms
+Total time: 48.798687 ms
+Sum of all times: 48.779396 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 25.167713 ms
+CDF: 0.003360 ms
+Equalize: 23.533504 ms
+Total time: 48.723743 ms
+Sum of all times: 48.704578 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 25.233568 ms
+CDF: 0.003616 ms
+Equalize: 23.640385 ms
+Total time: 48.898239 ms
+Sum of all times: 48.877571 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 25.215872 ms
+CDF: 0.003456 ms
+Equalize: 23.579008 ms
+Total time: 48.818977 ms
+Sum of all times: 48.798336 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/1920x1200.png ---------------
+Image width: 1920
+Image height: 1200
+Histogram: 25.232414 ms
+CDF: 0.004032 ms
+Equalize: 23.635584 ms
+Total time: 48.892609 ms
+Sum of all times: 48.872032 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 88.164261 ms
+CDF: 0.004576 ms
+Equalize: 83.184349 ms
+Total time: 171.381058 ms
+Sum of all times: 171.353180 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 88.662491 ms
+CDF: 0.004224 ms
+Equalize: 83.653946 ms
+Total time: 172.348511 ms
+Sum of all times: 172.320663 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 87.793922 ms
+CDF: 0.004192 ms
+Equalize: 83.660896 ms
+Total time: 171.487076 ms
+Sum of all times: 171.459015 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 87.959518 ms
+CDF: 0.004256 ms
+Equalize: 82.695015 ms
+Total time: 170.686874 ms
+Sum of all times: 170.658783 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 87.769249 ms
+CDF: 0.004032 ms
+Equalize: 83.224487 ms
+Total time: 171.028610 ms
+Sum of all times: 170.997772 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 87.919586 ms
+CDF: 0.004224 ms
+Equalize: 82.752739 ms
+Total time: 170.704956 ms
+Sum of all times: 170.676544 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 88.032059 ms
+CDF: 0.003936 ms
+Equalize: 83.558716 ms
+Total time: 171.623047 ms
+Sum of all times: 171.594711 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/3840x2160.png ---------------
+Image width: 3840
+Image height: 2160
+Histogram: 88.486786 ms
+CDF: 0.004512 ms
+Equalize: 82.998627 ms
+Total time: 171.522202 ms
+Sum of all times: 171.489929 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 295.861694 ms
+CDF: 0.003200 ms
+Equalize: 235.463547 ms
+Total time: 531.355469 ms
+Sum of all times: 531.328430 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 292.060547 ms
+CDF: 0.003200 ms
+Equalize: 231.743500 ms
+Total time: 523.834229 ms
+Sum of all times: 523.807251 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 253.244186 ms
+CDF: 0.002592 ms
+Equalize: 203.736954 ms
+Total time: 457.009705 ms
+Sum of all times: 456.983734 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 249.973267 ms
+CDF: 0.002976 ms
+Equalize: 201.854019 ms
+Total time: 451.855164 ms
+Sum of all times: 451.830261 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 249.613922 ms
+CDF: 0.002816 ms
+Equalize: 201.189728 ms
+Total time: 450.829315 ms
+Sum of all times: 450.806458 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 247.868225 ms
+CDF: 0.002976 ms
+Equalize: 199.735931 ms
+Total time: 447.633423 ms
+Sum of all times: 447.607117 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 250.379578 ms
+CDF: 0.003008 ms
+Equalize: 201.514084 ms
+Total time: 451.921844 ms
+Sum of all times: 451.896667 ms
+-----------------------------------------------------
+
+--------------- HISTOGRAM EQUALIZATION - Serial ---------------
+--------------- test_images/7680x4320.png ---------------
+Image width: 7680
+Image height: 4320
+Histogram: 246.036743 ms
+CDF: 0.002784 ms
+Equalize: 199.357941 ms
+Total time: 445.424286 ms
+Sum of all times: 445.397461 ms
+-----------------------------------------------------
+

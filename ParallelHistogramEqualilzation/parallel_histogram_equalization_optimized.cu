@@ -22,7 +22,7 @@
 
 // Settings
 #define SAVE_TIMING_STATS
-#define WRITE_OUTPUT_IMAGE
+// #define WRITE_OUTPUT_IMAGE
 
 // Macros
 #define CLAMP(a, min, max) ((a) < (min) ? (min) : ((a) > (max) ? (max) : (a)))
@@ -89,8 +89,8 @@ int main(int argc, char *args[])
 
     // Create time events
     cudaEvent_t startMain, stopMain,
-                startTimeHistogramMS, stopTimeHistogramMS, 
-                startTimeCumulativeMS, stopTimeCumulativeMS, 
+                startTimeHistogramMS, stopTimeHistogramMS,
+                startTimeCumulativeMS, stopTimeCumulativeMS,
                 startTimeLuminancesMS, stopTimeLuminancesMS,
                 startTimeEqualizeMS, stopTimeEqualizeMS;
 
@@ -105,10 +105,10 @@ int main(int argc, char *args[])
     cudaEventCreate(&startTimeEqualizeMS);
     cudaEventCreate(&stopTimeEqualizeMS);
 
-    float elapsedTimeMain = 0, 
-          elapsedTimeHistogramMS = 0, 
-          elapsedTimeLuminancesMS = 0, 
-          elapsedTimeCumulativeMS = 0, 
+    float elapsedTimeMain = 0,
+          elapsedTimeHistogramMS = 0,
+          elapsedTimeLuminancesMS = 0,
+          elapsedTimeCumulativeMS = 0,
           elapsedTimeEqualizeMS = 0;
 
     cudaEventRecord(startMain);
@@ -130,7 +130,7 @@ int main(int argc, char *args[])
     calculateCumulativeDistribution(histogram, cumulativeDistributionHistogram);
     cudaEventRecord(stopTimeCumulativeMS);
 
-    // STEP 3: Computation Of New Pixel Intensities 
+    // STEP 3: Computation Of New Pixel Intensities
     cudaEventRecord(startTimeLuminancesMS);
     unsigned char *newLuminances = (unsigned char *)malloc(HISTOGRAM_LEVELS * sizeof(unsigned char));
     calculateNewLuminances(newLuminances, imageWidthPixel, imageHeightPixel, cumulativeDistributionHistogram);
@@ -370,7 +370,7 @@ void calculateNewLuminances(unsigned char *newLuminances,  int imageWidthPixel, 
     unsigned int *deviceCumulativeDistributionHistogram;
     cudaMalloc((void **)&deviceCumulativeDistributionHistogram, HISTOGRAM_LEVELS * sizeof(unsigned int));
     cudaMemcpy(deviceCumulativeDistributionHistogram, cumulativeDistributionHistogram, HISTOGRAM_LEVELS * sizeof(unsigned int), cudaMemcpyHostToDevice);
-    
+
     // pointer to the new luminances on the GPU
     unsigned char *deviceNewLuminances;
     cudaMalloc((void **)&deviceNewLuminances, HISTOGRAM_LEVELS * sizeof(unsigned char));

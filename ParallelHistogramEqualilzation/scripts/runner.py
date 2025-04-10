@@ -5,7 +5,7 @@ from typing import List
 
 PROGRAMS = [
     "histogram_equalization.cu",
-    "parallel_histogram_equalization",
+    "parallel_histogram_equalization.cu",
     "parallel_histogram_equalization_optimized.cu"
 ]
 
@@ -25,7 +25,7 @@ OUT_IMAGES = [
     "output_images/7680x4320.png",
 ]
 
-NUM_RUNS = 5
+NUM_RUNS = 8
 
 @dataclass
 class SlurmJob:
@@ -45,16 +45,7 @@ def run_slurm_jobs(jobs: List[SlurmJob]):
     for job in jobs:
         compiled_program = f"./bin/{job.program.replace('.cu', '.out')}"
 
-        cmd = ["srun",
-               "--partition=gpu",
-               "--job-name=runner-run-histogram_equalization",
-               "--output=logs/runner-run-histogram_equalization.log",
-               "--gpus=1",
-               "--time=60:00",
-               "--reservation=fri",
-               compiled_program,
-               job.input_image,
-               job.output_image]
+        cmd = ["sbatch", "scripts/job.sh", compiled_program, job.input_image, job.output_image]
         print("Running:", " ".join(cmd))
         result = subprocess.run(cmd, cwd=".", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result = result.stdout.decode()
