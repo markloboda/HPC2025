@@ -65,7 +65,7 @@ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize)
                               grid[down][x].V + 
                               grid[up][x].V - 
                               4 * grid[y][x].V;
-                              
+
             float uVSqr = grid[y][x].U * grid[y][x].V * grid[y][x].V;
 
             float newU = grid[y][x].U + DELTA_t * (-uVSqr + F * (1 - grid[y][x].U) + Du + deltaSqrU);
@@ -90,8 +90,8 @@ void initGrid(Cell** grid, int gridSize)
     {
         for (int x = 0; x < gridSize; x++)
         {
-            if (((int)(gridSize * (3/8)) < x < (int)(gridSize * (5/8))) &&
-                (gridSize * (3/8) < y < gridSize * (5/8)))
+            if ((x > (int)(gridSize * 3.0/8) && x < (int)(gridSize * 5.0/8)) &&
+                (y > (int)(gridSize * 3.0/8) && y < (int)(gridSize * 5.0/8)))
             {
                 grid[y][x].U = U_INSIDE;
                 grid[y][x].V = V_INSIDE;
@@ -111,7 +111,7 @@ void allocateGrid(Cell** gridDataPtr, Cell*** gridPtr, int gridSize)
     *gridPtr = (Cell**) malloc(gridSize * sizeof(Cell*));
     // Now we do not have to calc pixel position every time
     for (int i = 0; i < gridSize; i++)
-        *gridPtr[i] = &(*gridDataPtr)[i * gridSize];
+        (*gridPtr)[i] = &((*gridDataPtr)[i * gridSize]);
 }
 
 int main(int argc, char *args[])
@@ -137,13 +137,13 @@ int main(int argc, char *args[])
 
 #ifdef WRITE_OUTPUT_IMAGE
     // Create dirs if they do not exist
-    struct stat st = {0};
-    if (stat("./output_images", &st) == -1) {
+    struct stat output_images_st = {0};
+    if (stat("./output_images", &output_images_st) == -1) {
         mkdir("./output_images", 0700);
     }
     struct stat st = {0};
     char outDirFpath[50];
-    snprintf(outDirFpath, sizeof(outDirFpath), "%s%s%s%s", "./output_images/", gridSize, "x", gridSize);
+    snprintf(outDirFpath, sizeof(outDirFpath), "%s%d%s%d", "./output_images/", gridSize, "x", gridSize);
     if (stat(outDirFpath, &st) == -1) {
         mkdir(outDirFpath, 0700);
     }
@@ -169,19 +169,19 @@ int main(int argc, char *args[])
 
 #ifdef WRITE_OUTPUT_IMAGE
         char outputImageFpath[100];
-        snprintf(outputImageFpath, sizeof(outputImageFpath), "%s%s%s%s", outDirFpath, "/", step, ".png");
+        snprintf(outputImageFpath, sizeof(outputImageFpath), "%s%s%d%s", outDirFpath, "/", step, ".png");
 
         char gridVImage[gridSize * gridSize];
         for (int y = 0; y < gridSize; y++)
         {
             for (int x = 0; x < gridSize; x++)
             {
-                // gridVImage[x + y * gridSize] = 255 - 255 * (grid[y][x].U - grid[y][x].V);
+                // gridVImage[x + y * gridSize] = (char) (255 - 255 * (grid[y][x].U - grid[y][x].V));
                 gridVImage[x + y * gridSize] = (char) (255 * grid[y][x].V);
             }
         }
 
-        stbi_write_png("./output_images/", gridSize, gridSize, COLOR_CHANNELS, gridVData, gridSize * COLOR_CHANNELS);
+        stbi_write_png(outputImageFpath, gridSize, gridSize, COLOR_CHANNELS, gridVImage, gridSize * COLOR_CHANNELS);
 #endif
     }
 
@@ -199,14 +199,14 @@ int main(int argc, char *args[])
     result.total = elapsedMain;
 
     // Create dir timing_stats if it does not exist
-    struct stat st = {0};
-    if (stat("./timing_stats", &st) == -1) {
+    struct stat timing_stats_st = {0};
+    if (stat("./timing_stats", &timing_stats_st) == -1) {
         mkdir("./timing_stats", 0700);
     }
 
     FILE *timingFile = fopen("./timing_stats/timing_stats_serial.txt", "a");
     fprintf(timingFile, "--------------- HISTOGRAM EQUALIZATION - Serial ---------------\n");
-    fprintf(timingFile, "--------------- %s ---------------\n", gridSize);
+    fprintf(timingFile, "------------------------- %d%s%d ----------------------\n", gridSize, "x", gridSize);
     fprintf(timingFile, "Grid size: %d\n", result.size);
     fprintf(timingFile, "Total time: %f ms\n", result.total);
     fprintf(timingFile, "-----------------------------------------------------\n");
@@ -221,6 +221,8 @@ int main(int argc, char *args[])
     // Free memory
     free(grid);
     free(gridData);
+    free(gridTmp);
+    free(gridDataTmp);
 
     return EXIT_SUCCESS;
 }

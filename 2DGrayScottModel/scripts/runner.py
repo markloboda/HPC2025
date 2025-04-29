@@ -36,7 +36,7 @@ def run_slurm_jobs(jobs: List[SlurmJob]):
     for job in jobs:
         compiled_program = f"./bin/{job.program.replace('.cu', '.out')}"
 
-        cmd = ["sbatch", "scripts/job.sh", compiled_program, job.grid_size]
+        cmd = ["sbatch", "scripts/job.sh", compiled_program, str(job.grid_size)]
         print("Running:", " ".join(cmd))
         result = subprocess.run(cmd, cwd=".", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result = result.stdout.decode()
@@ -66,4 +66,3 @@ if __name__ == "__main__":
     run_slurm_jobs(jobs)
 
     os.chdir(original_dir)
-    
