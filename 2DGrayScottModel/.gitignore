@@ -1,0 +1,7 @@
+# Folders
+bin/
+logs/
+debug_images/
+output_images/
+timing_stats/
+.vscode/
