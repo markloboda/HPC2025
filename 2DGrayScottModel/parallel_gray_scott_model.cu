@@ -106,7 +106,6 @@ void grayScottSolver(Cell** grid, Cell** gridTmp, int gridSize, char* outDirFpat
         // 2. Switch current grid to new grid
         swapGridPtr(&grid, &gridTmp);
 
-
 #ifdef WRITE_OUTPUT_IMAGE
         if (step % FRAME_CAPUTRE_FREQ == 0)
         {
@@ -123,7 +122,7 @@ void swapGridPtr(Cell*** firstGridPtr, Cell*** secondGridPtr)
     *secondGridPtr = tmp;
 }
 
-void initGrid(Cell** grid, int gridSize)
+void initGrid(Cell* gridData, int gridSize)
 { 
     for (int y = 0; y < gridSize; y++)
     {
@@ -132,25 +131,25 @@ void initGrid(Cell** grid, int gridSize)
             if ((x > (int)(gridSize * 3.0/8) && x < (int)(gridSize * 5.0/8)) &&
                 (y > (int)(gridSize * 3.0/8) && y < (int)(gridSize * 5.0/8)))
             {
-                grid[y][x].U = U_INSIDE;
-                grid[y][x].V = V_INSIDE;
+                gridData[y * gridSize + x].U = U_INSIDE;
+                gridData[y * gridSize + x].V = V_INSIDE;
             }
             else
             {
-                grid[y][x].U = U_OUTSIDE;
-                grid[y][x].V = V_OUTSIDE;
+                gridData[y * gridSize + x].U = U_OUTSIDE;
+                gridData[y * gridSize + x].V = V_OUTSIDE;
             }
         }
     }
 }
 
-void allocateGrid(Cell** gridDataPtr, Cell*** gridPtr, int gridSize)
+void allocateDeviceGrid(Cell** deviceGridDataPtr, Cell*** deviceGridPtr, int gridSize)
 {
-    *gridDataPtr = (Cell*) malloc(gridSize * gridSize * sizeof(Cell));
-    *gridPtr = (Cell**) malloc(gridSize * sizeof(Cell*));
+    cudaMalloc((void **)deviceGridDataPtr, gridSize * gridSize * sizeof(Cell));
+    cudaMalloc((void ***)deviceGridPtr, gridSize * sizeof(Cell*));
     // Now we do not have to calc pixel position every time
     for (int i = 0; i < gridSize; i++)
-        (*gridPtr)[i] = &((*gridDataPtr)[i * gridSize]);
+        (*deviceGridPtr)[i] = &((*deviceGridDataPtr)[i * gridSize]);
 }
 
 int main(int argc, char *args[])
@@ -163,15 +162,12 @@ int main(int argc, char *args[])
 
     int gridSize = atoi(args[1]);
 
-    // Reserve space for grids and initialize them
-    Cell* gridData;
-    Cell** grid;
-    allocateGrid(&gridData, &grid, gridSize);
-    initGrid(grid, gridSize);
+    int gridDataSizeBytes = gridSize * gridSize * sizeof(Cell);
 
-    Cell* gridDataTmp;
-    Cell** gridTmp;
-    allocateGrid(&gridDataTmp, &gridTmp, gridSize);
+    // Reserve space for grids and initialize them
+    Cell* gridData = (Cell*) malloc(gridDataSizeBytes);
+    Cell* gridDataTmp = (Cell*) malloc(gridDataSizeBytes);
+    initGrid(gridData, gridSize);
 
 
     char outDirFpath[50];
@@ -198,9 +194,26 @@ int main(int argc, char *args[])
 
     cudaEventRecord(startMain);
 
+    // Copy/allocate the initial grids to the GPU
+    Cell* deviceGridData;
+    Cell** deviceGrid;
+    allocateDeviceGrid(&deviceGridData, &deviceGrid, gridSize);
+    getLastCudaError("Failed to allocate grid memory.");
+    cudaMemcpy(deviceGridData, gridData, gridDataSizeBytes, cudaMemcpyHostToDevice);
+    getLastCudaError("Failed to copy initial grid to device.");
+
+    Cell* deviceGridDataTmp;
+    Cell** deviceGridTmp;
+    allocateDeviceGrid(&deviceGridDataTmp, &deviceGridTmp, gridSize);
+    getLastCudaError("Failed to allocate grid memory.");
+
     // Main algorithm ///////////////////////////////////////////////////////////////////////////////////
-    grayScottSolver(grid, gridTmp, gridSize, outDirFpath);
+    grayScottSolver(deviceGrid, deviceGridTmp, gridSize, outDirFpath);
     /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // recover data from the GPU to the CPU allocated memory
+    cudaMemcpy(gridData, deviceGridData, gridDataSizeBytes, cudaMemcpyDeviceToHost);
+    getLastCudaError("Retrieving data from GPU failed");
 
     // End the time recording and calculate elapsed times
     cudaEventRecord(stopMain);
@@ -221,8 +234,8 @@ int main(int argc, char *args[])
         mkdir("./timing_stats", 0700);
     }
 
-    FILE *timingFile = fopen("./timing_stats/timing_stats_serial.txt", "a");
-    fprintf(timingFile, "--------------- HISTOGRAM EQUALIZATION - Serial ---------------\n");
+    FILE *timingFile = fopen("./timing_stats/timing_stats_parallel.txt", "a");
+    fprintf(timingFile, "-------------- HISTOGRAM EQUALIZATION - Parallel -------------\n");
     fprintf(timingFile, "------------------------- %d%s%d ----------------------\n", gridSize, "x", gridSize);
     fprintf(timingFile, "Grid size: %d\n", result.size);
     fprintf(timingFile, "Total time: %f ms\n", result.total);
@@ -236,10 +249,14 @@ int main(int argc, char *args[])
     cudaEventDestroy(stopMain);
 
     // Free memory
-    free(grid);
     free(gridData);
-    free(gridTmp);
     free(gridDataTmp);
+
+    cudaFree(deviceGrid);
+    cudaFree(deviceGridData);
+    cudaFree(deviceGridTmp);
+    cudaFree(deviceGridDataTmp);
+    getLastCudaError("Freeing memory failed");
 
     return EXIT_SUCCESS;
 }
