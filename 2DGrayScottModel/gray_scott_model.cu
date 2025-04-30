@@ -28,7 +28,7 @@
 #define V_OUTSIDE 0.0
 
 #define COLOR_CHANNELS 1
-#define FRAME_CAPUTRE_FREQ 100  // How frequently is a frame captured
+#define FRAME_CAPTURE_FREQ 100  // How frequently is a frame captured
 
 // Settings
 #define SAVE_TIMING_STATS
@@ -108,7 +108,7 @@ void grayScottSolver(Cell** grid, Cell** gridTmp, int gridSize, char* outDirFpat
 
 
 #ifdef WRITE_OUTPUT_IMAGE
-        if (step % FRAME_CAPUTRE_FREQ == 0)
+        if (step % FRAME_CAPTURE_FREQ == 0)
         {
             write_output_frame(outDirFpath, step, gridSize, grid);
         }

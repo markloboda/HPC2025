@@ -28,7 +28,7 @@
 #define V_OUTSIDE 0.0
 
 #define COLOR_CHANNELS 1
-#define FRAME_CAPUTRE_FREQ 100  // How frequently is a frame captured
+#define FRAME_CAPTURE_FREQ 100  // How frequently is a frame captured
 
 // Settings
 #define SAVE_TIMING_STATS
@@ -45,38 +45,42 @@ struct execution_result
     float total;
 };
 
-void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize)
+__device__ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize, int index)
 {
-    for (int y = 0; y < gridSize; y++)
-    {
-        for (int x = 0; x < gridSize; x++)
-        {
-            int left = (x - 1 + gridSize) % gridSize;
-            int right = (x + 1) % gridSize;
-            int up = (y - 1 + gridSize) % gridSize;
-            int down = (y + 1) % gridSize;
+    int x = index % gridSize;
+    int y = index / gridSize;
 
-            float deltaSqrU = grid[y][right].U + 
-                              grid[y][left].U + 
-                              grid[down][x].U + 
-                              grid[up][x].U - 
-                              4 * grid[y][x].U;
+    int left = (x - 1 + gridSize) % gridSize;
+    int right = (x + 1) % gridSize;
+    int up = (y - 1 + gridSize) % gridSize;
+    int down = (y + 1) % gridSize;
 
-            float deltaSqrV = grid[y][right].V + 
-                              grid[y][left].V + 
-                              grid[down][x].V + 
-                              grid[up][x].V - 
-                              4 * grid[y][x].V;
+    float deltaSqrU = grid[y][right].U + 
+                        grid[y][left].U + 
+                        grid[down][x].U + 
+                        grid[up][x].U - 
+                        4 * grid[y][x].U;
 
-            float uVSqr = grid[y][x].U * grid[y][x].V * grid[y][x].V;
+    float deltaSqrV = grid[y][right].V + 
+                        grid[y][left].V + 
+                        grid[down][x].V + 
+                        grid[up][x].V - 
+                        4 * grid[y][x].V;
 
-            float newU = grid[y][x].U + DELTA_t * (-uVSqr + F * (1 - grid[y][x].U) + Du * deltaSqrU);
-            float newV = grid[y][x].V + DELTA_t * ( uVSqr - (F + k) * grid[y][x].V + Dv * deltaSqrV);
+    float uVSqr = grid[y][x].U * grid[y][x].V * grid[y][x].V;
 
-            gridOut[y][x].U = newU;
-            gridOut[y][x].V = newV;
-        }
-    }
+    float newU = grid[y][x].U + DELTA_t * (-uVSqr + F * (1 - grid[y][x].U) + Du * deltaSqrU);
+    float newV = grid[y][x].V + DELTA_t * ( uVSqr - (F + k) * grid[y][x].V + Dv * deltaSqrV);
+
+    gridOut[y][x].U = newU;
+    gridOut[y][x].V = newV;
+}
+
+__device__ void swapGridPtr(Cell*** firstGridPtr, Cell*** secondGridPtr)
+{
+    Cell** tmp = *firstGridPtr;
+    *firstGridPtr = *secondGridPtr;
+    *secondGridPtr = tmp;
 }
 
 void write_output_frame(char* outDirFpath, int step, int gridSize, Cell** grid)
@@ -96,18 +100,25 @@ void write_output_frame(char* outDirFpath, int step, int gridSize, Cell** grid)
     stbi_write_png(outputImageFpath, gridSize, gridSize, COLOR_CHANNELS, gridVImage, gridSize * COLOR_CHANNELS);
 }
 
-void grayScottSolver(Cell** grid, Cell** gridTmp, int gridSize, char* outDirFpath)
+__global__ void grayScottSimStep_kernel(Cell** grid, Cell** gridTmp, int gridSize)
 {
-    for (int step = 0; step < MAX_SIM_STEPS; step++)
+    // find index of the pixel of the thread
+    int index = threadIdx.x + blockIdx.x * blockDim.x;
+    int indexOffset = blockDim.x * gridDim.x;
+
+    int gridSizePixel = gridSize * gridSize;
+
+    for (int step = 0; step < MAX_SIM_STEPS / 2; step++)  // TODO if num of steps is odd
     {
         // 1. Calculate new grid values
-        grayScottSimStep(grid, gridTmp, gridSize);
-
-        // 2. Switch current grid to new grid
-        swapGridPtr(&grid, &gridTmp);
+        grayScottSimStep(grid, gridTmp, gridSize, index);
+        __syncthreads();
+        grayScottSimStep(gridTmp, grid, gridSize, index);
+        __syncthreads();
 
 #ifdef WRITE_OUTPUT_IMAGE
-        if (step % FRAME_CAPUTRE_FREQ == 0)
+        // TODO
+        if (step % FRAME_CAPTURE_FREQ == 0)
         {
             write_output_frame(outDirFpath, step, gridSize, grid);
         }
@@ -115,11 +126,40 @@ void grayScottSolver(Cell** grid, Cell** gridTmp, int gridSize, char* outDirFpat
     }
 }
 
-void swapGridPtr(Cell*** firstGridPtr, Cell*** secondGridPtr)
+void grayScottSolver(Cell* gridData, int gridSize, char* outDirFpath)
 {
-    Cell** tmp = *firstGridPtr;
-    *firstGridPtr = *secondGridPtr;
-    *secondGridPtr = tmp;
+    // Copy/allocate the initial grids to the GPU
+    int gridDataSizeBytes = gridSize * gridSize * sizeof(Cell);
+
+    Cell* deviceGridData;
+    Cell** deviceGrid;
+    allocateDeviceGrid(&deviceGridData, &deviceGrid, gridSize);
+    getLastCudaError("Failed to allocate grid memory.");
+    cudaMemcpy(deviceGridData, gridData, gridDataSizeBytes, cudaMemcpyHostToDevice);
+    getLastCudaError("Failed to copy initial grid to device.");
+
+    Cell* deviceGridDataTmp;
+    Cell** deviceGridTmp;
+    allocateDeviceGrid(&deviceGridDataTmp, &deviceGridTmp, gridSize);
+    getLastCudaError("Failed to allocate grid memory.");
+
+    // set up the grid and block size
+    dim3 gridSize(ceil(gridSize * gridSize / (float)256));
+    dim3 blockSize(256);  // TODO test different block sizes
+
+    // runs KERNEL
+    grayScottSimStep_kernel<<<gridSize, blockSize>>>(deviceGrid, deviceGridTmp, gridSize);
+    getLastCudaError("grayScottSimStep_kernel() execution failed");
+
+    // recover data from the GPU to the CPU allocated memory
+    cudaMemcpy(gridData, deviceGridData, gridDataSizeBytes, cudaMemcpyDeviceToHost);
+    getLastCudaError("Retrieving data from GPU failed");
+
+    cudaFree(deviceGrid);
+    cudaFree(deviceGridData);
+    cudaFree(deviceGridTmp);
+    cudaFree(deviceGridDataTmp);
+    getLastCudaError("Freeing memory failed");
 }
 
 void initGrid(Cell* gridData, int gridSize)
@@ -194,26 +234,9 @@ int main(int argc, char *args[])
 
     cudaEventRecord(startMain);
 
-    // Copy/allocate the initial grids to the GPU
-    Cell* deviceGridData;
-    Cell** deviceGrid;
-    allocateDeviceGrid(&deviceGridData, &deviceGrid, gridSize);
-    getLastCudaError("Failed to allocate grid memory.");
-    cudaMemcpy(deviceGridData, gridData, gridDataSizeBytes, cudaMemcpyHostToDevice);
-    getLastCudaError("Failed to copy initial grid to device.");
-
-    Cell* deviceGridDataTmp;
-    Cell** deviceGridTmp;
-    allocateDeviceGrid(&deviceGridDataTmp, &deviceGridTmp, gridSize);
-    getLastCudaError("Failed to allocate grid memory.");
-
     // Main algorithm ///////////////////////////////////////////////////////////////////////////////////
-    grayScottSolver(deviceGrid, deviceGridTmp, gridSize, outDirFpath);
+    grayScottSolver(gridData, gridSize, outDirFpath);
     /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // recover data from the GPU to the CPU allocated memory
-    cudaMemcpy(gridData, deviceGridData, gridDataSizeBytes, cudaMemcpyDeviceToHost);
-    getLastCudaError("Retrieving data from GPU failed");
 
     // End the time recording and calculate elapsed times
     cudaEventRecord(stopMain);
@@ -251,12 +274,6 @@ int main(int argc, char *args[])
     // Free memory
     free(gridData);
     free(gridDataTmp);
-
-    cudaFree(deviceGrid);
-    cudaFree(deviceGridData);
-    cudaFree(deviceGridTmp);
-    cudaFree(deviceGridDataTmp);
-    getLastCudaError("Freeing memory failed");
 
     return EXIT_SUCCESS;
 }
