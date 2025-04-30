@@ -30,7 +30,7 @@
 
 // Settings
 #define SAVE_TIMING_STATS
-// #define WRITE_OUTPUT_IMAGE
+#define WRITE_OUTPUT_IMAGE
 
 typedef struct _Cell_ {
     float U;  // Concentration of species U
@@ -49,10 +49,10 @@ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize)
     {
         for (int x = 0; x < gridSize; x++)
         {
-            int left = (x + gridSize) % gridSize;
-            int right = x % gridSize;
-            int up = (y + gridSize) % gridSize;
-            int down = y % gridSize;
+            int left = (x - 1 + gridSize) % gridSize;
+            int right = (x + 1) % gridSize;
+            int up = (y - 1 + gridSize) % gridSize;
+            int down = (y + 1) % gridSize;
 
             float deltaSqrU = grid[y][right].U + 
                               grid[y][left].U + 
@@ -68,8 +68,8 @@ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize)
 
             float uVSqr = grid[y][x].U * grid[y][x].V * grid[y][x].V;
 
-            float newU = grid[y][x].U + DELTA_t * (-uVSqr + F * (1 - grid[y][x].U) + Du + deltaSqrU);
-            float newV = grid[y][x].V + DELTA_t * ( uVSqr - (F + k) * grid[y][x].V + Dv + deltaSqrV);
+            float newU = grid[y][x].U + DELTA_t * (-uVSqr + F * (1 - grid[y][x].U) + Du * deltaSqrU);
+            float newV = grid[y][x].V + DELTA_t * ( uVSqr - (F + k) * grid[y][x].V + Dv * deltaSqrV);
 
             gridOut[y][x].U = newU;
             gridOut[y][x].V = newV;
@@ -168,20 +168,23 @@ int main(int argc, char *args[])
 
 
 #ifdef WRITE_OUTPUT_IMAGE
-        char outputImageFpath[100];
-        snprintf(outputImageFpath, sizeof(outputImageFpath), "%s%s%d%s", outDirFpath, "/", step, ".png");
-
-        char gridVImage[gridSize * gridSize];
-        for (int y = 0; y < gridSize; y++)
+        #define FRAME_CAPUTRE_FREQ 100  // How frequently is a frame captured
+        if (step % FRAME_CAPUTRE_FREQ == 0)
         {
-            for (int x = 0; x < gridSize; x++)
-            {
-                // gridVImage[x + y * gridSize] = (char) (255 - 255 * (grid[y][x].U - grid[y][x].V));
-                gridVImage[x + y * gridSize] = (char) (255 * grid[y][x].V);
-            }
-        }
+            char outputImageFpath[100];
+            snprintf(outputImageFpath, sizeof(outputImageFpath), "%s%s%d%s", outDirFpath, "/", step, ".png");
 
-        stbi_write_png(outputImageFpath, gridSize, gridSize, COLOR_CHANNELS, gridVImage, gridSize * COLOR_CHANNELS);
+            char gridVImage[gridSize * gridSize];
+            for (int y = 0; y < gridSize; y++)
+            {
+                for (int x = 0; x < gridSize; x++)
+                {
+                    gridVImage[x + y * gridSize] = (char) (255 * grid[y][x].V);
+                }
+            }
+
+            stbi_write_png(outputImageFpath, gridSize, gridSize, COLOR_CHANNELS, gridVImage, gridSize * COLOR_CHANNELS);
+        }
 #endif
     }
 
