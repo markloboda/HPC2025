@@ -45,6 +45,13 @@ struct execution_result
     float total;
 };
 
+void swapGridPtr(Cell*** firstGridPtr, Cell*** secondGridPtr)
+{
+    Cell** tmp = *firstGridPtr;
+    *firstGridPtr = *secondGridPtr;
+    *secondGridPtr = tmp;
+}
+
 void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize)
 {
     for (int y = 0; y < gridSize; y++)
@@ -114,13 +121,6 @@ void grayScottSolver(Cell** grid, Cell** gridTmp, int gridSize, char* outDirFpat
         }
 #endif
     }
-}
-
-void swapGridPtr(Cell*** firstGridPtr, Cell*** secondGridPtr)
-{
-    Cell** tmp = *firstGridPtr;
-    *firstGridPtr = *secondGridPtr;
-    *secondGridPtr = tmp;
 }
 
 void initGrid(Cell** grid, int gridSize)

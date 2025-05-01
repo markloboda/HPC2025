@@ -114,7 +114,7 @@ void write_output_frame(int step, int gridSize, Cell* gridData, Cell* deviceGrid
     {
         for (int x = 0; x < gridSize; x++)
         {
-            gridVImage[x + y * gridSize] = (unsigned char) (255 * gridData[y * gridSize + x].V);
+            gridVImage[y * gridSize + x] = (unsigned char) (255 * gridData[y * gridSize + x].V);
         }
     }
 
@@ -138,6 +138,8 @@ __global__ void grayScottSimStep_kernel(int simSteps, Cell** deviceGrid, Cell** 
             __syncthreads();
             //grayScottSimStep(deviceGridTmp, deviceGrid, gridSize, index);
             //__syncthreads();
+
+            // 2. Switch current grid to new grid
             swapGridPtr(&deviceGrid, &deviceGridTmp);
         }
     }
