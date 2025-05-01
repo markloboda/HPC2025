@@ -16,6 +16,7 @@
 
 // Constants
 #define MAX_SIM_STEPS 5000
+#define NUM_FRAMES_CAPTURED 10  // Total frames captured
 #define DELTA_t 1
 #define Du 0.16
 #define Dv 0.08
@@ -28,7 +29,6 @@
 #define V_OUTSIDE 0.0
 
 #define COLOR_CHANNELS 1
-#define FRAME_CAPTURE_FREQ 100  // How frequently is a frame captured
 
 // Settings
 #define SAVE_TIMING_STATS
@@ -108,9 +108,9 @@ void grayScottSolver(Cell** grid, Cell** gridTmp, int gridSize, char* outDirFpat
 
 
 #ifdef WRITE_OUTPUT_IMAGE
-        if (step % FRAME_CAPTURE_FREQ == 0)
+        if ((step + 1) % (MAX_SIM_STEPS / NUM_FRAMES_CAPTURED)  == 0)
         {
-            write_output_frame(outDirFpath, step, gridSize, grid);
+            write_output_frame(outDirFpath, step + 1, gridSize, grid);
         }
 #endif
     }
