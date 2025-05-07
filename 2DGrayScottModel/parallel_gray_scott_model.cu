@@ -35,7 +35,7 @@
 // #define WRITE_OUTPUT_IMAGE
 
 // CUDA settings
-#define BLOCK_SIZE 256
+#define BLOCK_SIZE 16
 
 typedef struct _Cell_ {
     float U;  // Concentration of species U
@@ -47,6 +47,13 @@ struct execution_result
     int size;
     float total;
 };
+
+void swapDeviceGridPtr(Cell*** firstGridPtr, Cell*** secondGridPtr)
+{
+    Cell** tmp = *firstGridPtr;
+    *firstGridPtr = *secondGridPtr;
+    *secondGridPtr = tmp;
+}
 
 void allocateDeviceGrid(Cell** deviceGridDataPtr, Cell*** deviceGridPtr, int gridSize)
 {
@@ -115,7 +122,7 @@ void write_output_frame(int step, int gridSize, Cell* gridData, Cell* deviceGrid
     stbi_write_png(outputImageFpath, gridSize, gridSize, COLOR_CHANNELS, gridVImage, gridSize * COLOR_CHANNELS);
 }
 
-__global__ void grayScottSimStep_kernel(int simSteps, Cell** deviceGrid, Cell** deviceGridTmp, int gridSize)
+__global__ void grayScottSimStep_kernel(Cell** deviceGrid, Cell** deviceGridTmp, int gridSize)
 {
     // find index of the pixel of the thread
     int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -123,18 +130,7 @@ __global__ void grayScottSimStep_kernel(int simSteps, Cell** deviceGrid, Cell** 
 
     if (x < gridSize && y < gridSize)
     {
-        for (int step = 0; step < simSteps; step++)
-        {
-            if (step % 2 == 0)
-            {
-                grayScottSimStep(deviceGrid, deviceGridTmp, gridSize, x, y);
-            }
-            else
-            {
-                grayScottSimStep(deviceGridTmp, deviceGrid, gridSize, x, y);
-            }
-            __syncthreads();
-        }
+        grayScottSimStep(deviceGrid, deviceGridTmp, gridSize, x, y);
     }
 }
 
@@ -161,15 +157,19 @@ void grayScottSolver(Cell* gridData, int gridSize)
     // runs KERNEL
     for (int step = 0; step < MAX_SIM_STEPS; step++)
     {
+        // 1. Calculate new grid values
         grayScottSimStep_kernel<<<cudaGridSize, cudaBlockSize>>>(deviceGrid, deviceGridTmp, gridSize);
         getLastCudaError("grayScottSimStep_kernel() execution failed");
 
-        #ifdef WRITE_OUTPUT_IMAGE
+        // 2. Switch current grid to new grid
+        swapDeviceGridPtr(&deviceGrid, &deviceGridTmp);
+
+#ifdef WRITE_OUTPUT_IMAGE
         if ((step + 1) % (MAX_SIM_STEPS / NUM_FRAMES_CAPTURED) == 0)
         {
             write_output_frame((step + 1), gridSize, gridData, deviceGridData);
         }
-        #endif
+#endif
     }
 
     // recover data from the GPU to the CPU allocated memory
