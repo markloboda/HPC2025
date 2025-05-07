@@ -93,13 +93,6 @@ __device__ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize, int 
     gridOut[y][x].V = newV;
 }
 
-__device__ void swapGridPtr(Cell*** firstGridPtr, Cell*** secondGridPtr)
-{
-    Cell** tmp = *firstGridPtr;
-    *firstGridPtr = *secondGridPtr;
-    *secondGridPtr = tmp;
-}
-
 void write_output_frame(int step, int gridSize, Cell* gridData, Cell* deviceGridData)
 {
     // recover data from the GPU to the CPU allocated memory
