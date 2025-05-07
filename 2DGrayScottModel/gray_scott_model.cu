@@ -58,25 +58,28 @@ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize)
     {
         for (int x = 0; x < gridSize; x++)
         {
+            // Calculate neighbour indices with wrap-around
             int left = (x - 1 + gridSize) % gridSize;
             int right = (x + 1) % gridSize;
             int up = (y - 1 + gridSize) % gridSize;
             int down = (y + 1) % gridSize;
 
-            float deltaSqrU = grid[y][right].U + 
-                              grid[y][left].U + 
-                              grid[down][x].U + 
-                              grid[up][x].U - 
+            // Calculate Laplacian
+            float deltaSqrU = grid[y][right].U +
+                              grid[y][left].U +
+                              grid[down][x].U +
+                              grid[up][x].U -
                               4 * grid[y][x].U;
 
-            float deltaSqrV = grid[y][right].V + 
-                              grid[y][left].V + 
-                              grid[down][x].V + 
-                              grid[up][x].V - 
+            float deltaSqrV = grid[y][right].V +
+                              grid[y][left].V +
+                              grid[down][x].V +
+                              grid[up][x].V -
                               4 * grid[y][x].V;
 
             float uVSqr = grid[y][x].U * grid[y][x].V * grid[y][x].V;
 
+            // Update U and V concentrations
             float newU = grid[y][x].U + DELTA_t * (-uVSqr + F * (1 - grid[y][x].U) + Du * deltaSqrU);
             float newV = grid[y][x].V + DELTA_t * ( uVSqr - (F + k) * grid[y][x].V + Dv * deltaSqrV);
 
@@ -124,7 +127,7 @@ void grayScottSolver(Cell** grid, Cell** gridTmp, int gridSize, char* outDirFpat
 }
 
 void initGrid(Cell** grid, int gridSize)
-{ 
+{
     for (int y = 0; y < gridSize; y++)
     {
         for (int x = 0; x < gridSize; x++)
