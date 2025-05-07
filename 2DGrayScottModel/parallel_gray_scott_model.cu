@@ -34,6 +34,9 @@
 #define SAVE_TIMING_STATS
 // #define WRITE_OUTPUT_IMAGE
 
+// CUDA settings
+#define BLOCK_SIZE 256
+
 typedef struct _Cell_ {
     float U;  // Concentration of species U
     float V;  // Concentration of species V
@@ -51,13 +54,19 @@ void allocateDeviceGrid(Cell** deviceGridDataPtr, Cell*** deviceGridPtr, int gri
     getLastCudaError("Failed to allocate grid memory.");
     checkCudaErrors(cudaMalloc((void ***)deviceGridPtr, gridSize * sizeof(Cell*)));
     getLastCudaError("Failed to allocate grid memory.");
+
+    Cell** grid = (Cell**)malloc(gridSize * sizeof(Cell*));
+    for (int i = 0; i < gridSize; i++)
+        grid[i] = (*deviceGridDataPtr) + i * gridSize;
+
+    checkCudaErrors(cudaMemcpy(*deviceGridPtr, grid, gridSize * sizeof(Cell*), cudaMemcpyHostToDevice));
+    getLastCudaError("Failed to copy initial grid to device.");
+
+    free(grid);
 }
 
-__device__ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize, int index)
+__device__ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize, int x, int y)
 {
-    int x = index % gridSize;
-    int y = index / gridSize;
-
     int left = (x - 1 + gridSize) % gridSize;
     int right = (x + 1) % gridSize;
     int up = (y - 1 + gridSize) % gridSize;
@@ -116,22 +125,20 @@ void write_output_frame(int step, int gridSize, Cell* gridData, Cell* deviceGrid
 __global__ void grayScottSimStep_kernel(int simSteps, Cell** deviceGrid, Cell** deviceGridTmp, int gridSize)
 {
     // find index of the pixel of the thread
-    int index = threadIdx.x + blockIdx.x * blockDim.x;
-    //int indexOffset = blockDim.x * gridDim.x;
+    int x = threadIdx.x + blockIdx.x * blockDim.x;
+    int y = threadIdx.y + blockIdx.y * blockDim.y;
 
-    int gridSizePixel = gridSize * gridSize;
-
-    if (index < gridSizePixel)
+    if (x < gridSize && y < gridSize)
     {
         for (int step = 0; step < simSteps; step++)
         {
             if (step % 2 == 0)
             {
-                grayScottSimStep(deviceGrid, deviceGridTmp, gridSize, index);
+                grayScottSimStep(deviceGrid, deviceGridTmp, gridSize, x, y);
             }
             else
             {
-                grayScottSimStep(deviceGridTmp, deviceGrid, gridSize, index);
+                grayScottSimStep(deviceGridTmp, deviceGrid, gridSize, x, y);
             }
             __syncthreads();
         }
@@ -154,8 +161,9 @@ void grayScottSolver(Cell* gridData, int gridSize)
     allocateDeviceGrid(&deviceGridDataTmp, &deviceGridTmp, gridSize);
 
     // set up the grid and block size
-    dim3 cudaGridSize(ceil((gridSize * gridSize) / (float)256));
-    dim3 cudaBlockSize(256);  // TODO test different block sizes
+    dim3 cudaBlockSize(BLOCK_SIZE, BLOCK_SIZE);
+    dim3 cudaGridSize((gridSize + BLOCK_SIZE - 1) / BLOCK_SIZE,
+                      (gridSize + BLOCK_SIZE - 1) / BLOCK_SIZE);
 
     // runs KERNEL
     for (int step = 0; step < MAX_SIM_STEPS; step++)
@@ -217,7 +225,6 @@ int main(int argc, char *args[])
 
     // Reserve space for grids and initialize them
     Cell* gridData = (Cell*) malloc(gridDataSizeBytes);
-    Cell* gridDataTmp = (Cell*) malloc(gridDataSizeBytes);
     initGrid(gridData, gridSize);
 
 
@@ -284,7 +291,6 @@ int main(int argc, char *args[])
 
     // Free memory
     free(gridData);
-    free(gridDataTmp);
 
     return EXIT_SUCCESS;
 }
