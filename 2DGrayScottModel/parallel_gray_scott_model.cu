@@ -52,48 +52,40 @@ struct execution_result
     float total;
 };
 
-void swapDeviceGridPtr(Cell*** firstGridPtr, Cell*** secondGridPtr)
+void swapDeviceGridPtr(Cell** firstGridPtr, Cell** secondGridPtr)
 {
-    Cell** tmp = *firstGridPtr;
+    Cell* tmp = *firstGridPtr;
     *firstGridPtr = *secondGridPtr;
     *secondGridPtr = tmp;
 }
 
-void allocateDeviceGrid(Cell** deviceGridDataPtr, Cell*** deviceGridPtr, int gridSize)
+void allocateDeviceGrid(Cell** deviceGridDataPtr, int gridSize)
 {
     checkCudaErrors(cudaMalloc((void **)deviceGridDataPtr, gridSize * gridSize * sizeof(Cell)));
     getLastCudaError("Failed to allocate grid memory.");
-    checkCudaErrors(cudaMalloc((void ***)deviceGridPtr, gridSize * sizeof(Cell*)));
-    getLastCudaError("Failed to allocate grid memory.");
-
-    Cell** grid = (Cell**)malloc(gridSize * sizeof(Cell*));
-    for (int i = 0; i < gridSize; i++)
-        grid[i] = (*deviceGridDataPtr) + i * gridSize;
-
-    checkCudaErrors(cudaMemcpy(*deviceGridPtr, grid, gridSize * sizeof(Cell*), cudaMemcpyHostToDevice));
-    getLastCudaError("Failed to copy initial grid to device.");
-
-    free(grid);
 }
 
-__device__ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize, int x, int y)
+__device__ void grayScottSimStep(Cell* grid, int gridSize, int x, int y, float& newU, float& newV)
 {
-    Cell origin = grid[y][x];
-    Cell left = grid[y][(x - 1 + gridSize) % gridSize];
-    Cell right = grid[y][(x + 1) % gridSize];
-    Cell up = grid[(y - 1 + gridSize) % gridSize][x];
-    Cell down = grid[(y + 1) % gridSize][x];
+    int idx;
+    idx = y * gridSize + x;
+    Cell origin = grid[idx];
+    idx = y * gridSize + ((x - 1 + gridSize) % gridSize);
+    Cell left = grid[idx];
+    idx = y * gridSize + ((x + 1) % gridSize);
+    Cell right = grid[idx];
+    idx = ((y - 1 + gridSize) % gridSize) * gridSize + x;
+    Cell up = grid[idx];
+    idx = ((y + 1) % gridSize) * gridSize + x;
+    Cell down = grid[idx];
 
     float deltaSqrU = right.U + left.U + down.U + up.U - 4 * origin.U;
     float deltaSqrV = right.V + left.V + down.V + up.V - 4 * origin.V;
 
     float uVSqr = origin.U * origin.V * origin.V;
 
-    float newU = origin.U + DELTA_t * (-uVSqr + F * (1 - origin.U) + Du * deltaSqrU);
-    float newV = origin.V + DELTA_t * ( uVSqr - (F + k) * origin.V + Dv * deltaSqrV);
-
-    gridOut[y][x].U = newU;
-    gridOut[y][x].V = newV;
+    newU = origin.U + DELTA_t * (-uVSqr + F * (1 - origin.U) + Du * deltaSqrU);
+    newV = origin.V + DELTA_t * ( uVSqr - (F + k) * origin.V + Dv * deltaSqrV);
 }
 
 #ifdef WRITE_OUTPUT_IMAGE
@@ -149,7 +141,7 @@ void write_output_gif_frame(int step, int gridSize, Cell* gridData, Cell* device
 }
 #endif
 
-__global__ void grayScottSimStep_kernel(Cell** deviceGrid, Cell** deviceGridTmp, int gridSize)
+__global__ void grayScottSimStep_kernel(Cell* deviceGrid, Cell* deviceGridTmp, int gridSize)
 {
     // find index of the pixel of the thread
     int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -157,7 +149,12 @@ __global__ void grayScottSimStep_kernel(Cell** deviceGrid, Cell** deviceGridTmp,
 
     if (x < gridSize && y < gridSize)
     {
-        grayScottSimStep(deviceGrid, deviceGridTmp, gridSize, x, y);
+        float newU, newV;
+        grayScottSimStep(deviceGrid, gridSize, x, y, newU, newV);
+
+        int idx = y * gridSize + x;
+        deviceGridTmp[idx].U = newU;
+        deviceGridTmp[idx].V = newV;
     }
 }
 
@@ -167,14 +164,12 @@ void grayScottSolver(Cell* gridData, int gridSize)
     int gridDataSizeBytes = gridSize * gridSize * sizeof(Cell);
 
     Cell* deviceGridData;
-    Cell** deviceGrid;
-    allocateDeviceGrid(&deviceGridData, &deviceGrid, gridSize);
+    allocateDeviceGrid(&deviceGridData, gridSize);
     checkCudaErrors(cudaMemcpy(deviceGridData, gridData, gridDataSizeBytes, cudaMemcpyHostToDevice));
     getLastCudaError("Failed to copy initial grid to device.");
 
     Cell* deviceGridDataTmp;
-    Cell** deviceGridTmp;
-    allocateDeviceGrid(&deviceGridDataTmp, &deviceGridTmp, gridSize);
+    allocateDeviceGrid(&deviceGridDataTmp, gridSize);
 
 #ifdef WRITE_OUTPUT_GIF
     GifWriter gifWriter;
@@ -192,11 +187,11 @@ void grayScottSolver(Cell* gridData, int gridSize)
     for (int step = 0; step < MAX_SIM_STEPS; step++)
     {
         // 1. Calculate new grid values
-        grayScottSimStep_kernel<<<cudaGridSize, cudaBlockSize>>>(deviceGrid, deviceGridTmp, gridSize);
+        grayScottSimStep_kernel<<<cudaGridSize, cudaBlockSize>>>(deviceGridData, deviceGridDataTmp, gridSize);
         getLastCudaError("grayScottSimStep_kernel() execution failed");
 
         // 2. Switch current grid to new grid
-        swapDeviceGridPtr(&deviceGrid, &deviceGridTmp);
+        swapDeviceGridPtr(&deviceGridData, &deviceGridDataTmp);
 
 #ifdef WRITE_OUTPUT_IMAGE
         if ((step + 1) % (MAX_SIM_STEPS / NUM_FRAMES_CAPTURED) == 0)
@@ -220,9 +215,7 @@ void grayScottSolver(Cell* gridData, int gridSize)
     checkCudaErrors(cudaMemcpy(gridData, deviceGridData, gridDataSizeBytes, cudaMemcpyDeviceToHost));
     getLastCudaError("Retrieving data from GPU failed");
 
-    cudaFree(deviceGrid);
     cudaFree(deviceGridData);
-    cudaFree(deviceGridTmp);
     cudaFree(deviceGridDataTmp);
     getLastCudaError("Freeing memory failed");
 }
