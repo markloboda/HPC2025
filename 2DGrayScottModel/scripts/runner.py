@@ -48,11 +48,9 @@ if __name__ == "__main__":
 
     jobs = []
     for program in PROGRAMS:
-        cache_run = True  # First run on GPU is slower due to caching of kernels
         for grid_size_index in range(len(GRID_SIZES)):
             grid_size = GRID_SIZES[grid_size_index]
-            for i in range(int(cache_run) + NUM_RUNS):
-                cache_run = False
+            for i in range(NUM_RUNS):
                 jobs.append(SlurmJob(program, grid_size))
 
     # print(jobs)
@@ -68,6 +66,9 @@ if __name__ == "__main__":
         exit(1)
 
     print("Running jobs...")
+
+
+
     run_slurm_jobs(jobs)
 
     os.chdir(original_dir)
