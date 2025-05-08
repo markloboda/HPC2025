@@ -25,12 +25,13 @@ class SlurmJob:
     grid_size: int
 
 def compile_programs():
-    # Run program runner_compile.sh with arguments: PROGRAM=$1
     for program in PROGRAMS:
         cmd = ["./scripts/runner_compile.sh", program]
-        print("Running:", " ".join(cmd))
-        subprocess.run(cmd)
-        print("Done compiling", program)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if result.returncode != 0:
+            print(f"Error compiling {program}: {result.stderr.decode()}")
+            raise RuntimeError(f"Compilation failed for {program}")
+        print("Successfully compiled", program)
 
 def run_slurm_jobs(jobs: List[SlurmJob]):
     for job in jobs:
@@ -60,7 +61,11 @@ if __name__ == "__main__":
     os.chdir("..")
 
     print("Compiling required programs...")
-    compile_programs()
+    try:
+        compile_programs()
+    except Exception as e:
+        print(f"Compilation failed: {e}")
+        exit(1)
 
     print("Running jobs...")
     run_slurm_jobs(jobs)
