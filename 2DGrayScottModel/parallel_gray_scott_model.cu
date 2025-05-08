@@ -105,7 +105,7 @@ __device__ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize, int 
 }
 
 #ifdef WRITE_OUTPUT_IMAGE
-void write_output_frame(int step, int gridSize, Cell* gridData, Cell* deviceGridData)
+void write_output_image_frame(int step, int gridSize, Cell* gridData, Cell* deviceGridData)
 {
     // recover data from the GPU to the CPU allocated memory
     int gridDataSizeBytes = gridSize * gridSize * sizeof(Cell);
@@ -209,7 +209,7 @@ void grayScottSolver(Cell* gridData, int gridSize)
 #ifdef WRITE_OUTPUT_IMAGE
         if ((step + 1) % (MAX_SIM_STEPS / NUM_FRAMES_CAPTURED) == 0)
         {
-            write_output_frame((step + 1), gridSize, gridData, deviceGridData);
+            write_output_image_frame((step + 1), gridSize, gridData, deviceGridData);
         }
 #endif
 #ifdef WRITE_OUTPUT_GIF
