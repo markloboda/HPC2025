@@ -21,16 +21,16 @@
 #define MAX_SIM_STEPS 5000
 #define NUM_FRAMES_CAPTURED 50  // Total frames caputed
 #define DELTA_t 1
-#define Du 0.16
-#define Dv 0.08
-#define F 0.060
-#define k 0.062
+#define Du 0.16f
+#define Dv 0.08f
+#define F 0.060f
+#define k 0.062f
 #define SHARED_GRID_SIZE (BLOCK_SIZE + 2) // Shared memory size (including halo cells)
 
-#define U_INSIDE 0.75
-#define V_INSIDE 0.25
-#define U_OUTSIDE 1.0
-#define V_OUTSIDE 0.0
+#define U_INSIDE 0.75f
+#define V_INSIDE 0.25f
+#define U_OUTSIDE 1.0f
+#define V_OUTSIDE 0.0f
 
 #define COLOR_CHANNELS 1
 
@@ -43,8 +43,7 @@
 #define BLOCK_SIZE 16
 
 typedef struct _Cell_ {
-    float U;  // Concentration of species U
-    float V;  // Concentration of species V
+    float2 UV;
 } Cell;
 
 struct execution_result
@@ -74,13 +73,13 @@ __device__ void grayScottSimStep(Cell sharedGrid[SHARED_GRID_SIZE * SHARED_GRID_
     Cell up = sharedGrid[(y - 1) * SHARED_GRID_SIZE + x];
     Cell down = sharedGrid[(y + 1) * SHARED_GRID_SIZE + x];
 
-    float deltaSqrU = left.U + right.U + up.U + down.U - 4 * origin.U;
-    float deltaSqrV = left.V + right.V + up.V + down.V - 4 * origin.V;
+    float deltaSqrU = left.UV.x + right.UV.x + up.UV.x + down.UV.x - 4 * origin.UV.x;
+    float deltaSqrV = left.UV.y + right.UV.y + up.UV.y + down.UV.y - 4 * origin.UV.y;
 
-    float uVSqr = origin.U * origin.V * origin.V;
+    float uVSqr = origin.UV.x * origin.UV.y * origin.UV.y;
 
-    newU = origin.U + DELTA_t * (-uVSqr + F * (1 - origin.U) + Du * deltaSqrU);
-    newV = origin.V + DELTA_t * ( uVSqr - (F + k) * origin.V + Dv * deltaSqrV);
+    newU = origin.UV.x + DELTA_t * (-uVSqr + F * (1 - origin.UV.x) + Du * deltaSqrU);
+    newV = origin.UV.y + DELTA_t * ( uVSqr - (F + k) * origin.UV.y + Dv * deltaSqrV);
 }
 
 #ifdef WRITE_OUTPUT_IMAGE
@@ -99,7 +98,7 @@ void write_output_image_frame(int step, int gridSize, Cell* gridData, Cell* devi
     {
         for (int x = 0; x < gridSize; x++)
         {
-            gridVImage[y * gridSize + x] = (unsigned char) (255 * gridData[y * gridSize + x].V);
+            gridVImage[y * gridSize + x] = (unsigned char) (255 * gridData[y * gridSize + x].UV.y);
         }
     }
 
@@ -121,7 +120,7 @@ void write_output_gif_frame(int step, int gridSize, Cell* gridData, Cell* device
     {
         for (int x = 0; x < gridSize; x++)
         {
-            unsigned char val = (unsigned char) (255 * gridData[y * gridSize + x].V);
+            unsigned char val = (unsigned char) (255 * gridData[y * gridSize + x].UV.y);
             int idx = (y * gridSize + x) * outColorChannels;
 
             frame[idx] = val; // R
@@ -188,8 +187,8 @@ __global__ void grayScottSimStep_kernel(Cell* deviceGrid, Cell* deviceGridTmp, i
         grayScottSimStep(sharedGrid, x, y, newU, newV);
 
         idx = gy * gridSize + gx;
-        deviceGridTmp[idx].U = newU;
-        deviceGridTmp[idx].V = newV;
+        deviceGridTmp[idx].UV.x = newU;
+        deviceGridTmp[idx].UV.y = newV;
     }
 }
 
@@ -264,16 +263,16 @@ void initGrid(Cell* gridData, int gridSize)
     {
         for (int x = 0; x < gridSize; x++)
         {
-            if ((x > (int)(gridSize * 3.0/8) && x < (int)(gridSize * 5.0/8)) &&
-                (y > (int)(gridSize * 3.0/8) && y < (int)(gridSize * 5.0/8)))
+            if ((x > (int)(gridSize * 3.0f/8) && x < (int)(gridSize * 5.0f/8)) &&
+                (y > (int)(gridSize * 3.0f/8) && y < (int)(gridSize * 5.0f/8)))
             {
-                gridData[y * gridSize + x].U = U_INSIDE;
-                gridData[y * gridSize + x].V = V_INSIDE;
+                gridData[y * gridSize + x].UV.x = U_INSIDE;
+                gridData[y * gridSize + x].UV.y = V_INSIDE;
             }
             else
             {
-                gridData[y * gridSize + x].U = U_OUTSIDE;
-                gridData[y * gridSize + x].V = V_OUTSIDE;
+                gridData[y * gridSize + x].UV.x = U_OUTSIDE;
+                gridData[y * gridSize + x].UV.y = V_OUTSIDE;
             }
         }
     }
