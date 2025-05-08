@@ -8,6 +8,9 @@
 #include <cuda.h>
 #include "lib/helper_cuda.h"
 
+// GIF
+#include "lib/gif.h"
+
 // STB image library
 #define STB_IMAGE_IMPLEMENTATION
 #include "lib/stb_image.h"
@@ -33,6 +36,7 @@
 // Settings
 #define SAVE_TIMING_STATS
 // #define WRITE_OUTPUT_IMAGE
+// #define WRITE_OUTPUT_GIF
 
 // CUDA settings
 #define BLOCK_SIZE 16
@@ -100,6 +104,7 @@ __device__ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize, int 
     gridOut[y][x].V = newV;
 }
 
+#ifdef WRITE_OUTPUT_IMAGE
 void write_output_frame(int step, int gridSize, Cell* gridData, Cell* deviceGridData)
 {
     // recover data from the GPU to the CPU allocated memory
@@ -121,6 +126,36 @@ void write_output_frame(int step, int gridSize, Cell* gridData, Cell* deviceGrid
 
     stbi_write_png(outputImageFpath, gridSize, gridSize, COLOR_CHANNELS, gridVImage, gridSize * COLOR_CHANNELS);
 }
+#endif
+
+#ifdef WRITE_OUTPUT_GIF
+void write_output_gif_frame(int step, int gridSize, Cell* gridData, Cell* deviceGridData, GifWriter* gifWriter)
+{
+    // recover data from the GPU to the CPU allocated memory
+    int gridDataSizeBytes = gridSize * gridSize * sizeof(Cell);
+    checkCudaErrors(cudaMemcpy(gridData, deviceGridData, gridDataSizeBytes, cudaMemcpyDeviceToHost));
+    getLastCudaError("Retrieving data from GPU failed");
+
+    int outColorChannels = 4;
+    unsigned char* frame = new unsigned char[gridSize * gridSize * outColorChannels];
+    for (int y = 0; y < gridSize; y++)
+    {
+        for (int x = 0; x < gridSize; x++)
+        {
+            unsigned char val = (unsigned char) (255 * gridData[y * gridSize + x].V);
+            int idx = (y * gridSize + x) * outColorChannels;
+
+            frame[idx] = val; // R
+            frame[idx + 1] = val; // G
+            frame[idx + 2] = val; // B
+            frame[idx + 3] = 255; // A
+        }
+    }
+
+    GifWriteFrame(gifWriter, frame, gridSize, gridSize, 4);
+    delete[] frame;
+}
+#endif
 
 __global__ void grayScottSimStep_kernel(Cell** deviceGrid, Cell** deviceGridTmp, int gridSize)
 {
@@ -149,6 +184,13 @@ void grayScottSolver(Cell* gridData, int gridSize)
     Cell** deviceGridTmp;
     allocateDeviceGrid(&deviceGridDataTmp, &deviceGridTmp, gridSize);
 
+#ifdef WRITE_OUTPUT_GIF
+    GifWriter gifWriter;
+    char outputGifFpath[100];
+    snprintf(outputGifFpath, sizeof(outputGifFpath), "%s%d%s%d%s%d%s", "./output_gifs/", gridSize, "x", gridSize, "/", MAX_SIM_STEPS, ".gif");
+    GifBegin(&gifWriter, outputGifFpath, gridSize, gridSize, 0);
+#endif
+
     // set up the grid and block size
     dim3 cudaBlockSize(BLOCK_SIZE, BLOCK_SIZE);
     dim3 cudaGridSize((gridSize + BLOCK_SIZE - 1) / BLOCK_SIZE,
@@ -170,7 +212,17 @@ void grayScottSolver(Cell* gridData, int gridSize)
             write_output_frame((step + 1), gridSize, gridData, deviceGridData);
         }
 #endif
+#ifdef WRITE_OUTPUT_GIF
+        if ((step + 1) % (MAX_SIM_STEPS / NUM_FRAMES_CAPTURED)  == 0)
+        {
+            write_output_gif_frame((step + 1), gridSize, gridData, deviceGridData, &gifWriter);
+        }
+#endif
     }
+
+#ifdef WRITE_OUTPUT_GIF
+    GifEnd(&gifWriter);
+#endif
 
     // recover data from the GPU to the CPU allocated memory
     checkCudaErrors(cudaMemcpy(gridData, deviceGridData, gridDataSizeBytes, cudaMemcpyDeviceToHost));
@@ -223,15 +275,32 @@ int main(int argc, char *args[])
 
 #ifdef WRITE_OUTPUT_IMAGE
     // Create dirs if they do not exist
-    struct stat output_images_st = {0};
-    if (stat("./output_images", &output_images_st) == -1) {
-        mkdir("./output_images", 0700);
+    {
+        struct stat output_images_st = {0};
+        if (stat("./output_images", &output_images_st) == -1) {
+            mkdir("./output_images", 0700);
+        }
+        struct stat st = {0};
+        char outDirFpath[50];
+        snprintf(outDirFpath, sizeof(outDirFpath), "%s%d%s%d", "./output_images/", gridSize, "x", gridSize);
+        if (stat(outDirFpath, &st) == -1) {
+            mkdir(outDirFpath, 0700);
+        }
     }
-    struct stat st = {0};
-    char outDirFpath[50];
-    snprintf(outDirFpath, sizeof(outDirFpath), "%s%d%s%d", "./output_images/", gridSize, "x", gridSize);
-    if (stat(outDirFpath, &st) == -1) {
-        mkdir(outDirFpath, 0700);
+#endif
+#ifdef WRITE_OUTPUT_GIF
+    {
+        // Create dirs if they do not exist
+        struct stat output_gifs_st = {0};
+        if (stat("./output_gifs", &output_gifs_st) == -1) {
+            mkdir("./output_gifs", 0700);
+        }
+        struct stat st = {0};
+        char outGifDirFpath[50];
+        snprintf(outGifDirFpath, sizeof(outGifDirFpath), "%s%d%s%d", "./output_gifs/", gridSize, "x", gridSize);
+        if (stat(outGifDirFpath, &st) == -1) {
+            mkdir(outGifDirFpath, 0700);
+        }
     }
 #endif
 

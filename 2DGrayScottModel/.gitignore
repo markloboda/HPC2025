@@ -2,6 +2,7 @@
 bin/
 logs/
 debug_images/
+output_gifs/
 output_images/
 timing_stats/
 .vscode/

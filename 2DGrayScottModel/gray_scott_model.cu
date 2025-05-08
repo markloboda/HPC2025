@@ -8,6 +8,9 @@
 #include <cuda.h>
 #include "lib/helper_cuda.h"
 
+// GIF
+#include "lib/gif.h"
+
 // STB image library
 #define STB_IMAGE_IMPLEMENTATION
 #include "lib/stb_image.h"
@@ -33,6 +36,7 @@
 // Settings
 #define SAVE_TIMING_STATS
 // #define WRITE_OUTPUT_IMAGE
+// #define WRITE_OUTPUT_GIF
 
 typedef struct _Cell_ {
     float U;  // Concentration of species U
@@ -89,7 +93,8 @@ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize)
     }
 }
 
-void write_output_frame(char* outDirFpath, int step, int gridSize, Cell** grid)
+#ifdef WRITE_OUTPUT_IMAGE
+void write_output_image_frame(char* outDirFpath, int step, int gridSize, Cell** grid)
 {
     char outputImageFpath[100];
     snprintf(outputImageFpath, sizeof(outputImageFpath), "%s%s%d%s", outDirFpath, "/", step, ".png");
@@ -105,9 +110,41 @@ void write_output_frame(char* outDirFpath, int step, int gridSize, Cell** grid)
 
     stbi_write_png(outputImageFpath, gridSize, gridSize, COLOR_CHANNELS, gridVImage, gridSize * COLOR_CHANNELS);
 }
+#endif
+
+#ifdef WRITE_OUTPUT_GIF
+void write_output_gif_frame(int step, int gridSize, Cell** grid, GifWriter* gifWriter)
+{
+    int outColorChannels = 4;
+    unsigned char* frame = new unsigned char[gridSize * gridSize * outColorChannels];
+    for (int y = 0; y < gridSize; y++)
+    {
+        for (int x = 0; x < gridSize; x++)
+        {
+            unsigned char val = (unsigned char) (255 * grid[y][x].V);
+            int idx = (y * gridSize + x) * outColorChannels;
+
+            frame[idx] = val; // R
+            frame[idx + 1] = val; // G
+            frame[idx + 2] = val; // B
+            frame[idx + 3] = 255; // A
+        }
+    }
+
+    GifWriteFrame(gifWriter, frame, gridSize, gridSize, 0);
+    delete[] frame;
+}
+#endif
 
 void grayScottSolver(Cell** grid, Cell** gridTmp, int gridSize, char* outDirFpath)
 {
+#ifdef WRITE_OUTPUT_GIF
+    GifWriter gifWriter;
+    char outputGifFpath[100];
+    snprintf(outputGifFpath, sizeof(outputGifFpath), "%s%d%s%d%s%d%s", "./output_gifs/", gridSize, "x", gridSize, "/", MAX_SIM_STEPS, ".gif");
+    GifBegin(&gifWriter, outputGifFpath, gridSize, gridSize, 0);
+#endif
+
     for (int step = 0; step < MAX_SIM_STEPS; step++)
     {
         // 1. Calculate new grid values
@@ -120,10 +157,20 @@ void grayScottSolver(Cell** grid, Cell** gridTmp, int gridSize, char* outDirFpat
 #ifdef WRITE_OUTPUT_IMAGE
         if ((step + 1) % (MAX_SIM_STEPS / NUM_FRAMES_CAPTURED)  == 0)
         {
-            write_output_frame(outDirFpath, step + 1, gridSize, grid);
+            write_output_image_frame(outDirFpath, step + 1, gridSize, grid);
+        }
+#endif
+#ifdef WRITE_OUTPUT_GIF
+        if ((step + 1) % (MAX_SIM_STEPS / NUM_FRAMES_CAPTURED)  == 0)
+        {
+            write_output_gif_frame((step + 1), gridSize, grid, &gifWriter);
         }
 #endif
     }
+
+#ifdef WRITE_OUTPUT_GIF
+    GifEnd(&gifWriter);
+#endif
 }
 
 void initGrid(Cell** grid, int gridSize)
@@ -179,15 +226,32 @@ int main(int argc, char *args[])
 
     char outDirFpath[50];
 #ifdef WRITE_OUTPUT_IMAGE
-    // Create dirs if they do not exist
-    struct stat output_images_st = {0};
-    if (stat("./output_images", &output_images_st) == -1) {
-        mkdir("./output_images", 0700);
+    {
+        // Create dirs if they do not exist
+        struct stat output_images_st = {0};
+        if (stat("./output_images", &output_images_st) == -1) {
+            mkdir("./output_images", 0700);
+        }
+        struct stat st = {0};
+        snprintf(outDirFpath, sizeof(outDirFpath), "%s%d%s%d", "./output_images/", gridSize, "x", gridSize);
+        if (stat(outDirFpath, &st) == -1) {
+            mkdir(outDirFpath, 0700);
+        }
     }
-    struct stat st = {0};
-    snprintf(outDirFpath, sizeof(outDirFpath), "%s%d%s%d", "./output_images/", gridSize, "x", gridSize);
-    if (stat(outDirFpath, &st) == -1) {
-        mkdir(outDirFpath, 0700);
+#endif
+#ifdef WRITE_OUTPUT_GIF
+    {
+        // Create dirs if they do not exist
+        struct stat output_gifs_st = {0};
+        if (stat("./output_gifs", &output_gifs_st) == -1) {
+            mkdir("./output_gifs", 0700);
+        }
+        struct stat st = {0};
+        char outGifDirFpath[50];
+        snprintf(outGifDirFpath, sizeof(outGifDirFpath), "%s%d%s%d", "./output_gifs/", gridSize, "x", gridSize);
+        if (stat(outGifDirFpath, &st) == -1) {
+            mkdir(outGifDirFpath, 0700);
+        }
     }
 #endif
 
