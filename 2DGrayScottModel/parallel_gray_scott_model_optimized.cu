@@ -73,13 +73,19 @@ __device__ void grayScottSimStep(Cell sharedGrid[SHARED_GRID_SIZE * SHARED_GRID_
     Cell up = sharedGrid[(y - 1) * SHARED_GRID_SIZE + x];
     Cell down = sharedGrid[(y + 1) * SHARED_GRID_SIZE + x];
 
-    float deltaSqrU = left.UV.x + right.UV.x + up.UV.x + down.UV.x - 4 * origin.UV.x;
-    float deltaSqrV = left.UV.y + right.UV.y + up.UV.y + down.UV.y - 4 * origin.UV.y;
+    float2 originUV = origin.UV;
+    float2 leftUV = left.UV;
+    float2 rightUV = right.UV;
+    float2 upUV = up.UV;
+    float2 downUV = down.UV;
+
+    float deltaSqrU = leftUV.x + rightUV.x + upUV.x + downUV.x - 4 * originUV.x;
+    float deltaSqrV = leftUV.y + rightUV.y + upUV.y + downUV.y - 4 * originUV.y;
 
     float uVSqr = origin.UV.x * origin.UV.y * origin.UV.y;
 
-    newU = origin.UV.x + DELTA_t * (-uVSqr + F * (1 - origin.UV.x) + Du * deltaSqrU);
-    newV = origin.UV.y + DELTA_t * ( uVSqr - (F + k) * origin.UV.y + Dv * deltaSqrV);
+    newU = originUV.x + DELTA_t * (-uVSqr + F * (1 - originUV.x) + Du * deltaSqrU);
+    newV = originUV.y + DELTA_t * ( uVSqr - (F + k) * originUV.y + Dv * deltaSqrV);
 }
 
 #ifdef WRITE_OUTPUT_IMAGE

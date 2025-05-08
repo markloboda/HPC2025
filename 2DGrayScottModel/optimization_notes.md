@@ -1,0 +1,6 @@
+- float2 instead of float for cell
+- removed pointer-of-pointer access with flattened array
+- avoid frequent array read (caching)
+- switched modulus for wrap-around with if check
+- cache of UV values when calculating new cell
+- shared memory
