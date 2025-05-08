@@ -19,7 +19,7 @@
 
 // Constants
 #define MAX_SIM_STEPS 5000
-#define NUM_FRAMES_CAPTURED 10  // Total frames captured
+#define NUM_FRAMES_CAPTURED 50  // Total frames captured
 #define DELTA_t 1
 #define Du 0.16
 #define Dv 0.08

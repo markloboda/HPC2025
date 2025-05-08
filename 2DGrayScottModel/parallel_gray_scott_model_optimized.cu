@@ -8,14 +8,14 @@
 #include <cuda.h>
 #include "lib/helper_cuda.h"
 
-// GIF
-#include "lib/gif.h"
-
 // STB image library
 #define STB_IMAGE_IMPLEMENTATION
 #include "lib/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "lib/stb_image_write.h"
+
+// GIF
+#include "lib/gif.h"
 
 // Constants
 #define MAX_SIM_STEPS 5000
@@ -76,36 +76,28 @@ void allocateDeviceGrid(Cell** deviceGridDataPtr, Cell*** deviceGridPtr, int gri
     free(grid);
 }
 
-__device__ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize, int x, int y)
+__device__ void grayScottSimStep(Cell sharedGrid[BLOCK_SIZE + 2][BLOCK_SIZE + 2], int x, int y, float& newU, float& newV)
 {
-    int left = (x - 1 + gridSize) % gridSize;
-    int right = (x + 1) % gridSize;
-    int up = (y - 1 + gridSize) % gridSize;
-    int down = (y + 1) % gridSize;
+    float deltaSqrU = sharedGrid[y][x + 1].U +
+                        sharedGrid[y][x - 1].U +
+                        sharedGrid[y + 1][x].U +
+                        sharedGrid[y - 1][x].U -
+                        4 * sharedGrid[y][x].U;
 
-    float deltaSqrU = grid[y][right].U +
-                        grid[y][left].U +
-                        grid[down][x].U +
-                        grid[up][x].U -
-                        4 * grid[y][x].U;
+    float deltaSqrV = sharedGrid[y][x + 1].V +
+                        sharedGrid[y][x - 1].V +
+                        sharedGrid[y + 1][x].V +
+                        sharedGrid[y - 1][x].V -
+                        4 * sharedGrid[y][x].V;
 
-    float deltaSqrV = grid[y][right].V +
-                        grid[y][left].V +
-                        grid[down][x].V +
-                        grid[up][x].V -
-                        4 * grid[y][x].V;
+    float uVSqr = sharedGrid[y][x].U * sharedGrid[y][x].V * sharedGrid[y][x].V;
 
-    float uVSqr = grid[y][x].U * grid[y][x].V * grid[y][x].V;
-
-    float newU = grid[y][x].U + DELTA_t * (-uVSqr + F * (1 - grid[y][x].U) + Du * deltaSqrU);
-    float newV = grid[y][x].V + DELTA_t * ( uVSqr - (F + k) * grid[y][x].V + Dv * deltaSqrV);
-
-    gridOut[y][x].U = newU;
-    gridOut[y][x].V = newV;
+    newU = sharedGrid[y][x].U + DELTA_t * (-uVSqr + F * (1 - sharedGrid[y][x].U) + Du * deltaSqrU);
+    newV = sharedGrid[y][x].V + DELTA_t * ( uVSqr - (F + k) * sharedGrid[y][x].V + Dv * deltaSqrV);
 }
 
 #ifdef WRITE_OUTPUT_IMAGE
-void write_output_frame(int step, int gridSize, Cell* gridData, Cell* deviceGridData)
+void write_output_image_frame(int step, int gridSize, Cell* gridData, Cell* deviceGridData)
 {
     // recover data from the GPU to the CPU allocated memory
     int gridDataSizeBytes = gridSize * gridSize * sizeof(Cell);
@@ -152,7 +144,7 @@ void write_output_gif_frame(int step, int gridSize, Cell* gridData, Cell* device
         }
     }
 
-    GifWriteFrame(gifWriter, frame, gridSize, gridSize, 4);
+    GifWriteFrame(gifWriter, frame, gridSize, gridSize, 10);
     delete[] frame;
 }
 #endif
@@ -160,12 +152,45 @@ void write_output_gif_frame(int step, int gridSize, Cell* gridData, Cell* device
 __global__ void grayScottSimStep_kernel(Cell** deviceGrid, Cell** deviceGridTmp, int gridSize)
 {
     // find index of the pixel of the thread
-    int x = threadIdx.x + blockIdx.x * blockDim.x;
-    int y = threadIdx.y + blockIdx.y * blockDim.y;
+    int tx = threadIdx.x;
+    int ty = threadIdx.y;
+    int gx = blockIdx.x * blockDim.x + threadIdx.x;
+    int gy = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x < gridSize && y < gridSize)
+    __shared__ Cell sharedGrid[BLOCK_SIZE + 2][BLOCK_SIZE + 2];
+
+    if (gx < gridSize && gy < gridSize)
     {
-        grayScottSimStep(deviceGrid, deviceGridTmp, gridSize, x, y);
+        int x = tx + 1;
+        int y = ty + 1;
+
+        // load data into shared memory (core and halo cells)
+        sharedGrid[y][x] = deviceGrid[gy][gx];
+        if (tx == 0) // left edge
+        {
+            sharedGrid[y][x - 1] = deviceGrid[gy][(gx - 1 + gridSize) % gridSize];
+        }
+        if (tx == BLOCK_SIZE - 1) // right edge
+        {
+            sharedGrid[y][x + 1] = deviceGrid[gy][(gx + 1) % gridSize];
+        }
+        if (ty == 0) // top edge
+        {
+            sharedGrid[y - 1][x] = deviceGrid[(gy - 1 + gridSize) % gridSize][gx];
+        }
+        if (ty == BLOCK_SIZE - 1) // bottom edge
+        {
+            sharedGrid[y + 1][x] = deviceGrid[(gy + 1) % gridSize][gx];
+        }
+
+        __syncthreads();
+
+        // calculate new values
+        float newU, newV;
+        grayScottSimStep(sharedGrid, x, y, newU, newV);
+
+        deviceGridTmp[gy][gx].U = newU;
+        deviceGridTmp[gy][gx].V = newV;
     }
 }
 
@@ -189,6 +214,9 @@ void grayScottSolver(Cell* gridData, int gridSize)
     char outputGifFpath[100];
     snprintf(outputGifFpath, sizeof(outputGifFpath), "%s%d%s%d%s%d%s", "./output_gifs/", gridSize, "x", gridSize, "/", MAX_SIM_STEPS, ".gif");
     GifBegin(&gifWriter, outputGifFpath, gridSize, gridSize, 0);
+
+    // write the first frame
+    write_output_gif_frame(0, gridSize, gridData, deviceGridData, &gifWriter);
 #endif
 
     // set up the grid and block size
@@ -209,7 +237,7 @@ void grayScottSolver(Cell* gridData, int gridSize)
 #ifdef WRITE_OUTPUT_IMAGE
         if ((step + 1) % (MAX_SIM_STEPS / NUM_FRAMES_CAPTURED) == 0)
         {
-            write_output_frame((step + 1), gridSize, gridData, deviceGridData);
+            write_output_image_frame((step + 1), gridSize, gridData, deviceGridData);
         }
 #endif
 #ifdef WRITE_OUTPUT_GIF
@@ -274,17 +302,17 @@ int main(int argc, char *args[])
 
 
 #ifdef WRITE_OUTPUT_IMAGE
-    // Create dirs if they do not exist
     {
+        // Create dirs if they do not exist
         struct stat output_images_st = {0};
         if (stat("./output_images", &output_images_st) == -1) {
             mkdir("./output_images", 0700);
         }
         struct stat st = {0};
-        char outDirFpath[50];
-        snprintf(outDirFpath, sizeof(outDirFpath), "%s%d%s%d", "./output_images/", gridSize, "x", gridSize);
-        if (stat(outDirFpath, &st) == -1) {
-            mkdir(outDirFpath, 0700);
+        char outImageDirFpath[50];
+        snprintf(outImageDirFpath, sizeof(outImageDirFpath), "%s%d%s%d", "./output_images/", gridSize, "x", gridSize);
+        if (stat(outImageDirFpath, &st) == -1) {
+            mkdir(outImageDirFpath, 0700);
         }
     }
 #endif
@@ -337,8 +365,8 @@ int main(int argc, char *args[])
         mkdir("./timing_stats", 0700);
     }
 
-    FILE *timingFile = fopen("./timing_stats/timing_stats_parallel.txt", "a");
-    fprintf(timingFile, "-------------- HISTOGRAM EQUALIZATION - Parallel -------------\n");
+    FILE *timingFile = fopen("./timing_stats/timing_stats_optimized.txt", "a");
+    fprintf(timingFile, "-------------- HISTOGRAM EQUALIZATION - Optimized -------------\n");
     fprintf(timingFile, "------------------------- %d%s%d ----------------------\n", gridSize, "x", gridSize);
     fprintf(timingFile, "Grid size: %d\n", result.size);
     fprintf(timingFile, "Total time: %f ms\n", result.total);
