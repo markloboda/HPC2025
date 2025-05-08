@@ -143,6 +143,12 @@ __global__ void grayScottSimStep_kernel(Cell* deviceGrid, Cell* deviceGridTmp, i
     int gx = blockIdx.x * blockDim.x + threadIdx.x;
     int gy = blockIdx.y * blockDim.y + threadIdx.y;
 
+    // find the index of the neighboring pixels (faster than using modulo on every access)
+    int left  = (gx == 0         ? gridSize-1 : gx-1);
+    int right = (gx == gridSize-1?          0 : gx+1);
+    int up    = (gy == 0         ? gridSize-1 : gy-1);
+    int down  = (gy == gridSize-1?          0 : gy+1);
+
     __shared__ Cell sharedGrid[BLOCK_SIZE + 2][BLOCK_SIZE + 2];
 
     if (gx < gridSize && gy < gridSize)
@@ -155,22 +161,22 @@ __global__ void grayScottSimStep_kernel(Cell* deviceGrid, Cell* deviceGridTmp, i
         int idx;
         if (tx == 0) // left edge
         {
-            idx = gy * gridSize + (gx - 1 + gridSize) % gridSize;
+            idx = gy * gridSize + left;
             sharedGrid[y][x - 1] = deviceGrid[idx];
         }
         if (tx == BLOCK_SIZE - 1) // right edge
         {
-            idx = gy * gridSize + (gx + 1) % gridSize;
+            idx = gy * gridSize + right;
             sharedGrid[y][x + 1] = deviceGrid[idx];
         }
         if (ty == 0) // top edge
         {
-            idx = ((gy - 1 + gridSize) % gridSize) * gridSize + gx;
+            idx = up * gridSize + gx;
             sharedGrid[y - 1][x] = deviceGrid[idx];
         }
         if (ty == BLOCK_SIZE - 1) // bottom edge
         {
-            idx = ((gy + 1) % gridSize) * gridSize + gx;
+            idx = down * gridSize + gx;
             sharedGrid[y + 1][x] = deviceGrid[idx];
         }
 
