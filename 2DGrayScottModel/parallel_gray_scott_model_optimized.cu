@@ -25,6 +25,7 @@
 #define Dv 0.08
 #define F 0.060
 #define k 0.062
+#define SHARED_GRID_SIZE (BLOCK_SIZE + 2) // Shared memory size (including halo cells)
 
 #define U_INSIDE 0.75
 #define V_INSIDE 0.25
@@ -65,13 +66,13 @@ void allocateDeviceGrid(Cell** deviceGridDataPtr, int gridSize)
     getLastCudaError("Failed to allocate grid memory.");
 }
 
-__device__ void grayScottSimStep(Cell sharedGrid[BLOCK_SIZE + 2][BLOCK_SIZE + 2], int x, int y, float& newU, float& newV)
+__device__ void grayScottSimStep(Cell sharedGrid[SHARED_GRID_SIZE * SHARED_GRID_SIZE], int x, int y, float& newU, float& newV)
 {
-    Cell origin = sharedGrid[y][x];
-    Cell left = sharedGrid[y][x - 1];
-    Cell right = sharedGrid[y][x + 1];
-    Cell up = sharedGrid[y - 1][x];
-    Cell down = sharedGrid[y + 1][x];
+    Cell origin = sharedGrid[y * SHARED_GRID_SIZE + x];
+    Cell left = sharedGrid[y * SHARED_GRID_SIZE + (x - 1)];
+    Cell right = sharedGrid[y * SHARED_GRID_SIZE + (x + 1)];
+    Cell up = sharedGrid[(y - 1) * SHARED_GRID_SIZE + x];
+    Cell down = sharedGrid[(y + 1) * SHARED_GRID_SIZE + x];
 
     float deltaSqrU = left.U + right.U + up.U + down.U - 4 * origin.U;
     float deltaSqrV = left.V + right.V + up.V + down.V - 4 * origin.V;
@@ -149,7 +150,7 @@ __global__ void grayScottSimStep_kernel(Cell* deviceGrid, Cell* deviceGridTmp, i
     int up    = (gy == 0         ? gridSize-1 : gy-1);
     int down  = (gy == gridSize-1?          0 : gy+1);
 
-    __shared__ Cell sharedGrid[BLOCK_SIZE + 2][BLOCK_SIZE + 2];
+    __shared__ Cell sharedGrid[SHARED_GRID_SIZE * SHARED_GRID_SIZE];
 
     if (gx < gridSize && gy < gridSize)
     {
@@ -157,27 +158,27 @@ __global__ void grayScottSimStep_kernel(Cell* deviceGrid, Cell* deviceGridTmp, i
         int y = ty + 1;
 
         // load data into shared memory (core and halo cells)
-        sharedGrid[y][x] = deviceGrid[gy * gridSize + gx];
+        sharedGrid[y * SHARED_GRID_SIZE + x] = deviceGrid[gy * gridSize + gx];
         int idx;
         if (tx == 0) // left edge
         {
             idx = gy * gridSize + left;
-            sharedGrid[y][x - 1] = deviceGrid[idx];
+            sharedGrid[y * SHARED_GRID_SIZE + x - 1] = deviceGrid[idx];
         }
         if (tx == BLOCK_SIZE - 1) // right edge
         {
             idx = gy * gridSize + right;
-            sharedGrid[y][x + 1] = deviceGrid[idx];
+            sharedGrid[y * SHARED_GRID_SIZE + x + 1] = deviceGrid[idx];
         }
         if (ty == 0) // top edge
         {
             idx = up * gridSize + gx;
-            sharedGrid[y - 1][x] = deviceGrid[idx];
+            sharedGrid[(y - 1) * SHARED_GRID_SIZE + x] = deviceGrid[idx];
         }
         if (ty == BLOCK_SIZE - 1) // bottom edge
         {
             idx = down * gridSize + gx;
-            sharedGrid[y + 1][x] = deviceGrid[idx];
+            sharedGrid[(y + 1) * SHARED_GRID_SIZE + x] = deviceGrid[idx];
         }
 
         __syncthreads();
