@@ -78,22 +78,19 @@ void allocateDeviceGrid(Cell** deviceGridDataPtr, Cell*** deviceGridPtr, int gri
 
 __device__ void grayScottSimStep(Cell sharedGrid[BLOCK_SIZE + 2][BLOCK_SIZE + 2], int x, int y, float& newU, float& newV)
 {
-    float deltaSqrU = sharedGrid[y][x + 1].U +
-                        sharedGrid[y][x - 1].U +
-                        sharedGrid[y + 1][x].U +
-                        sharedGrid[y - 1][x].U -
-                        4 * sharedGrid[y][x].U;
+    Cell origin = sharedGrid[y][x];
+    Cell left = sharedGrid[y][x - 1];
+    Cell right = sharedGrid[y][x + 1];
+    Cell up = sharedGrid[y - 1][x];
+    Cell down = sharedGrid[y + 1][x];
 
-    float deltaSqrV = sharedGrid[y][x + 1].V +
-                        sharedGrid[y][x - 1].V +
-                        sharedGrid[y + 1][x].V +
-                        sharedGrid[y - 1][x].V -
-                        4 * sharedGrid[y][x].V;
+    float deltaSqrU = left.U + right.U + up.U + down.U - 4 * origin.U;
+    float deltaSqrV = left.V + right.V + up.V + down.V - 4 * origin.V;
 
-    float uVSqr = sharedGrid[y][x].U * sharedGrid[y][x].V * sharedGrid[y][x].V;
+    float uVSqr = origin.U * origin.V * origin.V;
 
-    newU = sharedGrid[y][x].U + DELTA_t * (-uVSqr + F * (1 - sharedGrid[y][x].U) + Du * deltaSqrU);
-    newV = sharedGrid[y][x].V + DELTA_t * ( uVSqr - (F + k) * sharedGrid[y][x].V + Dv * deltaSqrV);
+    newU = origin.U + DELTA_t * (-uVSqr + F * (1 - origin.U) + Du * deltaSqrU);
+    newV = origin.V + DELTA_t * ( uVSqr - (F + k) * origin.V + Dv * deltaSqrV);
 }
 
 #ifdef WRITE_OUTPUT_IMAGE

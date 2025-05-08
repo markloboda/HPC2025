@@ -78,27 +78,19 @@ void allocateDeviceGrid(Cell** deviceGridDataPtr, Cell*** deviceGridPtr, int gri
 
 __device__ void grayScottSimStep(Cell** grid, Cell** gridOut, int gridSize, int x, int y)
 {
-    int left = (x - 1 + gridSize) % gridSize;
-    int right = (x + 1) % gridSize;
-    int up = (y - 1 + gridSize) % gridSize;
-    int down = (y + 1) % gridSize;
+    Cell origin = grid[y][x];
+    Cell left = grid[y][(x - 1 + gridSize) % gridSize];
+    Cell right = grid[y][(x + 1) % gridSize];
+    Cell up = grid[(y - 1 + gridSize) % gridSize][x];
+    Cell down = grid[(y + 1) % gridSize][x];
 
-    float deltaSqrU = grid[y][right].U +
-                        grid[y][left].U +
-                        grid[down][x].U +
-                        grid[up][x].U -
-                        4 * grid[y][x].U;
+    float deltaSqrU = right.U + left.U + down.U + up.U - 4 * origin.U;
+    float deltaSqrV = right.V + left.V + down.V + up.V - 4 * origin.V;
 
-    float deltaSqrV = grid[y][right].V +
-                        grid[y][left].V +
-                        grid[down][x].V +
-                        grid[up][x].V -
-                        4 * grid[y][x].V;
+    float uVSqr = origin.U * origin.V * origin.V;
 
-    float uVSqr = grid[y][x].U * grid[y][x].V * grid[y][x].V;
-
-    float newU = grid[y][x].U + DELTA_t * (-uVSqr + F * (1 - grid[y][x].U) + Du * deltaSqrU);
-    float newV = grid[y][x].V + DELTA_t * ( uVSqr - (F + k) * grid[y][x].V + Dv * deltaSqrV);
+    float newU = origin.U + DELTA_t * (-uVSqr + F * (1 - origin.U) + Du * deltaSqrU);
+    float newV = origin.V + DELTA_t * ( uVSqr - (F + k) * origin.V + Dv * deltaSqrV);
 
     gridOut[y][x].U = newU;
     gridOut[y][x].V = newV;
