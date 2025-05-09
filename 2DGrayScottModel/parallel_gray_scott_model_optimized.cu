@@ -90,13 +90,30 @@ __device__ void grayScottSimStep(Cell sharedGrid[SHARED_GRID_SIZE * SHARED_GRID_
     newV = originUV.y + DELTA_t * ( uVSqr - (F + k) * originUV.y + Dv * deltaSqrV);
 }
 
-#ifdef WRITE_OUTPUT_IMAGE
-void write_output_image_frame(int step, int gridSize, Cell* gridData[], Cell* deviceGridData[])
+void recoverGridData(int gridSize, Cell* gridData, Cell* deviceGridData[])
 {
-    // recover data from the GPU to the CPU allocated memory
-    int gridDataSizeBytes = gridSize * gridSize * sizeof(Cell);
-    checkCudaErrors(cudaMemcpy(gridData, deviceGridData, gridDataSizeBytes, cudaMemcpyDeviceToHost));
-    getLastCudaError("Retrieving data from GPU failed");
+    // Combine the data from both GPUs
+    int gridDataDeviceNumElements = gridSize * gridSize / NUM_GPUS; 
+    int gridDataDeviceSizeBytes = gridDataDeviceNumElements * sizeof(Cell);
+    std::thread threads[NUM_GPUS];
+    for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
+    {
+        // recover data from the GPU to the CPU allocated memory (only the important part)
+        int gridOffset = deviceIdx * gridDataDeviceNumElements;
+        threads[deviceIdx] = std::thread(cudaMemcpy, &gridData[gridOffset], deviceGridData[gridOffset], gridDataDeviceSizeBytes, cudaMemcpyDeviceToHost);
+        getLastCudaError("Retrieving data from GPU failed");
+    }
+
+    for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
+    {
+        threads[deviceIdx].join();
+    }
+}
+
+#ifdef WRITE_OUTPUT_IMAGE
+void write_output_image_frame(int step, int gridSize, Cell* gridData, Cell* deviceGridData[])
+{
+    recoverGridData(gridSize, gridData, deviceGridData);
 
     char outputImageFpath[100];
     snprintf(outputImageFpath, sizeof(outputImageFpath), "%s%d%s%d%s%d%s", "./output_images/", gridSize, "x", gridSize, "/", step, ".png");
@@ -115,12 +132,9 @@ void write_output_image_frame(int step, int gridSize, Cell* gridData[], Cell* de
 #endif
 
 #ifdef WRITE_OUTPUT_GIF
-void write_output_gif_frame(int step, int gridSize, Cell* gridData[], Cell* deviceGridData[], GifWriter* gifWriter)
+void write_output_gif_frame(int step, int gridSize, Cell* gridData, Cell* deviceGridData[], GifWriter* gifWriter)
 {
-    // recover data from the GPU to the CPU allocated memory
-    int gridDataSizeBytes = gridSize * gridSize * sizeof(Cell);
-    checkCudaErrors(cudaMemcpy(gridData, deviceGridData, gridDataSizeBytes, cudaMemcpyDeviceToHost));
-    getLastCudaError("Retrieving data from GPU failed");
+    recoverGridData(gridSize, gridData, deviceGridData);
 
     int outColorChannels = 4;
     unsigned char* frame = new unsigned char[gridSize * gridSize * outColorChannels];
@@ -143,23 +157,25 @@ void write_output_gif_frame(int step, int gridSize, Cell* gridData[], Cell* devi
 }
 #endif
 
-__global__ void grayScottSimStep_kernel(Cell* deviceGrid, Cell* deviceGridTmp, int gridSize)
+__global__ void grayScottSimStep_kernel(int deviceIdx, Cell* deviceGrid, Cell* deviceGridTmp, int gridOffsetHeight, int deviceGridWidth, int deviceGridHeight, int gridSize)
 {
+    int deviceGridSize = deviceGridHeight * deviceGridWidth;
+
     // find index of the pixel of the thread
     int tx = threadIdx.x;
     int ty = threadIdx.y;
     int gx = blockIdx.x * blockDim.x + threadIdx.x;
-    int gy = blockIdx.y * blockDim.y + threadIdx.y;
+    int gy = blockIdx.y * blockDim.y + threadIdx.y + gridOffsetHeight;
 
     // find the index of the neighboring pixels (faster than using modulo on every access)
-    int left  = (gx == 0         ? gridSize-1 : gx-1);
-    int right = (gx == gridSize-1?          0 : gx+1);
-    int up    = (gy == 0         ? gridSize-1 : gy-1);
-    int down  = (gy == gridSize-1?          0 : gy+1);
+    int left  = (gx == 0                  ?  deviceGridWidth-1 : gx-1);
+    int right = (gx == deviceGridWidth-1  ?                  0 : gx+1);
+    int up    = (gy == 0                  ? deviceGridHeight-1 : gy-1);
+    int down  = (gy == deviceGridHeight-1 ?                  0 : gy+1);
 
     __shared__ Cell sharedGrid[SHARED_GRID_SIZE * SHARED_GRID_SIZE];
 
-    if (gx < gridSize && gy < gridSize)
+    if (gx < deviceGridWidth && gy < deviceGridHeight + gridOffsetHeight)
     {
         int x = tx + 1;
         int y = ty + 1;
@@ -221,16 +237,15 @@ void setupDevice(int deviceIdx, Cell* gridData, int gridSize, Cell** deviceGridD
     *deviceGridDataTmpOut = deviceGridDataTmp;
 }
 
-void runKernel(int deviceIdx, Cell* deviceGridData, Cell* deviceGridDataTmp, int gridOffset, int deviceGridWidth, int deviceGridHeight, int gridSize)
+void runKernel(int deviceIdx, Cell* deviceGridData, Cell* deviceGridDataTmp, int gridOffsetHeight, int deviceGridWidth, int deviceGridHeight, int gridSize)
 {
     // set up the grid and block size
     dim3 cudaBlockSize(BLOCK_SIZE, BLOCK_SIZE);
-    dim3 cudaGridSize((gridSize + BLOCK_SIZE - 1) / BLOCK_SIZE,
-                      (gridSize + BLOCK_SIZE - 1) / BLOCK_SIZE);
-
+    dim3 cudaGridSize(((gridSize + BLOCK_SIZE - 1) / BLOCK_SIZE) / NUM_GPUS,
+                      ((gridSize + BLOCK_SIZE - 1) / BLOCK_SIZE) / NUM_GPUS);
 
     // 1. Calculate new grid values
-    grayScottSimStep_kernel<<<cudaGridSize, cudaBlockSize>>>(deviceGridData, deviceGridDataTmp, gridSize);
+    grayScottSimStep_kernel<<<cudaGridSize, cudaBlockSize>>>(deviceIdx, deviceGridData, deviceGridDataTmp, gridOffsetHeight, deviceGridWidth, deviceGridHeight, gridSize);
     getLastCudaError("grayScottSimStep_kernel() execution failed");
 }
 
@@ -267,7 +282,6 @@ void grayScottSolver(Cell* gridData, int gridSize)
     GifBegin(&gifWriter, outputGifFpath, gridSize, gridSize, 0);
 
     // write the first frame
-
     write_output_gif_frame(0, gridSize, gridData, deviceGridData, &gifWriter);
 #endif
 
@@ -279,8 +293,8 @@ void grayScottSolver(Cell* gridData, int gridSize)
         {
             int deviceGridWidth = gridSize;
             int deviceGridHeight = gridSize / NUM_GPUS;
-            int gridOffset = deviceIdx * deviceGridWidth;
-            threads[deviceIdx] = std::thread(runKernel, deviceIdx, deviceGridData, deviceGridDataTmp, gridOffset, deviceGridWidth, deviceGridHeight, gridSize);
+            int gridOffsetHeight = deviceIdx * deviceGridWidth;
+            threads[deviceIdx] = std::thread(runKernel, deviceIdx, deviceGridData[deviceIdx], deviceGridDataTmp[deviceIdx], gridOffsetHeight, deviceGridWidth, deviceGridHeight, gridSize);
         }
 
         for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
@@ -291,9 +305,7 @@ void grayScottSolver(Cell* gridData, int gridSize)
         // Synchronize devices
         for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
         {
-            checkCudaErrors(cudaSetDevice(deviceIdx));
-            getLastCudaError("cudaSetDevice() failed");
-            swapDeviceGridPtr(&deviceGridData, &deviceGridDataTmp);
+            swapDeviceGridPtr(&deviceGridData[deviceIdx], &deviceGridDataTmp[deviceIdx]);
         }
 
         // Write outputs
@@ -315,13 +327,14 @@ void grayScottSolver(Cell* gridData, int gridSize)
     GifEnd(&gifWriter);
 #endif
 
-    // recover data from the GPU to the CPU allocated memory
-    // checkCudaErrors(cudaMemcpy(gridData, deviceGridData, gridDataSizeBytes, cudaMemcpyDeviceToHost));
-    // getLastCudaError("Retrieving data from GPU failed");
+    recoverGridData(gridSize, gridData, deviceGridData);
 
-    // cudaFree(deviceGridData);
-    // cudaFree(deviceGridDataTmp);
-    // getLastCudaError("Freeing memory failed");
+    for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
+    {
+        cudaFree(deviceGridData[deviceIdx]);
+        cudaFree(deviceGridDataTmp[deviceIdx]);
+    }
+    getLastCudaError("Freeing memory failed");
 }
 
 void initGrid(Cell* gridData, int gridSize)
