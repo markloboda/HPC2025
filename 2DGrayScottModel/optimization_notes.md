@@ -4,3 +4,4 @@
 - switched modulus for wrap-around with if check
 - cache of UV values when calculating new cell
 - shared memory
+- utilization of two GPUs

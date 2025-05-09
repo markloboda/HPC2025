@@ -19,17 +19,17 @@
 
 // Constants
 #define MAX_SIM_STEPS 5000
-#define NUM_FRAMES_CAPTURED 50  // Total frames captured
+#define NUM_FRAMES_CAPTURED 50  // Total frames caputed
 #define DELTA_t 1
-#define Du 0.16
-#define Dv 0.08
-#define F 0.060
-#define k 0.062
+#define Du 0.16f
+#define Dv 0.08f
+#define F 0.060f
+#define k 0.062f
 
-#define U_INSIDE 0.75
-#define V_INSIDE 0.25
-#define U_OUTSIDE 1.0
-#define V_OUTSIDE 0.0
+#define U_INSIDE 0.75f
+#define V_INSIDE 0.25f
+#define U_OUTSIDE 1.0f
+#define V_OUTSIDE 0.0f
 
 #define COLOR_CHANNELS 1
 
