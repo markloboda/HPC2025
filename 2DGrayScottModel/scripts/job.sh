@@ -3,7 +3,7 @@
 #SBATCH --partition=gpu
 #SBATCH --job-name=runner-run-gray-scott-model
 #SBATCH --output=logs/runner-run-gray-scott-model.log
-#SBATCH --gpus=1
+#SBATCH --gpus=2
 #SBATCH --time=00:10:00
 #SBATCH --reservation=fri
 
