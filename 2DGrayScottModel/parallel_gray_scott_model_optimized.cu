@@ -67,6 +67,12 @@ void allocateDeviceGrid(Cell** deviceGridDataPtr, int gridSize)
     getLastCudaError("Failed to allocate grid memory.");
 }
 
+void setDeviceCuda(int deviceIdx)
+{
+    checkCudaErrors(cudaSetDevice(deviceIdx));
+    getLastCudaError("cudaSetDevice() failed");
+}
+
 __device__ void grayScottSimStep(Cell sharedGrid[SHARED_GRID_SIZE * SHARED_GRID_SIZE], int x, int y, float& newU, float& newV)
 {
     Cell origin = sharedGrid[y * SHARED_GRID_SIZE + x];
@@ -90,18 +96,25 @@ __device__ void grayScottSimStep(Cell sharedGrid[SHARED_GRID_SIZE * SHARED_GRID_
     newV = originUV.y + DELTA_t * ( uVSqr - (F + k) * originUV.y + Dv * deltaSqrV);
 }
 
+void recoverGridDataDevice(int deviceIdx, int gridSize, Cell* gridData, Cell* deviceGridData)
+{
+    setDeviceCuda(deviceIdx);
+
+    int gridDataDeviceSizeBytes = (gridSize * gridSize / NUM_GPUS) * sizeof(Cell);
+    checkCudaErrors(cudaMemcpy(gridData, deviceGridData, gridDataDeviceSizeBytes, cudaMemcpyDeviceToHost));
+    getLastCudaError("Retrieving data from GPU failed");
+}
+
 void recoverGridData(int gridSize, Cell* gridData, Cell* deviceGridData[])
 {
     // Combine the data from both GPUs
-    int gridDataDeviceNumElements = gridSize * gridSize / NUM_GPUS; 
-    int gridDataDeviceSizeBytes = gridDataDeviceNumElements * sizeof(Cell);
     std::thread threads[NUM_GPUS];
     for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
     {
+        setDeviceCuda(deviceIdx);
         // recover data from the GPU to the CPU allocated memory (only the important part)
-        int gridOffset = deviceIdx * gridDataDeviceNumElements;
-        threads[deviceIdx] = std::thread(cudaMemcpy, &gridData[gridOffset], deviceGridData[gridOffset], gridDataDeviceSizeBytes, cudaMemcpyDeviceToHost);
-        getLastCudaError("Retrieving data from GPU failed");
+        int gridOffset = deviceIdx * gridSize * gridSize / NUM_GPUS;
+        threads[deviceIdx] = std::thread(recoverGridDataDevice, deviceIdx, gridSize, &gridData[gridOffset], deviceGridData[gridOffset]);
     }
 
     for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
@@ -220,9 +233,18 @@ void setupDevice(int deviceIdx, Cell* gridData, int gridSize, Cell** deviceGridD
 {
     int gridDataSizeBytes = gridSize * gridSize * sizeof(Cell);
 
-    // Set device
-    checkCudaErrors(cudaSetDevice(deviceIdx));
-    getLastCudaError("cudaSetDevice() failed");
+    setDeviceCuda(deviceIdx);
+
+    // Setup peer access
+    int canAccessPeer = 0;
+    int peerDeviceIdx = deviceIdx ^ 1;
+    cudaDeviceCanAccessPeer(&canAccessPeer, deviceIdx, peerDeviceIdx);
+    if (canAccessPeer)
+    {
+        cudaDeviceEnablePeerAccess(peerDeviceIdx, 0);
+    }
+    else
+        exit(EXIT_FAILURE);
 
     // Copy/allocate the initial grids to the GPU
     Cell* deviceGridData;
@@ -239,6 +261,8 @@ void setupDevice(int deviceIdx, Cell* gridData, int gridSize, Cell** deviceGridD
 
 void runKernel(int deviceIdx, Cell* deviceGridData, Cell* deviceGridDataTmp, int gridOffsetHeight, int deviceGridWidth, int deviceGridHeight, int gridSize)
 {
+    setDeviceCuda(deviceIdx);
+
     // set up the grid and block size
     dim3 cudaBlockSize(BLOCK_SIZE, BLOCK_SIZE);
     dim3 cudaGridSize(((gridSize + BLOCK_SIZE - 1) / BLOCK_SIZE) / NUM_GPUS,
@@ -306,6 +330,15 @@ void grayScottSolver(Cell* gridData, int gridSize)
         for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
         {
             swapDeviceGridPtr(&deviceGridData[deviceIdx], &deviceGridDataTmp[deviceIdx]);
+        }
+
+        int gridDataDeviceSizeBytes = (gridSize * gridSize / NUM_GPUS) * sizeof(Cell);
+        for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
+        {
+            int peerDeviceIdx = deviceIdx ^ 1;
+            int gridOffset = deviceIdx * gridSize * gridSize / NUM_GPUS;
+            checkCudaErrors(cudaMemcpyPeer(&deviceGridData[peerDeviceIdx][gridOffset], peerDeviceIdx, &deviceGridData[deviceIdx][gridOffset], deviceIdx, gridDataDeviceSizeBytes));
+            getLastCudaError("Transfer of data to peer failed.");
         }
 
         // Write outputs
