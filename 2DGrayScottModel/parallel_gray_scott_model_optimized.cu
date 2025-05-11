@@ -39,7 +39,7 @@
 // Settings
 #define SAVE_TIMING_STATS
 // #define WRITE_OUTPUT_IMAGE
-// #define WRITE_OUTPUT_GIF
+#define WRITE_OUTPUT_GIF
 
 // CUDA settings
 #define BLOCK_SIZE 16
@@ -342,14 +342,17 @@ void grayScottSolver(Cell* gridData, int gridSize)
 
             for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
             {
-                int peerDeviceIdx = deviceIdx ^ 1;
-                int gridOffset = deviceIdx * gridSize * gridSize / NUM_GPUS;
+                // int peerDeviceIdx = deviceIdx ^ 1;
+                // int gridOffset = deviceIdx * gridSize * gridSize / NUM_GPUS;
 
                 // checkCudaErrors(cudaMemcpyPeer(&deviceGridData[peerDeviceIdx][gridOffset], peerDeviceIdx, &deviceGridData[deviceIdx][gridOffset], deviceIdx, gridDataDeviceSizeBytes));
                 // checkCudaErrors(cudaMemcpy(&(deviceGridData[peerDeviceIdx][gridOffset]), &(deviceGridData[deviceIdx][gridOffset]), gridDataDeviceSizeBytes, cudaMemcpyDefault));
 
                 setDeviceCuda(deviceIdx);
-                //checkCudaErrors(cudaMemcpy());
+                int peerDeviceIdx = deviceIdx ^ 1;
+                int gridOffset = peerDeviceIdx * gridSize * gridSize / NUM_GPUS;
+                checkCudaErrors(cudaMemcpy(&deviceGridData[deviceIdx][gridOffset], &gridData[gridOffset], gridDataDeviceSizeBytes, cudaMemcpyHostToDevice));
+                getLastCudaError("Retrieving data from GPU failed");
 
                 getLastCudaError("Transfer of data to peer failed.");
             }
