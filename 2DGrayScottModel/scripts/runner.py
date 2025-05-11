@@ -17,7 +17,7 @@ GRID_SIZES = [
     4096,
 ]
 
-NUM_RUNS = 5
+NUM_RUNS = 8
 
 @dataclass
 class SlurmJob:

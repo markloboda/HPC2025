@@ -146,6 +146,9 @@ __global__ void grayScottSimStep_kernel(Cell* deviceGrid, Cell* deviceGridTmp, i
     // find index of the pixel of the thread
     int x = threadIdx.x + blockIdx.x * blockDim.x;
     int y = threadIdx.y + blockIdx.y * blockDim.y;
+    // int pixelPos = threadIdx.x + blockIdx.x * blockDim.x;
+    // int x = pixelPos % gridSize;
+    // int y = pixelPos / gridSize;
 
     if (x < gridSize && y < gridSize)
     {
@@ -182,6 +185,8 @@ void grayScottSolver(Cell* gridData, int gridSize)
     dim3 cudaBlockSize(BLOCK_SIZE, BLOCK_SIZE);
     dim3 cudaGridSize((gridSize + BLOCK_SIZE - 1) / BLOCK_SIZE,
                       (gridSize + BLOCK_SIZE - 1) / BLOCK_SIZE);
+    // dim3 cudaBlockSize(BLOCK_SIZE * BLOCK_SIZE);
+    // dim3 cudaGridSize(gridSize * gridSize / (BLOCK_SIZE * BLOCK_SIZE));
 
     // runs KERNEL
     for (int step = 0; step < MAX_SIM_STEPS; step++)

@@ -4,7 +4,7 @@
 #SBATCH --job-name=runner-run-gray-scott-model
 #SBATCH --output=logs/runner-run-gray-scott-model.log
 #SBATCH --gpus=2
-#SBATCH --time=00:10:00
+#SBATCH --time=00:20:00
 #SBATCH --reservation=fri
 
 PROGRAM=$1
