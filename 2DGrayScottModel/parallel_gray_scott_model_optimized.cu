@@ -39,7 +39,7 @@
 // Settings
 #define SAVE_TIMING_STATS
 // #define WRITE_OUTPUT_IMAGE
-#define WRITE_OUTPUT_GIF
+// #define WRITE_OUTPUT_GIF
 
 // CUDA settings
 #define BLOCK_SIZE 16
@@ -108,17 +108,11 @@ void recoverGridDataDevice(int deviceIdx, int gridSize, Cell* gridData, Cell* de
 void recoverGridData(int gridSize, Cell* gridData, Cell* deviceGridData[])
 {
     // Combine the data from both GPUs
-    std::thread threads[NUM_GPUS];
     for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
     {
         // recover data from the GPU to the CPU allocated memory (only the important part)
         int gridOffset = deviceIdx * gridSize * gridSize / NUM_GPUS;
-        threads[deviceIdx] = std::thread(recoverGridDataDevice, deviceIdx, gridSize, &gridData[gridOffset], &deviceGridData[deviceIdx][gridOffset]);
-    }
-
-    for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
-    {
-        threads[deviceIdx].join();
+        recoverGridDataDevice(deviceIdx, gridSize, &gridData[gridOffset], &deviceGridData[deviceIdx][gridOffset]);
     }
 }
 
@@ -289,19 +283,13 @@ void grayScottSolver(Cell* gridData, int gridSize)
         exit(EXIT_FAILURE);
     }
 
-    std::thread threads[NUM_GPUS];
     Cell* deviceGridData[NUM_GPUS];
     Cell* deviceGridDataTmp[NUM_GPUS];
 
     // Setup each device
     for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
     {
-        threads[deviceIdx] = std::thread(setupDevice, deviceIdx, gridData, gridSize, &deviceGridData[deviceIdx], &deviceGridDataTmp[deviceIdx]);
-    }
-
-    for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
-    {
-        threads[deviceIdx].join();
+        setupDevice(deviceIdx, gridData, gridSize, &deviceGridData[deviceIdx], &deviceGridDataTmp[deviceIdx]);
     }
 
 #ifdef WRITE_OUTPUT_GIF
@@ -321,12 +309,7 @@ void grayScottSolver(Cell* gridData, int gridSize)
         for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
         {
             int gridOffsetHeight = deviceIdx * gridSize / NUM_GPUS;
-            threads[deviceIdx] = std::thread(runKernel, deviceIdx, deviceGridData[deviceIdx], deviceGridDataTmp[deviceIdx], gridOffsetHeight, gridSize);
-        }
-
-        for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
-        {
-            threads[deviceIdx].join();
+            runKernel(deviceIdx, deviceGridData[deviceIdx], deviceGridDataTmp[deviceIdx], gridOffsetHeight, gridSize);
         }
 
         // Synchronize devices
@@ -338,23 +321,32 @@ void grayScottSolver(Cell* gridData, int gridSize)
         if (NUM_GPUS > 1)
         {
             int gridDataDeviceSizeBytes = (gridSize * gridSize / NUM_GPUS) * sizeof(Cell);
-            recoverGridData(gridSize, gridData, deviceGridData);
 
             for (int deviceIdx = 0; deviceIdx < NUM_GPUS; deviceIdx++)
             {
-                // int peerDeviceIdx = deviceIdx ^ 1;
-                // int gridOffset = deviceIdx * gridSize * gridSize / NUM_GPUS;
+                /*int peerDeviceIdx = deviceIdx ^ 1;
+                int gridOffset = deviceIdx * gridSize * gridSize / NUM_GPUS;
 
                 // checkCudaErrors(cudaMemcpyPeer(&deviceGridData[peerDeviceIdx][gridOffset], peerDeviceIdx, &deviceGridData[deviceIdx][gridOffset], deviceIdx, gridDataDeviceSizeBytes));
-                // checkCudaErrors(cudaMemcpy(&(deviceGridData[peerDeviceIdx][gridOffset]), &(deviceGridData[deviceIdx][gridOffset]), gridDataDeviceSizeBytes, cudaMemcpyDefault));
+                checkCudaErrors(cudaMemcpy(&(deviceGridData[peerDeviceIdx][gridOffset]), &(deviceGridData[deviceIdx][gridOffset]), gridDataDeviceSizeBytes, cudaMemcpyDefault));
+                getLastCudaError("Transfer of data to peer failed.");*/
 
+                // Retrive to host top and bottom row of device grid
                 setDeviceCuda(deviceIdx);
-                int peerDeviceIdx = deviceIdx ^ 1;
-                int gridOffset = peerDeviceIdx * gridSize * gridSize / NUM_GPUS;
-                checkCudaErrors(cudaMemcpy(&deviceGridData[deviceIdx][gridOffset], &gridData[gridOffset], gridDataDeviceSizeBytes, cudaMemcpyHostToDevice));
+                int rowSizeBytes = gridSize * sizeof(Cell);
+                int deviceOffset = deviceIdx * gridSize * gridSize / NUM_GPUS;
+                Cell topRow[rowSizeBytes]; 
+                Cell bottomRow[rowSizeBytes]; 
+                checkCudaErrors(cudaMemcpy(topRow, &deviceGridData[deviceIdx][deviceOffset], rowSizeBytes, cudaMemcpyDeviceToHost));
+                checkCudaErrors(cudaMemcpy(bottomRow, &deviceGridData[deviceIdx][deviceOffset + (gridSize * gridSize / NUM_GPUS) - gridSize], rowSizeBytes, cudaMemcpyDeviceToHost));
                 getLastCudaError("Retrieving data from GPU failed");
 
-                getLastCudaError("Transfer of data to peer failed.");
+                // Send to peer device top and bottom row of grid
+                int peerDeviceIdx = deviceIdx ^ 1;
+                setDeviceCuda(peerDeviceIdx);
+                checkCudaErrors(cudaMemcpy(&deviceGridData[peerDeviceIdx][deviceOffset], topRow, rowSizeBytes, cudaMemcpyHostToDevice));
+                checkCudaErrors(cudaMemcpy(&deviceGridData[peerDeviceIdx][deviceOffset + (gridSize * gridSize / NUM_GPUS) - gridSize], bottomRow, rowSizeBytes, cudaMemcpyHostToDevice));
+                getLastCudaError("Sending data to GPU failed");
             }
         }
 
