@@ -4,20 +4,20 @@ from dataclasses import dataclass
 from typing import List
 
 PROGRAMS = [
-    # "gray_scott_model.cu",
-    # "parallel_gray_scott_model.cu",
+    "gray_scott_model.cu",
+    "parallel_gray_scott_model.cu",
     "parallel_gray_scott_model_optimized.cu",
 ]
 
 GRID_SIZES = [
     256,
-    # 512,
-    # 1024,
-    # 2048,
-    # 4096,
+    512,
+    1024,
+    2048,
+    4096,
 ]
 
-NUM_RUNS = 1
+NUM_RUNS = 5
 
 @dataclass
 class SlurmJob:
