@@ -171,8 +171,6 @@ void write_output_gif_frame(int step, int gridSize, Cell* gridData, Cell* device
 
 __global__ void grayScottSimStep_kernel(int deviceIdx, Cell* deviceGrid, Cell* deviceGridTmp, int gridOffsetHeight, int gridSize)
 {
-    if (deviceIdx) return;
-
     // find index of the pixel of the thread
     int tx = threadIdx.x;
     int ty = threadIdx.y;
@@ -333,7 +331,7 @@ void grayScottSolver(Cell* gridData, int gridSize)
         {
             swapDeviceGridPtr(&deviceGridData[deviceIdx], &deviceGridDataTmp[deviceIdx]);
         }
-        
+
         if (NUM_GPUS > 1)
         {
             int gridDataDeviceSizeBytes = (gridSize * gridSize / NUM_GPUS) * sizeof(Cell);
@@ -342,8 +340,9 @@ void grayScottSolver(Cell* gridData, int gridSize)
                 int peerDeviceIdx = deviceIdx ^ 1;
                 int gridOffset = deviceIdx * gridSize * gridSize / NUM_GPUS;
 
-                checkCudaErrors(cudaMemcpy(&(deviceGridData[peerDeviceIdx][gridOffset]), &(deviceGridData[deviceIdx][gridOffset]), gridDataDeviceSizeBytes, cudaMemcpyDefault));
-                // checkCudaErrors(cudaMemcpyPeer(&deviceGridData[peerDeviceIdx][gridOffset], peerDeviceIdx, &deviceGridData[deviceIdx][gridOffset], deviceIdx, gridDataDeviceSizeBytes));
+                // checkCudaErrors(cudaMemcpy(&(deviceGridData[peerDeviceIdx][gridOffset]), &(deviceGridData[deviceIdx][gridOffset]), gridDataDeviceSizeBytes, cudaMemcpyDefault));
+                setDeviceCuda(deviceIdx);
+                checkCudaErrors(cudaMemcpyPeer(&deviceGridData[peerDeviceIdx][gridOffset], peerDeviceIdx, &deviceGridData[deviceIdx][gridOffset], deviceIdx, gridDataDeviceSizeBytes));
                 // checkCudaErrors(cudaMemcpy(&(deviceGridData[peerDeviceIdx][gridOffset]), &(deviceGridData[deviceIdx][gridOffset]), gridDataDeviceSizeBytes, cudaMemcpyDefault));
                 getLastCudaError("Transfer of data to peer failed.");
             }
