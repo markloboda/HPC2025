@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 // MPI
+#include "mpi.h"
 
 // GIF
 #include "lib/gif.h"
@@ -43,6 +44,7 @@ typedef struct _Cell_ {
 struct execution_result
 {
     int size;
+    int numCores;
     float total;
 };
 
@@ -202,13 +204,14 @@ void allocateGrid(Cell** gridDataPtr, Cell*** gridPtr, int gridSize)
 
 int main(int argc, char *args[])
 {
-    if (argc != 2)
+    if (argc != 3)
     {
         printf("Error: Invalid amount of arguments. [%d]\n", argc);
         exit(EXIT_FAILURE);
     }
 
     int gridSize = atoi(args[1]);
+    int numCores = atoi(args[2]);
 
     // Reserve space for grids and initialize them
     Cell* gridData;
@@ -252,18 +255,20 @@ int main(int argc, char *args[])
     }
 #endif
 
+    double startTime = MPI_Wtime();
 
     // Main algorithm ///////////////////////////////////////////////////////////////////////////////////
     grayScottSolver(grid, gridTmp, gridSize, outDirFpath);
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // End the time recording and calculate elapsed times
-
+    double elapsedMain = MPI_Wtime() - startTime;
 
 // Output timing stats to file //////////////////////////////////////////////////////////////////////////
 #ifdef SAVE_TIMING_STATS
     struct execution_result result;
     result.size = gridSize;
+    result.numCores = numCores;
     result.total = elapsedMain;
 
     // Create dir timing_stats if it does not exist
@@ -273,18 +278,15 @@ int main(int argc, char *args[])
     }
 
     FILE *timingFile = fopen("./timing_stats/timing_stats_serial.txt", "a");
-    fprintf(timingFile, "--------------- HISTOGRAM EQUALIZATION - Serial ---------------\n");
+    fprintf(timingFile, "----------------- GRAY SCOTT - Serial -----------------\n");
     fprintf(timingFile, "------------------------- %d%s%d ----------------------\n", gridSize, "x", gridSize);
     fprintf(timingFile, "Grid size: %d\n", result.size);
+    fprintf(timingFile, "Number of cores: %d\n", result.numCores);
     fprintf(timingFile, "Total time: %f ms\n", result.total);
     fprintf(timingFile, "-----------------------------------------------------\n");
     fprintf(timingFile, "\n");
     fclose(timingFile);
 #endif
-
-    // Clean-up events
-    cudaEventDestroy(startMain);
-    cudaEventDestroy(stopMain);
 
     // Free memory
     free(grid);

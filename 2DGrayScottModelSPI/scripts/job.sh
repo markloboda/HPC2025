@@ -15,6 +15,7 @@ module load OpenMPI
 
 PROGRAM=$1
 GRID_SIZE=$2
+NUM_CORES=$3
 
-echo "Running program: $PROGRAM with grid size: $GRID_SIZE"
-mpirun --display-allocation -n 8 $SLURM_JOB_NAME $GRID_SIZE
+echo "Running program: $PROGRAM with grid size: $GRID_SIZE and number of cores: $NUM_CORES"
+mpirun --display-allocation -n 8 $PROGRAM $GRID_SIZE $NUM_CORES

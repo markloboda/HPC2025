@@ -6,7 +6,6 @@ from typing import List
 PROGRAMS = [
     "gray_scott_model.cu",
     "parallel_gray_scott_model.cu",
-    "parallel_gray_scott_model_optimized.cu",
 ]
 
 GRID_SIZES = [
@@ -17,12 +16,22 @@ GRID_SIZES = [
     4096,
 ]
 
+NUM_CORES = [
+    1,
+    2,
+    4,
+    16,
+    32,
+    64
+]
+
 NUM_RUNS = 8
 
 @dataclass
 class SlurmJob:
     program: str
     grid_size: int
+    num_of_cores: int
 
 def compile_programs():
     for program in PROGRAMS:
@@ -37,7 +46,7 @@ def run_slurm_jobs(jobs: List[SlurmJob]):
     for job in jobs:
         compiled_program = f"./bin/{job.program.replace('.cu', '.out')}"
 
-        cmd = ["sbatch", "scripts/job.sh", compiled_program, str(job.grid_size)]
+        cmd = ["sbatch", "scripts/job.sh", compiled_program, str(job.grid_size), str(job.num_of_cores)]
         print("Running:", " ".join(cmd))
         result = subprocess.run(cmd, cwd=".", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result = result.stdout.decode()
@@ -50,8 +59,10 @@ if __name__ == "__main__":
     for program in PROGRAMS:
         for grid_size_index in range(len(GRID_SIZES)):
             grid_size = GRID_SIZES[grid_size_index]
-            for i in range(NUM_RUNS):
-                jobs.append(SlurmJob(program, grid_size))
+            for num_of_cores_index in range(len(NUM_CORES)):
+                num_of_cores = NUM_CORES[num_of_cores_index]
+                for i in range(NUM_RUNS):
+                    jobs.append(SlurmJob(program, grid_size, num_of_cores))
 
     # print(jobs)
 
@@ -66,8 +77,6 @@ if __name__ == "__main__":
         exit(1)
 
     print("Running jobs...")
-
-
 
     run_slurm_jobs(jobs)
 

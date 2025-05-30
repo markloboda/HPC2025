@@ -11,8 +11,7 @@ PROGRAM_OUT="bin/$(basename "$PROGRAM" .cu).out"
 
 mkdir -p bin
 
-# Load module CUDA
-module load CUDA
+module load OpenMPI
 
 # Compile the program
-nvcc -diag-suppress 550 -O2 -lm "$PROGRAM" -o "$PROGRAM_OUT"
+mpicc -o $PROGRAM_OUT $PROGRAM
