@@ -34,7 +34,7 @@
 // Settings
 #define SAVE_TIMING_STATS
 // #define WRITE_OUTPUT_IMAGE
-// #define WRITE_OUTPUT_GIF
+#define WRITE_OUTPUT_GIF
 
 typedef struct _Cell_ {
     float U;  // Concentration of species U
@@ -112,6 +112,7 @@ void write_output_image_frame(char* outDirFpath, int step, int gridSize, Cell** 
 #endif
 
 #ifdef WRITE_OUTPUT_GIF
+#include <stdlib.h> // for malloc and free
 void write_output_gif_frame(int step, int gridSize, Cell** grid, GifWriter* gifWriter)
 {
     int outColorChannels = 4;
@@ -141,7 +142,7 @@ void grayScottSolver(Cell** grid, Cell** gridTmp, int gridSize, char* outDirFpat
     GifWriter gifWriter;
     char outputGifFpath[100];
     snprintf(outputGifFpath, sizeof(outputGifFpath), "%s%d%s%d%s%d%s", "./output_gifs/", gridSize, "x", gridSize, "/", MAX_SIM_STEPS, ".gif");
-    GifBegin(&gifWriter, outputGifFpath, gridSize, gridSize, 0);
+    GifBegin(&gifWriter, outputGifFpath, gridSize, gridSize, 0, 8);
 #endif
 
     for (int step = 0; step < MAX_SIM_STEPS; step++)
