@@ -1,0 +1,27 @@
+Serial
+Grid Size: 256, Average Time (ms): 4727.29
+Grid Size: 512, Average Time (ms): 13884.00
+Grid Size: 1024, Average Time (ms): 50175.90
+Grid Size: 2048, Average Time (ms): 193547.03
+Grid Size: 4096, Average Time (ms): 764905.96
+
+Parallel
+Grid Size: 256, Average Time (ms): 33.43, Speedup: 141.41
+Grid Size: 512, Average Time (ms): 42.22, Speedup: 328.86
+Grid Size: 1024, Average Time (ms): 141.33, Speedup: 355.03
+Grid Size: 2048, Average Time (ms): 488.38, Speedup: 396.31
+Grid Size: 4096, Average Time (ms): 1984.08, Speedup: 385.52
+
+Parallel Optimized with 1 GPU
+Grid Size: 256, Average Time (ms): 26.38, Speedup: 179.22
+Grid Size: 512, Average Time (ms): 32.69, Speedup: 424.75
+Grid Size: 1024, Average Time (ms): 117.11, Speedup: 428.45
+Grid Size: 2048, Average Time (ms): 401.34, Speedup: 482.25
+Grid Size: 4096, Average Time (ms): 1531.17, Speedup: 499.56
+
+Parallel Optimized with 2 GPUs
+Grid Size: 256, Average Time (ms): 610.50, Speedup: 7.74
+Grid Size: 512, Average Time (ms): 621.10, Speedup: 22.35
+Grid Size: 1024, Average Time (ms): 671.84, Speedup: 74.68
+Grid Size: 2048, Average Time (ms): 874.95, Speedup: 221.21
+Grid Size: 4096, Average Time (ms): 1565.30, Speedup: 488.66
