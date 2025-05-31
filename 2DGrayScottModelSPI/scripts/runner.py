@@ -6,24 +6,22 @@ from typing import List
 
 PROGRAMS = [
     "gray_scott_model.cpp",
-    # "parallel_gray_scott_model.cpp",
+    "gray_scott_model_parallel.cpp",
 ]
 
 GRID_SIZES = [
     256,
-    # 512,
-    # 1024,
-    # 2048,
-    # 4096,
+    512,
+    1024,
+    2048,
+    4096,
 ]
 
 NUM_CORES = [
     1,
-    # 2,
-    # 4,
-    # 16,
-    # 32,
-    # 64
+    2,
+    4,
+    16,
 ]
 
 NUM_RUNS = 1
@@ -32,7 +30,7 @@ NUM_RUNS = 1
 class SlurmJob:
     program: str
     grid_size: int
-    num_of_cores: int
+    num_proc: int
 
 def compile_programs():
     for program in PROGRAMS:
@@ -46,7 +44,14 @@ def compile_programs():
 def run_slurm_jobs(jobs: List[SlurmJob]):
     for job in jobs:
         compiled_program = f"./bin/{job.program.replace('.cpp', '.out')}"
-        cmd = ["sbatch", "scripts/job.sh", compiled_program, str(job.grid_size), str(job.num_of_cores)]
+        cmd = [
+            "sbatch",
+            f"--ntasks={job.num_proc}",
+            "scripts/job.sh",
+            compiled_program,
+            str(job.grid_size),
+            str(job.num_proc)
+        ]
         print("Submitting with sbatch:", " ".join(cmd))
         result = subprocess.run(cmd, cwd=".", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print(result.stdout.decode())
@@ -55,19 +60,11 @@ def run_with_srun(jobs: List[SlurmJob]):
     for job in jobs:
         compiled_program = f"./bin/{job.program.replace('.cpp', '.out')}"
         cmd = [
-            "srun",
-            "--job-name=runner-run-gray-scott-model",
-            "--nodes=1",
-            "--ntasks-per-node=1",
-            "--cpus-per-task=1",
-            "--threads-per-core=1",
-            "--mem-per-cpu=2G",
-            "--time=10:00",
-            "--output=logs/runner-run-gray-scott-model.log",
-            "--reservation=fri",
+            "mpirun",
+            "-np", str(job.num_proc),
             compiled_program,
             str(job.grid_size),
-            str(job.num_of_cores)
+            str(job.num_proc)
         ]
         print("Running with srun:", " ".join(cmd))
         result = subprocess.run(cmd, cwd=".", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -83,9 +80,13 @@ if __name__ == "__main__":
     jobs = []
     for program in PROGRAMS:
         for grid_size in GRID_SIZES:
-            for num_of_cores in NUM_CORES:
+            if program == "gray_scott_model.cpp":
                 for i in range(NUM_RUNS):
-                    jobs.append(SlurmJob(program, grid_size, num_of_cores))
+                    jobs.append(SlurmJob(program, grid_size, 1))  # Always 1 core
+            else:
+                for num_of_cores in NUM_CORES:
+                    for i in range(NUM_RUNS):
+                        jobs.append(SlurmJob(program, grid_size, num_of_cores))
 
     original_dir = os.getcwd()
     os.chdir("..")

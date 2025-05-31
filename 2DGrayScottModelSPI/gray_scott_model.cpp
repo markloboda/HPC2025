@@ -34,7 +34,7 @@
 // Settings
 #define SAVE_TIMING_STATS
 // #define WRITE_OUTPUT_IMAGE
-#define WRITE_OUTPUT_GIF
+// #define WRITE_OUTPUT_GIF
 
 typedef struct _Cell_ {
     float U;  // Concentration of species U
