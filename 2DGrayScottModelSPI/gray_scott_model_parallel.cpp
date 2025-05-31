@@ -317,26 +317,29 @@ int main(int argc, char *args[])
 
 // Output timing stats to file //////////////////////////////////////////////////////////////////////////
 #ifdef SAVE_TIMING_STATS
-    struct execution_result result;
-    result.size = gridSize;
-    result.numCores = mpiSize;
-    result.total = elapsedMain;
+    if (mpiRank == 0)
+    {
+        struct execution_result result;
+        result.size = gridSize;
+        result.numCores = mpiSize;
+        result.total = elapsedMain;
 
-    // Create dir timing_stats if it does not exist
-    struct stat timing_stats_st = {0};
-    if (stat("./timing_stats", &timing_stats_st) == -1) {
-        mkdir("./timing_stats", 0700);
+        // Create dir timing_stats if it does not exist
+        struct stat timing_stats_st = {0};
+        if (stat("./timing_stats", &timing_stats_st) == -1) {
+            mkdir("./timing_stats", 0700);
+        }
+
+        FILE *timingFile = fopen("./timing_stats/timing_stats_parallel.txt", "a");
+        fprintf(timingFile, "----------------- GRAY SCOTT - Parallel -----------------\n");
+        fprintf(timingFile, "------------------------- %d%s%d ----------------------\n", gridSize, "x", gridSize);
+        fprintf(timingFile, "Grid size: %d\n", result.size);
+        fprintf(timingFile, "Number of cores: %d\n", result.numCores);
+        fprintf(timingFile, "Total time: %f ms\n", result.total);
+        fprintf(timingFile, "-----------------------------------------------------\n");
+        fprintf(timingFile, "\n");
+        fclose(timingFile);
     }
-
-    FILE *timingFile = fopen("./timing_stats/timing_stats_parallel.txt", "a");
-    fprintf(timingFile, "----------------- GRAY SCOTT - Parallel -----------------\n");
-    fprintf(timingFile, "------------------------- %d%s%d ----------------------\n", gridSize, "x", gridSize);
-    fprintf(timingFile, "Grid size: %d\n", result.size);
-    fprintf(timingFile, "Number of cores: %d\n", result.numCores);
-    fprintf(timingFile, "Total time: %f ms\n", result.total);
-    fprintf(timingFile, "-----------------------------------------------------\n");
-    fprintf(timingFile, "\n");
-    fclose(timingFile);
 #endif
 
     // Free memory
